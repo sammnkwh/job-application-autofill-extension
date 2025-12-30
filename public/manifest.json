@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "Job Application Autofill",
+  "version": "1.0.0",
+  "description": "Fill job applications automatically on Workday and Greenhouse with your saved profile data.",
+  "permissions": [
+    "storage",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "*://*.myworkdayjobs.com/*",
+    "*://*.workday.com/*",
+    "*://*.greenhouse.io/*",
+    "*://boards.greenhouse.io/*"
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "src/background/index.ts",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.myworkdayjobs.com/*",
+        "*://*.workday.com/*",
+        "*://*.greenhouse.io/*",
+        "*://boards.greenhouse.io/*"
+      ],
+      "js": ["src/content/index.ts"],
+      "run_at": "document_idle"
+    }
+  ],
+  "options_page": "options.html"
+}

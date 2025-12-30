@@ -7,7 +7,7 @@
 - [job_application_autofill_comprehensive_doc.md](./job_application_autofill_comprehensive_doc.md)
 
 **Status:** Draft
-**Last Updated:** December 26, 2024
+**Last Updated:** December 30, 2024
 
 ---
 
@@ -482,8 +482,14 @@ The following features will NOT be included in Version 1.0 (see roadmap.md for f
 
 ### 2.4 Design Considerations
 
+**UI Framework:**
+- **shadcn/ui** component library built on Radix UI + Tailwind CSS
+- All components (shadcn and custom) use Tailwind CSS for consistent styling
+- CSS variables define the design system (colors, spacing, radii)
+- Custom components must use the same Tailwind classes and CSS variables as shadcn components
+
 **User Interface:**
-- Clean, modern design following Material Design or similar guidelines
+- Clean, modern design using shadcn/ui's default theme
 - Consistent color scheme: Primary (blue), Success (green), Warning (yellow), Error (red)
 - Clear typography with good readability
 - Responsive layout for different screen sizes
@@ -555,11 +561,61 @@ The following features will NOT be included in Version 1.0 (see roadmap.md for f
 - Fallback to manual entry if auto-fill fails
 
 **Testing Strategy:**
-- Unit tests for parsing logic and field matching
-- Integration tests for storage and retrieval
-- Manual testing on real Workday and Greenhouse applications
-- Test with various resume formats and qualities
-- Cross-browser compatibility testing (Chrome versions)
+
+*Tools:*
+- **Vitest** - Unit and integration tests (fast, TypeScript-native, ESM support)
+- **Playwright** - E2E tests (better extension support than Puppeteer)
+- **Mock Chrome APIs** - For testing Chrome extension APIs in isolation
+- **Mock HTML Fixtures** - Local HTML files replicating Workday/Greenhouse forms
+
+*Test Types:*
+
+1. **Unit Tests** - Test individual functions in isolation
+   - Resume parser: extract name, email, phone, work history from various formats
+   - Field mapper: label matching, fuzzy matching, confidence scoring
+   - Encryption: encrypt/decrypt roundtrip, handle invalid data
+   - Validation: email format, phone format, URL format
+   - Schema migration: version transforms work correctly
+
+2. **Integration Tests** - Test how modules work together
+   - Profile save/load: save profile → retrieve from storage → data matches
+   - Export/import: export JSON → import JSON → profile restored correctly
+   - Resume → Profile flow: upload PDF → parse → populate form → save
+   - Encryption flow: save encrypted → load decrypted → data intact
+
+3. **E2E Tests** - Test full user flows in browser (using mock HTML fixtures)
+   - Extension popup: click icon → popup opens → buttons visible
+   - Profile form: open form → fill fields → save → data persisted
+   - Autofill on mock pages: load mock Workday HTML → click autofill → fields populated
+
+4. **Manual Testing** - Real-world validation on actual job sites
+   - Test on real Workday applications (do not submit)
+   - Test on real Greenhouse applications (do not submit)
+   - Test with various resume formats (PDF, DOCX, TXT)
+   - Cross-Chrome-version compatibility
+
+*Test File Organization:*
+- Tests placed next to source files (e.g., `validation.ts` and `validation.test.ts` in same folder)
+- Mock fixtures in `tests/fixtures/` directory
+
+*Coverage Goals:*
+- Resume Parser: 90%+
+- Field Mapper: 95%+
+- Encryption/Storage: 100%
+- Profile Form Validation: 80%+
+- E2E Critical Paths: 100% of happy paths
+
+*Testing Workflow:*
+- Run tests in watch mode during development (`npm run test -- --watch`)
+- All tests must pass before committing code
+- Each feature task includes corresponding test sub-tasks
+
+*Task Structure (every feature follows this pattern):*
+1. Implement the feature code
+2. Write unit tests for the feature
+3. Write integration tests (if applicable)
+4. Run all tests and verify they pass
+5. Fix any failing tests before moving to next task
 
 ---
 
@@ -628,16 +684,16 @@ No existing features or functionality will be removed or deprecated, as this is 
 
 | ITEM | DESCRIPTION | STATUS/ANSWER |
 |------|-------------|---------------|
-| Resume parsing library | Which library should we use for PDF parsing? pdf.js vs alternatives | Open - needs research |
+| Resume parsing library | Which library should we use for PDF parsing? pdf.js vs alternatives | **RESOLVED** - Use `pdfjs-dist` for PDF parsing and `mammoth.js` for DOCX. Both are industry standards and work entirely client-side. |
 | Encryption key management | How do we securely store the encryption key? Browser-derived or user password? | **RESOLVED** - Using browser-derived key for v1.0 (AES-256-GCM via Web Crypto API). Password-based encryption deferred to future version. |
-| Field matching confidence threshold | Is 80% the right threshold for auto-fill? Should it be configurable? | Open - needs user testing |
-| Storage quota handling | What happens if user hits 5MB storage limit? How to compress data? | Open - needs design |
-| Workday URL patterns | Do all Workday instances follow `*.myworkdayjobs.com` pattern? | Open - needs validation |
-| Greenhouse variations | Are there multiple Greenhouse URL patterns we need to support? | Open - needs validation |
-| File upload handling | How to handle resume file uploads in auto-fill? Some forms accept, some don't | Open - needs technical design |
-| Error logging | Should we implement crash reporting? How to do it without compromising privacy? | Open - needs decision |
-| Version migration | How to handle future JSON schema changes? Migration strategy? | Open - needs architecture design |
-| Testing environments | Can we get test Workday and Greenhouse environments for development? | Open - needs research |
+| Field matching confidence threshold | Is 80% the right threshold for auto-fill? Should it be configurable? | **RESOLVED** - Default 80% threshold, configurable in settings (range 70-95%). Will tune based on user feedback. |
+| Storage quota handling | What happens if user hits 5MB storage limit? How to compress data? | **RESOLVED** - Don't store full resume files as base64 (only parsed data). Warn user at 4MB usage. Profile data without embedded files will be <100KB. |
+| Workday URL patterns | Do all Workday instances follow `*.myworkdayjobs.com` pattern? | **RESOLVED** - Support `*.myworkdayjobs.com` and `*.workday.com` patterns in manifest, plus DOM detection for `data-automation-id` attributes. |
+| Greenhouse variations | Are there multiple Greenhouse URL patterns we need to support? | **RESOLVED** - Support `*.greenhouse.io` and `boards.greenhouse.io` patterns, plus DOM detection for Greenhouse-specific elements. |
+| File upload handling | How to handle resume file uploads in auto-fill? Some forms accept, some don't | **RESOLVED** - Skip file upload fields in v1.0. Highlight them as "needs your attention" for manual upload. Programmatic file uploads are unreliable due to browser security restrictions. |
+| Error logging | Should we implement crash reporting? How to do it without compromising privacy? | **RESOLVED** - Local console logging only. Add "Report Issue" button in settings that sanitizes logs (removes PII) and copies to clipboard. No external services. Maintains "100% local, no tracking" privacy stance. |
+| Version migration | How to handle future JSON schema changes? Migration strategy? | **RESOLVED** - Include `schemaVersion: "1.0"` in JSON structure. Write migration functions for each version change (e.g., `migrate_1_0_to_1_1()`). Run migrations automatically on extension update. Users never lose data. |
+| Testing environments | Can we get test Workday and Greenhouse environments for development? | **RESOLVED** - Use real job postings for testing (navigate to applications, test auto-fill, don't submit). Create mock HTML fixtures for unit tests. Use Puppeteer for E2E tests on real sites (stop before submit). |
 
 ---
 
@@ -651,6 +707,9 @@ No existing features or functionality will be removed or deprecated, as this is 
 | Dec 26, 2024 | Sam Ankwah | Clarified MVP scope: Workday + Greenhouse only, Chrome only, resume parsing included, export/import capability |
 | Dec 26, 2024 | Sam Ankwah | Resolved encryption key management: browser-derived key for v1.0, password option deferred to roadmap |
 | Dec 26, 2024 | Sam Ankwah | Clarified activation strategy: Manual activation only (crawl phase), user clicks extension icon → popup → "Autofill This Page" button. Icon turns green on supported platforms. One page at a time for Workday (multi-page forms). Extension supplements existing data rather than overriding. |
+| Dec 30, 2024 | Sam Ankwah | Added UI framework decision: shadcn/ui + Tailwind CSS for consistent styling across all components |
+| Dec 30, 2024 | Sam Ankwah | Resolved all open technical questions: (1) Resume parsing: pdfjs-dist + mammoth.js, (2) Confidence threshold: 80% default, configurable, (3) Storage: don't embed files, warn at 4MB, (4) Workday URLs: *.myworkdayjobs.com + *.workday.com + DOM detection, (5) Greenhouse URLs: *.greenhouse.io + DOM detection, (6) File uploads: skip in v1.0, highlight for manual, (7) Error logging: local console only with sanitized "Report Issue" export, (8) Version migration: schemaVersion field + migration functions, (9) Testing: real sites + mock fixtures + Puppeteer |
+| Dec 30, 2024 | Sam Ankwah | Added comprehensive Testing Strategy section: Vitest for unit/integration tests, Playwright for E2E, tests alongside source files, coverage goals defined, each feature task includes test sub-tasks |
 
 ---
 
