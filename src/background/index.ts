@@ -1,26 +1,89 @@
 // Background service worker for the extension
 // Handles messages from content scripts and manages extension state
 
+import { detectFromUrl, getPlatformName, type ATSPlatform } from '../content/detector'
+
 console.log('Background service worker loaded')
+
+// Icon paths
+const ICONS = {
+  default: {
+    16: 'icons/icon-16.png',
+    48: 'icons/icon-48.png',
+    128: 'icons/icon-128.png',
+  },
+  active: {
+    16: 'icons/icon-16-active.png',
+    48: 'icons/icon-48-active.png',
+    128: 'icons/icon-128-active.png',
+  },
+}
+
+// Update icon and badge for a tab
+function updateTabIcon(tabId: number, platform: ATSPlatform) {
+  const isSupported = platform !== 'unknown'
+
+  chrome.action.setIcon({
+    path: isSupported ? ICONS.active : ICONS.default,
+    tabId,
+  })
+
+  if (isSupported) {
+    chrome.action.setBadgeText({
+      text: platform === 'workday' ? 'WD' : 'GH',
+      tabId,
+    })
+    chrome.action.setBadgeBackgroundColor({
+      color: '#22c55e',
+      tabId,
+    })
+  } else {
+    chrome.action.setBadgeText({ text: '', tabId })
+  }
+}
+
+// Check URL when tab is updated
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.status === 'complete' && tab.url) {
+    const { platform } = detectFromUrl(tab.url)
+    updateTabIcon(tabId, platform)
+  }
+})
+
+// Check URL when tab is activated
+chrome.tabs.onActivated.addListener(async (activeInfo) => {
+  try {
+    const tab = await chrome.tabs.get(activeInfo.tabId)
+    if (tab.url) {
+      const { platform } = detectFromUrl(tab.url)
+      updateTabIcon(activeInfo.tabId, platform)
+    }
+  } catch (error) {
+    console.error('Error getting tab:', error)
+  }
+})
 
 // Listen for messages from content scripts
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log('Received message:', message, 'from:', sender)
 
   if (message.type === 'PLATFORM_DETECTED') {
-    // Update icon based on platform detection
-    const iconPath = message.platform
-      ? 'icons/icon-48-active.png'
-      : 'icons/icon-48.png'
+    const platform = message.platform as ATSPlatform
 
     if (sender.tab?.id) {
-      chrome.action.setIcon({
-        path: iconPath,
-        tabId: sender.tab.id
-      })
+      updateTabIcon(sender.tab.id, platform)
     }
 
-    sendResponse({ success: true })
+    sendResponse({ success: true, platformName: getPlatformName(platform) })
+  }
+
+  if (message.type === 'GET_PLATFORM') {
+    if (sender.tab?.url) {
+      const { platform } = detectFromUrl(sender.tab.url)
+      sendResponse({ platform, platformName: getPlatformName(platform) })
+    } else {
+      sendResponse({ platform: 'unknown', platformName: 'Unknown' })
+    }
   }
 
   return true // Keep message channel open for async response
