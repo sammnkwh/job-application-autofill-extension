@@ -86,6 +86,21 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
   }
 
+  // Forward autofill trigger from floating indicator back to content script
+  if (message.type === 'TRIGGER_AUTOFILL_FROM_INDICATOR') {
+    if (sender.tab?.id) {
+      // Send message to the same tab to trigger autofill
+      chrome.tabs.sendMessage(sender.tab.id, { type: 'TRIGGER_AUTOFILL' })
+        .then(response => {
+          console.log('Autofill response:', response)
+        })
+        .catch(error => {
+          console.error('Error triggering autofill:', error)
+        })
+    }
+    sendResponse({ success: true })
+  }
+
   return true // Keep message channel open for async response
 })
 
