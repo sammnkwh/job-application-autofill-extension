@@ -2,6 +2,7 @@
 // Handles platform detection and form autofill
 
 import { detectPlatform, isSupported, getPlatformName, type DetectionResult } from './detector'
+import { createIndicator, updateIndicator, removeIndicator } from './FloatingIndicator'
 
 console.log('Job Autofill: Content script loaded on:', window.location.href)
 
@@ -27,6 +28,13 @@ function runDetection(): DetectionResult {
     confidence: result.confidence,
   })
 
+  // Show/hide floating indicator
+  if (isSupported(result)) {
+    createIndicator(result.platform)
+  } else {
+    removeIndicator()
+  }
+
   return result
 }
 
@@ -43,7 +51,8 @@ const urlObserver = new MutationObserver(() => {
   if (window.location.href !== lastUrl) {
     lastUrl = window.location.href
     console.log('Job Autofill: URL changed, re-running detection')
-    runDetection()
+    const result = runDetection()
+    updateIndicator(result.platform)
   }
 })
 
