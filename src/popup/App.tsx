@@ -5,7 +5,8 @@ import { Badge } from '../components/ui/badge'
 import { Progress } from '../components/ui/progress'
 import { Separator } from '../components/ui/separator'
 import { Alert, AlertDescription } from '../components/ui/alert'
-import { hasProfile, loadProfile } from '../utils/storage'
+import { hasProfile, loadProfile, exportProfile, importProfile } from '../utils/storage'
+import { validateImportData, openFilePicker } from '../utils/exportImport'
 
 interface PlatformInfo {
   platform: 'workday' | 'greenhouse' | 'unknown'
@@ -118,6 +119,40 @@ function App() {
 
   const openOptions = () => {
     chrome.runtime.openOptionsPage()
+  }
+
+  const handleExport = async () => {
+    const result = await exportProfile()
+    if (result.success && result.data) {
+      const blob = new Blob([result.data], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `job-profile-${new Date().toISOString().split('T')[0]}.json`
+      a.click()
+      URL.revokeObjectURL(url)
+    } else {
+      setState(prev => ({ ...prev, error: result.error || 'Export failed' }))
+    }
+  }
+
+  const handleImport = async () => {
+    const text = await openFilePicker()
+    if (!text) return
+
+    const validation = validateImportData(text)
+    if (!validation.valid) {
+      setState(prev => ({ ...prev, error: validation.errors.join(' ') }))
+      return
+    }
+
+    const result = await importProfile(text)
+    if (result.success) {
+      // Reload to show updated profile
+      window.location.reload()
+    } else {
+      setState(prev => ({ ...prev, error: result.error || 'Import failed' }))
+    }
   }
 
   const triggerAutofill = async () => {
@@ -279,6 +314,14 @@ function App() {
             <Button variant="outline" className="w-full" onClick={openOptions}>
               Edit Profile
             </Button>
+            <div className="flex gap-2">
+              <Button variant="ghost" size="sm" className="flex-1 text-xs" onClick={handleExport}>
+                Export
+              </Button>
+              <Button variant="ghost" size="sm" className="flex-1 text-xs" onClick={handleImport}>
+                Import
+              </Button>
+            </div>
           </div>
         </>
       ) : (

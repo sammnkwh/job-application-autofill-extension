@@ -23,6 +23,8 @@ import {
 } from '../components/ui/dialog'
 import { ProfileForm } from '../components/profile'
 import { clearAllData, exportProfile, importProfile, loadSettings, saveSettings } from '../utils/storage'
+import { validateImportData, openFilePicker } from '../utils/exportImport'
+import { createSanitizedErrorReport, copyReportToClipboard, getExtensionVersion } from '../utils/logSanitizer'
 import type { Settings } from '../types/schema'
 
 function App() {
@@ -64,24 +66,51 @@ function App() {
   }
 
   const handleImport = async () => {
-    const input = document.createElement('input')
-    input.type = 'file'
-    input.accept = '.json'
-    input.onchange = async (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0]
-      if (file) {
-        const text = await file.text()
-        const result = await importProfile(text)
-        if (result.success) {
-          setSaveMessage('Profile imported successfully!')
-          setTimeout(() => window.location.reload(), 1000)
-        } else {
-          setSaveMessage('Error: ' + (result.error || 'Failed to import'))
-        }
-        setTimeout(() => setSaveMessage(null), 3000)
-      }
+    const text = await openFilePicker()
+    if (!text) return
+
+    // Validate the import data
+    const validation = validateImportData(text)
+
+    if (!validation.valid) {
+      setSaveMessage('Error: ' + validation.errors.join(' '))
+      setTimeout(() => setSaveMessage(null), 5000)
+      return
     }
-    input.click()
+
+    // Show warnings if any
+    if (validation.warnings.length > 0) {
+      console.warn('Import warnings:', validation.warnings)
+    }
+
+    // Import the profile
+    const result = await importProfile(text)
+    if (result.success) {
+      setSaveMessage('Profile imported successfully!' +
+        (validation.warnings.length > 0 ? ` (${validation.warnings.length} warnings)` : ''))
+      setTimeout(() => window.location.reload(), 1500)
+    } else {
+      setSaveMessage('Error: ' + (result.error || 'Failed to import'))
+    }
+    setTimeout(() => setSaveMessage(null), 5000)
+  }
+
+  const handleReportIssue = async () => {
+    const report = createSanitizedErrorReport(
+      new Error('User-initiated bug report'),
+      {
+        settingsLoaded: settings !== null,
+        confidenceThreshold: settings?.confidenceThreshold,
+      }
+    )
+
+    const success = await copyReportToClipboard(report)
+    if (success) {
+      setSaveMessage('Debug info copied to clipboard. Paste it in your bug report.')
+    } else {
+      setSaveMessage('Could not copy to clipboard. Please try again.')
+    }
+    setTimeout(() => setSaveMessage(null), 3000)
   }
 
   const handleClearData = async () => {
@@ -201,11 +230,39 @@ function App() {
 
           <Card>
             <CardHeader>
+              <CardTitle>Support</CardTitle>
+              <CardDescription>
+                Get help or report issues
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Button variant="outline" onClick={handleReportIssue}>
+                  Copy Debug Info
+                </Button>
+                <p className="text-sm text-muted-foreground">
+                  Copies sanitized debug information to clipboard. Paste this in your bug report.
+                  Personal information is automatically removed.
+                </p>
+              </div>
+              <Separator />
+              <Button
+                variant="link"
+                className="p-0 h-auto"
+                onClick={() => window.open('https://github.com/anthropics/claude-code/issues', '_blank')}
+              >
+                Report Issue on GitHub
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
               <CardTitle>About</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
               <p className="text-sm">
-                <strong>Version:</strong> 1.0.0
+                <strong>Version:</strong> {getExtensionVersion()}
               </p>
               <p className="text-sm text-muted-foreground">
                 Your data is stored locally and encrypted. It is never sent to any server.
