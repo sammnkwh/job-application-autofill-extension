@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mock Greenhouse Application</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; max-width: 700px; margin: 0 auto; padding: 20px; background: #f5f5f5; }
+    #application_form { background: white; padding: 24px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    h1 { margin-top: 0; color: #333; }
+    .job-details { color: #666; margin-bottom: 24px; }
+    .field { margin-bottom: 20px; }
+    .field label { display: block; margin-bottom: 6px; font-weight: 500; color: #333; }
+    .field label span.required { color: #e74c3c; }
+    .field input, .field select, .field textarea {
+      width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 4px;
+      box-sizing: border-box; font-size: 14px;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      border-color: #3498db; outline: none; box-shadow: 0 0 0 2px rgba(52,152,219,0.2);
+    }
+    .field-error-msg { color: #e74c3c; font-size: 12px; margin-top: 4px; display: none; }
+    .section-header { font-size: 16px; font-weight: 600; color: #333; margin: 24px 0 16px; padding-bottom: 8px; border-bottom: 1px solid #eee; }
+    .legal-text { font-size: 12px; color: #888; margin-bottom: 16px; }
+    #submit_app {
+      width: 100%; padding: 14px; background: #27ae60; color: white; border: none;
+      border-radius: 4px; font-size: 16px; font-weight: 600; cursor: pointer;
+    }
+    #submit_app:hover { background: #219a52; }
+    .file-upload { border: 2px dashed #ddd; padding: 20px; text-align: center; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <form id="application_form" method="post">
+    <h1>Software Engineer</h1>
+    <div class="job-details">
+      <strong>TechStartup Inc.</strong> - Remote (US)
+    </div>
+
+    <!-- Basic Information -->
+    <div class="section-header">Basic Information</div>
+
+    <div class="field">
+      <label for="first_name">First Name <span class="required">*</span></label>
+      <input type="text" id="first_name" name="job_application[first_name]" autocomplete="given-name" required>
+      <div class="field-error-msg"></div>
+    </div>
+
+    <div class="field">
+      <label for="last_name">Last Name <span class="required">*</span></label>
+      <input type="text" id="last_name" name="job_application[last_name]" autocomplete="family-name" required>
+      <div class="field-error-msg"></div>
+    </div>
+
+    <div class="field">
+      <label for="email">Email <span class="required">*</span></label>
+      <input type="email" id="email" name="job_application[email]" autocomplete="email" required>
+      <div class="field-error-msg"></div>
+    </div>
+
+    <div class="field">
+      <label for="phone">Phone <span class="required">*</span></label>
+      <input type="tel" id="phone" name="job_application[phone]" autocomplete="tel" required>
+      <div class="field-error-msg"></div>
+    </div>
+
+    <!-- Location -->
+    <div class="section-header">Location</div>
+
+    <div class="field">
+      <label for="street_address">Street Address</label>
+      <input type="text" id="street_address" name="job_application[address][street]" autocomplete="street-address">
+    </div>
+
+    <div class="field">
+      <label for="city">City</label>
+      <input type="text" id="city" name="job_application[city]" autocomplete="address-level2">
+    </div>
+
+    <div class="field">
+      <label for="state">State</label>
+      <select id="state" name="job_application[state]" autocomplete="address-level1">
+        <option value="">Select State</option>
+        <option value="AL">Alabama</option>
+        <option value="CA">California</option>
+        <option value="NY">New York</option>
+        <option value="TX">Texas</option>
+        <option value="WA">Washington</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="zip_code">ZIP Code</label>
+      <input type="text" id="zip_code" name="job_application[zip]" autocomplete="postal-code">
+    </div>
+
+    <div class="field">
+      <label for="country">Country</label>
+      <select id="country" name="job_application[country]" autocomplete="country">
+        <option value="">Select Country</option>
+        <option value="US">United States</option>
+        <option value="CA">Canada</option>
+        <option value="UK">United Kingdom</option>
+      </select>
+    </div>
+
+    <!-- Links -->
+    <div class="section-header">Links</div>
+
+    <div class="field">
+      <label for="linkedin_profile">LinkedIn Profile</label>
+      <input type="url" id="linkedin_profile" name="job_application[linkedin]" placeholder="https://linkedin.com/in/yourprofile">
+    </div>
+
+    <div class="field">
+      <label for="github_profile">GitHub Profile</label>
+      <input type="url" id="github_profile" name="job_application[github]" placeholder="https://github.com/yourusername">
+    </div>
+
+    <div class="field">
+      <label for="portfolio_website">Portfolio/Website</label>
+      <input type="url" id="portfolio_website" name="job_application[portfolio]" placeholder="https://yourportfolio.com">
+    </div>
+
+    <!-- Resume -->
+    <div class="section-header">Resume/CV</div>
+
+    <div class="field">
+      <div class="file-upload">
+        <input type="file" id="resume" name="job_application[resume]" accept=".pdf,.doc,.docx">
+        <p style="margin: 8px 0 0; color: #888; font-size: 12px;">Attach your resume (PDF, DOC, DOCX)</p>
+      </div>
+    </div>
+
+    <!-- Cover Letter -->
+    <div class="section-header">Cover Letter</div>
+
+    <div class="field">
+      <label for="cover_letter">Cover Letter</label>
+      <textarea id="cover_letter" name="job_application[cover_letter]" rows="6" placeholder="Tell us why you're interested in this role..."></textarea>
+    </div>
+
+    <!-- Work Authorization -->
+    <div class="section-header">Work Authorization</div>
+
+    <div class="field">
+      <label for="work_authorized">Are you legally authorized to work in the United States? <span class="required">*</span></label>
+      <select id="work_authorized" name="job_application[authorized]" required>
+        <option value="">Select</option>
+        <option value="Yes">Yes</option>
+        <option value="No">No</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="sponsorship_needed">Will you now or in the future require sponsorship? <span class="required">*</span></label>
+      <select id="sponsorship_needed" name="job_application[sponsorship]" required>
+        <option value="">Select</option>
+        <option value="Yes">Yes</option>
+        <option value="No">No</option>
+      </select>
+    </div>
+
+    <!-- EEOC -->
+    <div class="section-header">Voluntary Self-Identification</div>
+    <p class="legal-text">
+      Completion of this data is voluntary and will not affect your opportunity for employment.
+      This information is collected for federal reporting requirements.
+    </p>
+
+    <div class="field">
+      <label for="job_application_gender">Gender</label>
+      <select id="job_application_gender" name="job_application[gender]">
+        <option value="">Select</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+        <option value="Non-binary">Non-binary</option>
+        <option value="Decline">Decline to self-identify</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="job_application_race">Race/Ethnicity</label>
+      <select id="job_application_race" name="job_application[race]">
+        <option value="">Select</option>
+        <option value="Asian">Asian</option>
+        <option value="Black">Black or African American</option>
+        <option value="Hispanic">Hispanic or Latino</option>
+        <option value="White">White</option>
+        <option value="Two or More">Two or More Races</option>
+        <option value="Decline">Decline to self-identify</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="job_application_veteran_status">Veteran Status</label>
+      <select id="job_application_veteran_status" name="job_application[veteran]">
+        <option value="">Select</option>
+        <option value="Not a Veteran">I am not a protected veteran</option>
+        <option value="Veteran">I identify as a protected veteran</option>
+        <option value="Decline">Decline to self-identify</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="job_application_disability_status">Disability Status</label>
+      <select id="job_application_disability_status" name="job_application[disability]">
+        <option value="">Select</option>
+        <option value="Yes">Yes, I have a disability</option>
+        <option value="No">No, I do not have a disability</option>
+        <option value="Decline">Decline to self-identify</option>
+      </select>
+    </div>
+
+    <!-- Submit -->
+    <div style="margin-top: 24px;">
+      <button type="submit" id="submit_app">Submit Application</button>
+    </div>
+  </form>
+
+  <script>
+    // Simulate Greenhouse URL for testing
+    if (window.location.search.includes('simulate=greenhouse')) {
+      history.replaceState(null, '', 'https://boards.greenhouse.io/techstartup/jobs/12345');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mock Workday Application</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+    .section { margin-bottom: 24px; padding: 16px; border: 1px solid #ddd; border-radius: 8px; }
+    .section-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; }
+    .field { margin-bottom: 16px; }
+    .field label { display: block; margin-bottom: 4px; font-weight: 500; }
+    .field input, .field select, .field textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+    .radio-group { display: flex; gap: 16px; }
+    .radio-group label { display: flex; align-items: center; gap: 4px; font-weight: normal; }
+    button { padding: 12px 24px; background: #0875e1; color: white; border: none; border-radius: 4px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div data-automation-id="jobApplicationContainer">
+    <h1>Job Application - Software Engineer</h1>
+    <p>Acme Corporation - San Francisco, CA</p>
+
+    <!-- Personal Information Section -->
+    <div class="section">
+      <div class="section-title">Personal Information</div>
+
+      <div class="field">
+        <label for="firstName">First Name *</label>
+        <input type="text" id="firstName" data-automation-id="legalNameSection_firstName" name="firstName" required>
+      </div>
+
+      <div class="field">
+        <label for="lastName">Last Name *</label>
+        <input type="text" id="lastName" data-automation-id="legalNameSection_lastName" name="lastName" required>
+      </div>
+
+      <div class="field">
+        <label for="email">Email Address *</label>
+        <input type="email" id="email" data-automation-id="email" name="email" required>
+      </div>
+
+      <div class="field">
+        <label for="phone">Phone Number *</label>
+        <input type="tel" id="phone" data-automation-id="phone-number" name="phone" required>
+      </div>
+    </div>
+
+    <!-- Address Section -->
+    <div class="section">
+      <div class="section-title">Address</div>
+
+      <div class="field">
+        <label for="street">Street Address</label>
+        <input type="text" id="street" data-automation-id="addressSection_addressLine1" name="addressLine1">
+      </div>
+
+      <div class="field">
+        <label for="city">City</label>
+        <input type="text" id="city" data-automation-id="addressSection_city" name="city">
+      </div>
+
+      <div class="field">
+        <label for="state">State/Province</label>
+        <select id="state" data-automation-id="addressSection_countryRegion" name="state">
+          <option value="">Select State</option>
+          <option value="AL">Alabama</option>
+          <option value="CA">California</option>
+          <option value="NY">New York</option>
+          <option value="TX">Texas</option>
+          <option value="WA">Washington</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="zipCode">ZIP/Postal Code</label>
+        <input type="text" id="zipCode" data-automation-id="addressSection_postalCode" name="postalCode">
+      </div>
+
+      <div class="field">
+        <label for="country">Country</label>
+        <select id="country" data-automation-id="addressSection_country" name="country">
+          <option value="">Select Country</option>
+          <option value="US">United States</option>
+          <option value="CA">Canada</option>
+          <option value="UK">United Kingdom</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Professional Links Section -->
+    <div class="section">
+      <div class="section-title">Professional Links</div>
+
+      <div class="field">
+        <label for="linkedin">LinkedIn Profile</label>
+        <input type="text" id="linkedin" data-automation-id="linkedinQuestion" name="linkedin" placeholder="https://linkedin.com/in/...">
+      </div>
+
+      <div class="field">
+        <label for="github">GitHub Profile</label>
+        <input type="text" id="github" name="github" placeholder="https://github.com/...">
+      </div>
+
+      <div class="field">
+        <label for="portfolio">Portfolio/Website</label>
+        <input type="text" id="portfolio" name="portfolio" placeholder="https://...">
+      </div>
+    </div>
+
+    <!-- Work Authorization Section -->
+    <div class="section">
+      <div class="section-title">Work Authorization</div>
+
+      <div class="field">
+        <label>Are you legally authorized to work in the United States? *</label>
+        <div class="radio-group" data-automation-id="workAuthorizationQuestion">
+          <label>
+            <input type="radio" name="authorized" value="Yes"> Yes
+          </label>
+          <label>
+            <input type="radio" name="authorized" value="No"> No
+          </label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Will you now or in the future require sponsorship for employment visa status? *</label>
+        <div class="radio-group" data-automation-id="sponsorshipQuestion">
+          <label>
+            <input type="radio" name="sponsorship" value="Yes"> Yes
+          </label>
+          <label>
+            <input type="radio" name="sponsorship" value="No"> No
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Voluntary Self-Identification Section -->
+    <div class="section">
+      <div class="section-title">Voluntary Self-Identification</div>
+      <p style="color: #666; font-size: 14px; margin-bottom: 16px;">
+        This information is voluntary and will not affect your application.
+      </p>
+
+      <div class="field">
+        <label for="gender">Gender</label>
+        <select id="gender" data-automation-id="genderDropdown" name="gender">
+          <option value="">Select</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Non-binary">Non-binary</option>
+          <option value="Decline">Decline to self-identify</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="ethnicity">Ethnicity</label>
+        <select id="ethnicity" data-automation-id="ethnicityDropdown" name="ethnicity">
+          <option value="">Select</option>
+          <option value="Asian">Asian</option>
+          <option value="Black">Black or African American</option>
+          <option value="Hispanic">Hispanic or Latino</option>
+          <option value="White">White</option>
+          <option value="Two or More">Two or More Races</option>
+          <option value="Decline">Decline to self-identify</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="veteran">Veteran Status</label>
+        <select id="veteran" data-automation-id="veteranStatusDropdown" name="veteran">
+          <option value="">Select</option>
+          <option value="Not a Veteran">I am not a protected veteran</option>
+          <option value="Veteran">I identify as a protected veteran</option>
+          <option value="Decline">Decline to self-identify</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="disability">Disability Status</label>
+        <select id="disability" data-automation-id="disabilityStatusDropdown" name="disability">
+          <option value="">Select</option>
+          <option value="Yes">Yes, I have a disability</option>
+          <option value="No">No, I do not have a disability</option>
+          <option value="Decline">Decline to self-identify</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <div style="display: flex; justify-content: space-between; margin-top: 24px;">
+      <button type="button" data-automation-id="bottom-navigation-previous-button">Previous</button>
+      <button type="submit" data-automation-id="bottom-navigation-next-button">Submit Application</button>
+    </div>
+
+    <!-- Error Container (hidden by default) -->
+    <div data-automation-id="errorMessage" style="display: none; color: red; margin-top: 16px;"></div>
+  </div>
+
+  <script>
+    // Simulate Workday URL for testing
+    if (window.location.search.includes('simulate=workday')) {
+      history.replaceState(null, '', 'https://company.wd5.myworkdayjobs.com/careers/job/Software-Engineer');
+    }
+  </script>
+</body>
+</html>

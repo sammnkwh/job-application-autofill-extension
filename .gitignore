@@ -25,3 +25,7 @@ Thumbs.db
 *.crx
 *.pem
 *.xpi
+
+# Playwright
+playwright-report/
+test-results/

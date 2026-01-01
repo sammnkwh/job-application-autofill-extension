@@ -26,5 +26,10 @@ export default defineConfig({
     hmr: {
       port: 5173,
     },
+    // Serve test fixtures during development
+    fs: {
+      allow: ['..'],
+    },
   },
+  publicDir: 'public',
 })
