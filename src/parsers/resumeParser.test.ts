@@ -81,17 +81,20 @@ Spanish (Professional)
       expect(result.extractedData.github?.value).toContain('github.com')
     })
 
-    it('should extract work experience', () => {
+    it('should not extract work experience (disabled - to be replaced with LLM parsing)', () => {
       const result = parseResumeText(sampleResumeText)
 
-      expect(result.extractedData.workExperience).toBeDefined()
-      expect(result.extractedData.workExperience?.value.length).toBeGreaterThanOrEqual(1)
+      // Work experience extraction is disabled due to format variability
+      // Will be addressed with LLM-based parsing in future release
+      expect(result.extractedData.workExperience).toBeUndefined()
     })
 
-    it('should extract education', () => {
+    it('should not extract education (disabled - to be replaced with LLM parsing)', () => {
       const result = parseResumeText(sampleResumeText)
 
-      expect(result.extractedData.education).toBeDefined()
+      // Education extraction is disabled due to format variability
+      // Will be addressed with LLM-based parsing in future release
+      expect(result.extractedData.education).toBeUndefined()
     })
 
     it('should extract skills if present', () => {

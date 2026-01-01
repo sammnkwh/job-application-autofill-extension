@@ -28,22 +28,32 @@ export function extractAllEmails(text: string): string[] {
   return matches ? [...new Set(matches.map((e) => e.toLowerCase()))] : []
 }
 
-// Phone extraction
+// Phone extraction - more comprehensive patterns
 const PHONE_PATTERNS = [
-  /\+?1?[-.\s]?\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4}/g, // US format
-  /\([0-9]{3}\)\s?[0-9]{3}[-.\s]?[0-9]{4}/g, // (555) 123-4567
-  /[0-9]{3}[-.\s][0-9]{3}[-.\s][0-9]{4}/g, // 555-123-4567
+  /\((\d{3})\)\s*(\d{3})[-.\s]?(\d{4})/g, // (555) 123-4567 or (555)123-4567
+  /\+?1?[-.\s]?\((\d{3})\)[-.\s]?(\d{3})[-.\s]?(\d{4})/g, // +1 (555) 123-4567
+  /(\d{3})[-.\s](\d{3})[-.\s](\d{4})/g, // 555-123-4567 or 555.123.4567
+  /\+?1?(\d{3})(\d{3})(\d{4})/g, // 15551234567 or 5551234567
 ]
 
 export function extractPhone(text: string): ExtractedValue<string> | null {
+  // Normalize text - replace various separators and whitespace
+  const normalizedText = text.replace(/\|/g, ' ').replace(/\s+/g, ' ')
+
   for (const pattern of PHONE_PATTERNS) {
-    const matches = text.match(pattern)
+    // Reset regex lastIndex
+    pattern.lastIndex = 0
+    const matches = normalizedText.match(pattern)
     if (matches && matches.length > 0) {
       const cleaned = cleanPhoneNumber(matches[0])
-      return {
-        value: cleaned,
-        confidence: 'high',
-        source: matches[0],
+      // Validate it looks like a real phone (not a year or other number)
+      const digits = cleaned.replace(/\D/g, '')
+      if (digits.length >= 10) {
+        return {
+          value: cleaned,
+          confidence: 'high',
+          source: matches[0],
+        }
       }
     }
   }
@@ -244,132 +254,19 @@ export interface WorkExperienceEntry {
   responsibilities: string[]
 }
 
-const DATE_PATTERNS = [
-  /(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{4}/gi,
-  /\d{1,2}\/\d{4}/g,
-  /\d{4}/g,
-]
-
-const CURRENT_INDICATORS = ['present', 'current', 'now', 'ongoing']
-
-export function extractWorkExperience(text: string): ExtractedValue<WorkExperienceEntry[]> | null {
-  const entries: WorkExperienceEntry[] = []
-
-  // Split into sections and find work experience section
-  const lines = text.split('\n')
-  let inExperienceSection = false
-  let currentEntry: Partial<WorkExperienceEntry> | null = null
-  const bulletPoints: string[] = []
-
-  for (const line of lines) {
-    const trimmedLine = line.trim()
-    const lowerLine = trimmedLine.toLowerCase()
-
-    // Detect experience section
-    if (
-      lowerLine.includes('experience') ||
-      lowerLine.includes('employment') ||
-      lowerLine === 'work history'
-    ) {
-      inExperienceSection = true
-      continue
-    }
-
-    // Detect end of experience section
-    if (
-      inExperienceSection &&
-      (lowerLine.includes('education') ||
-        lowerLine.includes('skills') ||
-        lowerLine.includes('certifications'))
-    ) {
-      // Save last entry
-      if (currentEntry && currentEntry.jobTitle) {
-        currentEntry.responsibilities = [...bulletPoints]
-        entries.push(currentEntry as WorkExperienceEntry)
-      }
-      break
-    }
-
-    if (!inExperienceSection) continue
-
-    // Skip empty lines
-    if (!trimmedLine) continue
-
-    // Check for bullet points
-    if (trimmedLine.startsWith('-') || trimmedLine.startsWith('•') || trimmedLine.startsWith('*')) {
-      bulletPoints.push(trimmedLine.replace(/^[-•*]\s*/, ''))
-      continue
-    }
-
-    // Check for date range (indicates new job entry)
-    const hasDate = DATE_PATTERNS.some((p) => p.test(trimmedLine))
-    const hasDash = trimmedLine.includes(' - ') || trimmedLine.includes(' – ')
-
-    if (hasDate && hasDash) {
-      // Save previous entry
-      if (currentEntry && currentEntry.jobTitle) {
-        currentEntry.responsibilities = [...bulletPoints]
-        entries.push(currentEntry as WorkExperienceEntry)
-        bulletPoints.length = 0
-      }
-
-      // Parse date line
-      const dates = extractDatesFromLine(trimmedLine)
-      currentEntry = {
-        jobTitle: '',
-        company: '',
-        isCurrent: CURRENT_INDICATORS.some((i) => lowerLine.includes(i)),
-        description: '',
-        responsibilities: [],
-        ...dates,
-      }
-    } else if (currentEntry && !currentEntry.jobTitle && trimmedLine.length < 100) {
-      // First line after date is usually job title
-      currentEntry.jobTitle = trimmedLine
-    } else if (currentEntry && currentEntry.jobTitle && !currentEntry.company && trimmedLine.length < 100) {
-      // Second line is usually company
-      currentEntry.company = trimmedLine.replace(/,\s*[A-Z]{2}.*$/, '').trim()
-      const locationMatch = trimmedLine.match(/,\s*([^,]+,\s*[A-Z]{2})/i)
-      if (locationMatch) {
-        currentEntry.location = locationMatch[1].trim()
-      }
-    }
-  }
-
-  // Save last entry
-  if (currentEntry && currentEntry.jobTitle) {
-    currentEntry.responsibilities = [...bulletPoints]
-    entries.push(currentEntry as WorkExperienceEntry)
-  }
-
-  if (entries.length === 0) return null
-
-  return {
-    value: entries,
-    confidence: entries.length > 0 ? 'medium' : 'low',
-  }
-}
-
-function extractDatesFromLine(line: string): { startDate?: string; endDate?: string } {
-  const dates: string[] = []
-
-  for (const pattern of DATE_PATTERNS) {
-    const matches = line.match(pattern)
-    if (matches) {
-      dates.push(...matches)
-    }
-  }
-
-  // Get unique dates
-  const uniqueDates = [...new Set(dates)]
-
-  if (uniqueDates.length >= 2) {
-    return { startDate: uniqueDates[0], endDate: uniqueDates[1] }
-  } else if (uniqueDates.length === 1) {
-    return { startDate: uniqueDates[0] }
-  }
-
-  return {}
+export function extractWorkExperience(_text: string): ExtractedValue<WorkExperienceEntry[]> | null {
+  // Work experience extraction is disabled for now due to the high variability
+  // in resume formats. Different resumes structure work history very differently:
+  // - Company first vs job title first
+  // - Dates inline vs on separate lines
+  // - Project headers that look like job titles
+  // - Multiple roles under one company
+  //
+  // This will be addressed in a future release using LLM-based parsing
+  // which can semantically understand the resume structure.
+  //
+  // For now, users should manually enter their work experience.
+  return null
 }
 
 // Education extraction
@@ -383,96 +280,11 @@ export interface EducationEntry {
   honors?: string[]
 }
 
-const DEGREE_PATTERNS = [
-  /Bachelor(?:'s)?(?:\s+of\s+(?:Science|Arts|Engineering|Business))?\s*(?:in\s+)?/i,
-  /Master(?:'s)?(?:\s+of\s+(?:Science|Arts|Business|Engineering))?\s*(?:in\s+)?/i,
-  /Ph\.?D\.?|Doctorate/i,
-  /Associate(?:'s)?(?:\s+(?:of|in)\s+)?/i,
-  /B\.?S\.?|B\.?A\.?|M\.?S\.?|M\.?A\.?|MBA|M\.?B\.?A\.?/i,
-]
-
-export function extractEducation(text: string): ExtractedValue<EducationEntry[]> | null {
-  const entries: EducationEntry[] = []
-  const lines = text.split('\n')
-  let inEducationSection = false
-  let currentEntry: Partial<EducationEntry> | null = null
-
-  for (const line of lines) {
-    const trimmedLine = line.trim()
-    const lowerLine = trimmedLine.toLowerCase()
-
-    // Detect education section
-    if (lowerLine === 'education' || lowerLine.includes('academic background')) {
-      inEducationSection = true
-      continue
-    }
-
-    // Detect end of education section
-    if (
-      inEducationSection &&
-      (lowerLine.includes('skills') ||
-        lowerLine.includes('experience') ||
-        lowerLine.includes('certifications'))
-    ) {
-      if (currentEntry && currentEntry.institution) {
-        entries.push(currentEntry as EducationEntry)
-      }
-      break
-    }
-
-    if (!inEducationSection) continue
-    if (!trimmedLine) continue
-
-    // Check for degree pattern
-    const hasDegree = DEGREE_PATTERNS.some((p) => p.test(trimmedLine))
-
-    if (hasDegree) {
-      // Save previous entry
-      if (currentEntry && currentEntry.institution) {
-        entries.push(currentEntry as EducationEntry)
-      }
-
-      currentEntry = {
-        institution: '',
-        degree: trimmedLine,
-        fieldOfStudy: '',
-      }
-
-      // Try to extract field of study
-      const inMatch = trimmedLine.match(/(?:in|of)\s+([^,]+)/i)
-      if (inMatch) {
-        currentEntry.fieldOfStudy = inMatch[1].trim()
-      }
-    } else if (currentEntry && !currentEntry.institution && trimmedLine.length < 100) {
-      // Line after degree is usually institution
-      currentEntry.institution = trimmedLine
-    } else if (currentEntry && trimmedLine.toLowerCase().includes('gpa')) {
-      const gpaMatch = trimmedLine.match(/(\d+\.?\d*)/i)
-      if (gpaMatch) {
-        currentEntry.gpa = gpaMatch[1]
-      }
-    } else if (currentEntry && (lowerLine.includes('graduate') || lowerLine.includes('class of'))) {
-      const dateMatch = trimmedLine.match(/\d{4}/)
-      if (dateMatch) {
-        currentEntry.endDate = dateMatch[0]
-      }
-    } else if (currentEntry && (lowerLine.includes('honors') || lowerLine.includes('cum laude') || lowerLine.includes("dean's list"))) {
-      currentEntry.honors = currentEntry.honors || []
-      currentEntry.honors.push(trimmedLine)
-    }
-  }
-
-  // Save last entry
-  if (currentEntry && currentEntry.institution) {
-    entries.push(currentEntry as EducationEntry)
-  }
-
-  if (entries.length === 0) return null
-
-  return {
-    value: entries,
-    confidence: entries.length > 0 ? 'medium' : 'low',
-  }
+export function extractEducation(_text: string): ExtractedValue<EducationEntry[]> | null {
+  // Education extraction is disabled for now due to the high variability
+  // in resume formats. This will be addressed using LLM-based parsing.
+  // For now, users should manually enter their education.
+  return null
 }
 
 // Skills extraction

@@ -165,66 +165,35 @@ describe('extractors', () => {
   })
 
   describe('extractWorkExperience', () => {
-    it('should extract work experience entries', () => {
+    it('should return null (disabled - to be replaced with LLM parsing)', () => {
       const text = `
 WORK EXPERIENCE
 
 Senior Engineer
 January 2020 - Present
 - Led team of 5 engineers
-- Built scalable systems
-
-Software Engineer
-June 2018 - December 2019
-- Developed features
-- Fixed bugs
 
 EDUCATION
       `
+      // Work experience extraction is disabled due to format variability
       const result = extractWorkExperience(text)
-      expect(result).not.toBeNull()
-      expect(result?.value.length).toBeGreaterThanOrEqual(1)
-    })
-
-    it('should return null for no experience section', () => {
-      const result = extractWorkExperience('Just some random text')
       expect(result).toBeNull()
     })
   })
 
   describe('extractEducation', () => {
-    it('should extract education entries', () => {
+    it('should return null (disabled - to be replaced with LLM parsing)', () => {
       const text = `
 EDUCATION
 
 Bachelor of Science in Computer Science
 University of California, Berkeley
-Graduated: May 2020
-GPA: 3.8
-Honors: Dean's List
 
 SKILLS
       `
+      // Education extraction is disabled due to format variability
       const result = extractEducation(text)
-      expect(result).not.toBeNull()
-      expect(result?.value.length).toBeGreaterThanOrEqual(1)
-      // Find the entry with Berkeley
-      const berkeleyEntry = result?.value.find(e => e.institution.includes('Berkeley'))
-      expect(berkeleyEntry).toBeDefined()
-    })
-
-    it('should extract GPA', () => {
-      const text = `
-EDUCATION
-
-B.S. Computer Science
-MIT
-GPA: 3.9
-
-SKILLS
-      `
-      const result = extractEducation(text)
-      expect(result?.value[0].gpa).toBe('3.9')
+      expect(result).toBeNull()
     })
   })
 

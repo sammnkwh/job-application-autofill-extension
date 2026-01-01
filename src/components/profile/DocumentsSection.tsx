@@ -4,7 +4,9 @@ import { useCallback, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card'
 import { Alert, AlertDescription } from '../ui/alert'
 import { Progress } from '../ui/progress'
+import { Button } from '../ui/button'
 import { parseResume, extractedDataToProfile } from '../../parsers/resumeParser'
+import { parseResumeWithLLM, isLLMParsingAvailable } from '../../parsers/llmParser'
 import type { Profile } from '../../types/profile'
 
 interface DocumentsSectionProps {
@@ -14,15 +16,19 @@ interface DocumentsSectionProps {
 export function DocumentsSection({ onResumeImport }: DocumentsSectionProps) {
   const [isDragging, setIsDragging] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
+  const [isAIProcessing, setIsAIProcessing] = useState(false)
   const [progress, setProgress] = useState(0)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
+  const [lastResumeText, setLastResumeText] = useState<string | null>(null)
+  const [showAIOption, setShowAIOption] = useState(false)
 
   const handleFile = useCallback(async (file: File) => {
     setError(null)
     setSuccess(null)
     setIsProcessing(true)
     setProgress(20)
+    setShowAIOption(false)
 
     try {
       // Parse the resume
@@ -35,6 +41,9 @@ export function DocumentsSection({ onResumeImport }: DocumentsSectionProps) {
         return
       }
 
+      // Store the raw text for AI parsing
+      setLastResumeText(result.rawText)
+
       // Convert to profile format
       const profileData = extractedDataToProfile(result.extractedData)
       setProgress(90)
@@ -44,7 +53,17 @@ export function DocumentsSection({ onResumeImport }: DocumentsSectionProps) {
       setProgress(100)
 
       const fieldsExtracted = Object.keys(result.extractedData).length
-      setSuccess(`Resume parsed! Extracted ${fieldsExtracted} fields with ${result.overallConfidence} confidence.`)
+      const aiAvailable = isLLMParsingAvailable()
+
+      setSuccess(
+        `Resume parsed! Extracted ${fieldsExtracted} fields with ${result.overallConfidence} confidence.` +
+        (aiAvailable ? ' Click "Enhance with AI" for better work experience and education extraction.' : '')
+      )
+
+      // Show AI option if available
+      if (aiAvailable) {
+        setShowAIOption(true)
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to process resume')
     } finally {
@@ -80,6 +99,31 @@ export function DocumentsSection({ onResumeImport }: DocumentsSectionProps) {
     }
     e.target.value = '' // Reset input
   }, [handleFile])
+
+  const handleAIParsing = useCallback(async () => {
+    if (!lastResumeText) return
+
+    setError(null)
+    setIsAIProcessing(true)
+
+    try {
+      const result = await parseResumeWithLLM(lastResumeText)
+
+      if (result.success && result.profile) {
+        onResumeImport(result.profile)
+        setSuccess('AI enhanced your profile! Work experience and education have been extracted.')
+        setShowAIOption(false)
+      } else if (result.isRateLimited) {
+        setError('AI service is busy. Please try again in a few minutes.')
+      } else {
+        setError(result.error || 'AI parsing failed. Please try again.')
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'AI parsing failed')
+    } finally {
+      setIsAIProcessing(false)
+    }
+  }, [lastResumeText, onResumeImport])
 
   return (
     <Card>
@@ -145,9 +189,37 @@ export function DocumentsSection({ onResumeImport }: DocumentsSectionProps) {
           </Alert>
         )}
 
+        {showAIOption && (
+          <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
+            <div className="flex-1">
+              <p className="text-sm font-medium">Want better extraction?</p>
+              <p className="text-xs text-muted-foreground">
+                AI can extract work experience and education more accurately.
+              </p>
+            </div>
+            <Button
+              onClick={handleAIParsing}
+              disabled={isAIProcessing}
+              size="sm"
+            >
+              {isAIProcessing ? 'Processing...' : 'Enhance with AI'}
+            </Button>
+          </div>
+        )}
+
+        {isAIProcessing && (
+          <div className="space-y-2">
+            <Progress value={undefined} className="animate-pulse" />
+            <p className="text-sm text-center text-muted-foreground">
+              AI is analyzing your resume...
+            </p>
+          </div>
+        )}
+
         <p className="text-xs text-muted-foreground">
-          Your resume is processed locally and never sent to any server.
-          Only extracted data is stored in your browser.
+          {showAIOption
+            ? 'Initial parsing is local. AI enhancement uses Google Gemini to improve extraction.'
+            : 'Your resume is processed locally and never sent to any server. Only extracted data is stored in your browser.'}
         </p>
       </CardContent>
     </Card>
