@@ -64,9 +64,11 @@ export function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
         if (pi.email && !prev.personalInfo.email) merged.personalInfo.email = pi.email
         if (pi.phone && !prev.personalInfo.phone) merged.personalInfo.phone = pi.phone
         if (pi.address) {
+          if (pi.address.street && !prev.personalInfo.address.street) merged.personalInfo.address.street = pi.address.street
           if (pi.address.city && !prev.personalInfo.address.city) merged.personalInfo.address.city = pi.address.city
           if (pi.address.state && !prev.personalInfo.address.state) merged.personalInfo.address.state = pi.address.state
           if (pi.address.zipCode && !prev.personalInfo.address.zipCode) merged.personalInfo.address.zipCode = pi.address.zipCode
+          if (pi.address.country && !prev.personalInfo.address.country) merged.personalInfo.address.country = pi.address.country
         }
       }
 
@@ -78,16 +80,21 @@ export function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
         if (pl.portfolio && !prev.professionalLinks.portfolio) merged.professionalLinks.portfolio = pl.portfolio
       }
 
-      // Work experience - append new entries
+      // Work experience - replace with imported data if it has more/better entries
       if (importedData.workExperience && importedData.workExperience.length > 0) {
-        if (prev.workExperience.length === 0) {
+        // Replace if imported has more entries or existing entries lack dates
+        const existingHasDates = prev.workExperience.some(exp => exp.startDate)
+        const importedHasDates = importedData.workExperience.some(exp => exp.startDate)
+        if (prev.workExperience.length === 0 || (!existingHasDates && importedHasDates) || importedData.workExperience.length > prev.workExperience.length) {
           merged.workExperience = importedData.workExperience
         }
       }
 
-      // Education - append new entries
+      // Education - replace with imported data if it has more/better entries
       if (importedData.education && importedData.education.length > 0) {
-        if (prev.education.length === 0) {
+        const existingHasDates = prev.education.some(edu => edu.startDate)
+        const importedHasDates = importedData.education.some(edu => edu.startDate)
+        if (prev.education.length === 0 || (!existingHasDates && importedHasDates) || importedData.education.length > prev.education.length) {
           merged.education = importedData.education
         }
       }

@@ -111,7 +111,7 @@ function EducationEntry({ education, index, onUpdate, onRemove }: EducationEntry
         <div className="space-y-2">
           <Label>Start Date</Label>
           <Input
-            type="month"
+            type="date"
             value={education.startDate}
             onChange={(e) => onUpdate({ startDate: e.target.value })}
           />
@@ -119,7 +119,7 @@ function EducationEntry({ education, index, onUpdate, onRemove }: EducationEntry
         <div className="space-y-2">
           <Label>End Date</Label>
           <Input
-            type="month"
+            type="date"
             value={education.endDate || ''}
             onChange={(e) => onUpdate({ endDate: e.target.value || undefined })}
           />

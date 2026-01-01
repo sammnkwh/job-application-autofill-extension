@@ -125,7 +125,7 @@ function ExperienceEntry({ experience, index, onUpdate, onRemove }: ExperienceEn
         <div className="space-y-2">
           <Label>Start Date</Label>
           <Input
-            type="month"
+            type="date"
             value={experience.startDate}
             onChange={(e) => onUpdate({ startDate: e.target.value })}
           />
@@ -133,7 +133,7 @@ function ExperienceEntry({ experience, index, onUpdate, onRemove }: ExperienceEn
         <div className="space-y-2">
           <Label>End Date</Label>
           <Input
-            type="month"
+            type="date"
             value={experience.endDate || ''}
             onChange={(e) => onUpdate({ endDate: e.target.value || undefined })}
             disabled={experience.isCurrent}

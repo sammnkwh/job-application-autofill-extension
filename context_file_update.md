@@ -4,7 +4,131 @@ This file captures the complete context of development sessions. Read this first
 
 ---
 
-# Session 5: December 31, 2024 (Continued)
+# Session 7: January 1, 2025
+
+## Session Summary
+
+**Date:** January 1, 2025
+**Status:** Full date support implemented for work experience and education
+
+---
+
+## What We Accomplished This Session
+
+### Full Date Support for Work Experience & Education
+
+**Problem:** Date inputs were using `type="month"` which only showed month/year (e.g., "June 2023"), but user wanted full dates with day, month, year.
+
+**Solution:**
+1. Changed date inputs from `type="month"` to `type="date"` in:
+   - `WorkExperienceSection.tsx` (lines 127-130, 134-138)
+   - `EducationSection.tsx` (lines 113-117, 120-124)
+
+2. Updated Gemini prompt with explicit date rules:
+   - START dates: If only year given → first day of year (2020-01-01)
+   - START dates: If month/year given → first day of month (2020-06-01)
+   - END dates: If only year given → last day of year (2023-12-31)
+   - END dates: If month/year given → last day of month (2024-11-30)
+   - Current/ongoing roles: empty endDate + isCurrent=true
+
+3. "I currently work here" checkbox logic:
+   - Checked automatically if endDate is empty/missing
+   - Unchecked if there's an actual end date
+
+### What's Working:
+- Full YYYY-MM-DD dates from Gemini API ✓
+- Native date picker in form fields ✓
+- "I currently work here" auto-checked for current roles ✓
+- Date display in browser locale format (MM/DD/YYYY for US) ✓
+
+---
+
+# Session 6: December 31, 2024 (Evening)
+
+## Session Summary
+
+**Date:** December 31, 2024
+**Status:** Gemini AI integration for resume parsing - WORKING but needs testing
+
+---
+
+## What We Accomplished This Session
+
+### Gemini AI Integration for Resume Parsing
+
+**Problem:** Rule-based resume parsing was unreliable for work experience and education due to varied resume formats.
+
+**Solution:** Integrated Google Gemini 2.5 Flash API for LLM-based extraction.
+
+### Files Created/Modified:
+
+1. **`src/parsers/llmParser.ts`** (NEW)
+   - Gemini 2.5 Flash integration with JSON schema for structured output
+   - Extracts: name, email, phone, address (including street), work experience (with dates & responsibilities), education (with dates), skills
+   - Rate limiting handling
+   - API key: User's Gemini key is configured (free tier)
+
+2. **`src/components/profile/DocumentsSection.tsx`** (MODIFIED)
+   - Added "Enhance with AI" button after initial resume parse
+   - Shows AI processing state
+   - Displays rate limit/error messages
+
+3. **`src/components/profile/ProfileForm.tsx`** (MODIFIED)
+   - Fixed merge logic to include street address and country
+   - Improved work experience/education merge: now replaces if AI data has dates but existing doesn't, or if AI has more entries
+
+### Key Configuration:
+- Model: `gemini-2.5-flash`
+- Max tokens: 16384 (to handle long resumes)
+- JSON Schema enforced for valid output
+- Temperature: 0.1 (for consistent extraction)
+
+### What's Working:
+- Street address extraction and display ✓
+- Work experience with dates (YYYY-MM-DD format) ✓
+- Education extraction ✓
+- Skills extraction ✓
+- Responsibilities for each job ✓
+
+### What Needs Testing:
+- Verify dates are showing in work experience/education form fields
+- Test with different resume formats
+- Test rate limiting behavior
+
+---
+
+## Where We Left Off
+
+**Current Status:** AI parsing works, street address now shows in form. User needs to verify:
+1. Work experience dates are populated in the form
+2. Education dates are populated in the form
+3. All responsibilities are showing
+
+**If dates still not showing:** The merge logic now replaces work experience/education if:
+- Existing has no dates but imported does
+- Imported has more entries than existing
+
+**To test:**
+1. Clear the profile data (Settings → Clear All Data)
+2. Upload resume
+3. Click "Enhance with AI"
+4. Check that all fields including dates are populated
+
+---
+
+## API Key Location
+
+The Gemini API key is stored in:
+```
+src/parsers/llmParser.ts:8
+const GEMINI_API_KEY = 'AIzaSyBHhdg4uzrLBEHXIsnypzlwswsBPiQETcc'
+```
+
+**Note:** This is the user's personal Gemini API key on free tier. Don't commit to public repos.
+
+---
+
+# Session 5: December 31, 2024 (Earlier)
 
 ## Session Summary
 
@@ -258,7 +382,8 @@ npm run test:e2e   # E2E tests (needs dev server running)
 
 **End of Context File**
 
-*Last updated: December 31, 2024*
+*Last updated: December 31, 2024 (Evening)*
 *Current branch: feature/autofill-extension*
-*Unit tests: 320 passing*
+*Unit tests: 318 passing*
 *E2E tests: Written, need manual verification*
+*Gemini AI: Integrated with gemini-2.5-flash*

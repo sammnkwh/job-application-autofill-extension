@@ -1,11 +1,11 @@
 // LLM-based resume parsing using Google Gemini API
-import { GoogleGenerativeAI, GoogleGenerativeAIError } from '@google/generative-ai'
+import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai'
 import type { Profile } from '../types/profile'
 import { createEmptyProfile } from '../types/profile'
 
 // API key for shared usage - rate limited to free tier
 // When limit is hit, users are asked to try again later
-const GEMINI_API_KEY = 'YOUR_GEMINI_API_KEY_HERE' // Replace with your actual key
+const GEMINI_API_KEY = 'AIzaSyBHhdg4uzrLBEHXIsnypzlwswsBPiQETcc'
 
 export interface LLMParseResult {
   success: boolean
@@ -14,55 +14,50 @@ export interface LLMParseResult {
   isRateLimited?: boolean
 }
 
-const EXTRACTION_PROMPT = `You are a resume parser. Extract information from the following resume and return ONLY valid JSON (no markdown, no explanation).
+const EXTRACTION_PROMPT = `Extract resume information as JSON.
 
-Return this exact JSON structure, filling in values from the resume. Use empty strings for missing fields:
+DATE RULES (IMPORTANT):
+- All dates must be YYYY-MM-DD format
+- For START dates:
+  - If only year given (e.g., "2020"): use first day of year → "2020-01-01"
+  - If month and year given (e.g., "June 2020"): use first day of month → "2020-06-01"
+- For END dates:
+  - If only year given (e.g., "2023"): use last day of year → "2023-12-31"
+  - If month and year given (e.g., "Nov 2024"): use last day of month → "2024-11-30"
+- For "Present"/"Current"/ongoing roles: set endDate to "" (empty string) and isCurrent to true
 
-{
-  "firstName": "",
-  "lastName": "",
-  "email": "",
-  "phone": "",
-  "address": {
-    "street": "",
-    "city": "",
-    "state": "",
-    "zipCode": "",
-    "country": ""
-  },
-  "linkedin": "",
-  "github": "",
-  "portfolio": "",
-  "workExperience": [
-    {
-      "jobTitle": "",
-      "company": "",
-      "location": "",
-      "startDate": "",
-      "endDate": "",
-      "isCurrent": false,
-      "description": "",
-      "responsibilities": []
-    }
-  ],
-  "education": [
-    {
-      "institution": "",
-      "degree": "",
-      "fieldOfStudy": "",
-      "startDate": "",
-      "endDate": "",
-      "gpa": ""
-    }
-  ],
-  "skills": []
-}
+OTHER RULES:
+- Extract full street address if present
+- Include job responsibilities as bullet points
 
 Resume text:
 `
 
+// Attempt to repair common JSON issues from LLM output
+function repairJSON(jsonStr: string): string {
+  let repaired = jsonStr
+
+  // Remove trailing commas before ] or }
+  repaired = repaired.replace(/,\s*]/g, ']')
+  repaired = repaired.replace(/,\s*}/g, '}')
+
+  // Fix unescaped newlines in strings (common LLM issue)
+  // This is tricky - we need to be careful not to break valid JSON
+  repaired = repaired.replace(/([^\\])\\n/g, '$1\\\\n')
+
+  // Remove any control characters that might break parsing
+  repaired = repaired.replace(/[\x00-\x1F\x7F]/g, (char) => {
+    if (char === '\n' || char === '\r' || char === '\t') {
+      return char // Keep these
+    }
+    return '' // Remove other control chars
+  })
+
+  return repaired
+}
+
 export async function parseResumeWithLLM(resumeText: string): Promise<LLMParseResult> {
-  if (!GEMINI_API_KEY || GEMINI_API_KEY === 'YOUR_GEMINI_API_KEY_HERE') {
+  if (!GEMINI_API_KEY) {
     return {
       success: false,
       profile: null,
@@ -72,31 +67,106 @@ export async function parseResumeWithLLM(resumeText: string): Promise<LLMParseRe
 
   try {
     const genAI = new GoogleGenerativeAI(GEMINI_API_KEY)
-    const model = genAI.getGenerativeModel({ 
-      model: 'gemini-1.5-flash',
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-2.5-flash',
       generationConfig: {
-        temperature: 0.1, // Low temperature for consistent extraction
-        maxOutputTokens: 4096,
+        temperature: 0.1,
+        maxOutputTokens: 16384,
+        responseMimeType: 'application/json',
+        responseSchema: {
+          type: SchemaType.OBJECT,
+          properties: {
+            firstName: { type: SchemaType.STRING },
+            lastName: { type: SchemaType.STRING },
+            email: { type: SchemaType.STRING },
+            phone: { type: SchemaType.STRING },
+            address: {
+              type: SchemaType.OBJECT,
+              properties: {
+                street: { type: SchemaType.STRING },
+                city: { type: SchemaType.STRING },
+                state: { type: SchemaType.STRING },
+                zipCode: { type: SchemaType.STRING },
+                country: { type: SchemaType.STRING },
+              },
+            },
+            linkedin: { type: SchemaType.STRING },
+            github: { type: SchemaType.STRING },
+            portfolio: { type: SchemaType.STRING },
+            workExperience: {
+              type: SchemaType.ARRAY,
+              items: {
+                type: SchemaType.OBJECT,
+                properties: {
+                  jobTitle: { type: SchemaType.STRING },
+                  company: { type: SchemaType.STRING },
+                  location: { type: SchemaType.STRING },
+                  startDate: { type: SchemaType.STRING },
+                  endDate: { type: SchemaType.STRING },
+                  isCurrent: { type: SchemaType.BOOLEAN },
+                  description: { type: SchemaType.STRING },
+                  responsibilities: {
+                    type: SchemaType.ARRAY,
+                    items: { type: SchemaType.STRING },
+                  },
+                },
+              },
+            },
+            education: {
+              type: SchemaType.ARRAY,
+              items: {
+                type: SchemaType.OBJECT,
+                properties: {
+                  institution: { type: SchemaType.STRING },
+                  degree: { type: SchemaType.STRING },
+                  fieldOfStudy: { type: SchemaType.STRING },
+                  startDate: { type: SchemaType.STRING },
+                  endDate: { type: SchemaType.STRING },
+                  gpa: { type: SchemaType.STRING },
+                },
+              },
+            },
+            skills: {
+              type: SchemaType.ARRAY,
+              items: { type: SchemaType.STRING },
+            },
+          },
+        },
       }
     })
 
     const result = await model.generateContent(EXTRACTION_PROMPT + resumeText)
     const responseText = result.response.text()
 
-    // Extract JSON from response (handle potential markdown wrapping)
-    let jsonStr = responseText
-    const jsonMatch = responseText.match(/```(?:json)?\s*([\s\S]*?)```/)
+    // Log for debugging
+    console.log('Gemini response length:', responseText.length)
+
+    // Extract and clean JSON from response
+    let jsonStr = responseText.trim()
+
+    // Remove markdown code blocks if present
+    const jsonMatch = jsonStr.match(/```(?:json)?\s*([\s\S]*?)```/)
     if (jsonMatch) {
-      jsonStr = jsonMatch[1]
-    } else {
-      // Try to find raw JSON object
-      const rawJsonMatch = responseText.match(/\{[\s\S]*\}/)
-      if (rawJsonMatch) {
-        jsonStr = rawJsonMatch[0]
-      }
+      jsonStr = jsonMatch[1].trim()
     }
 
-    const parsed = JSON.parse(jsonStr)
+    // Find the JSON object
+    const startIdx = jsonStr.indexOf('{')
+    const endIdx = jsonStr.lastIndexOf('}')
+    if (startIdx !== -1 && endIdx !== -1) {
+      jsonStr = jsonStr.substring(startIdx, endIdx + 1)
+    }
+
+    // Attempt to repair common JSON issues
+    jsonStr = repairJSON(jsonStr)
+
+    let parsed: Record<string, unknown>
+    try {
+      parsed = JSON.parse(jsonStr)
+    } catch (parseError) {
+      console.error('JSON parse failed. Raw response:', responseText)
+      throw parseError
+    }
     const profile = convertToProfile(parsed)
 
     return {
@@ -104,34 +174,15 @@ export async function parseResumeWithLLM(resumeText: string): Promise<LLMParseRe
       profile,
     }
   } catch (error) {
-    // Handle rate limiting
-    if (error instanceof GoogleGenerativeAIError) {
-      const errorMessage = error.message.toLowerCase()
-      if (errorMessage.includes('rate') || errorMessage.includes('quota') || errorMessage.includes('limit')) {
-        return {
-          success: false,
-          profile: null,
-          error: 'AI service is temporarily busy. Please try again in a few minutes.',
-          isRateLimited: true,
-        }
-      }
-    }
-
-    // Handle JSON parse errors
-    if (error instanceof SyntaxError) {
-      return {
-        success: false,
-        profile: null,
-        error: 'Failed to parse AI response. Please try again.',
-      }
-    }
-
-    // Generic error
     console.error('LLM parsing error:', error)
+
+    const errorMessage = error instanceof Error ? error.message : String(error)
+
+    // Always show actual error for now (debugging)
     return {
       success: false,
       profile: null,
-      error: 'AI parsing failed. Please try again or enter details manually.',
+      error: `Error: ${errorMessage}`,
     }
   }
 }
@@ -162,19 +213,27 @@ function convertToProfile(parsed: Record<string, unknown>): Partial<Profile> {
 
   // Work Experience
   if (Array.isArray(parsed.workExperience)) {
-    profile.workExperience = parsed.workExperience.map((exp: Record<string, unknown>, idx: number) => ({
-      id: `llm-exp-${idx}`,
-      jobTitle: String(exp.jobTitle || ''),
-      company: String(exp.company || ''),
-      location: String(exp.location || ''),
-      startDate: String(exp.startDate || ''),
-      endDate: exp.endDate ? String(exp.endDate) : undefined,
-      isCurrent: Boolean(exp.isCurrent),
-      description: String(exp.description || ''),
-      responsibilities: Array.isArray(exp.responsibilities) 
-        ? exp.responsibilities.map(String) 
-        : [],
-    }))
+    profile.workExperience = parsed.workExperience.map((exp: Record<string, unknown>, idx: number) => {
+      const endDateStr = exp.endDate ? String(exp.endDate).trim() : ''
+      // isCurrent is true if: explicitly set OR endDate is empty/missing
+      const isCurrent = Boolean(exp.isCurrent) || !endDateStr
+
+      return {
+        id: `llm-exp-${idx}`,
+        jobTitle: String(exp.jobTitle || ''),
+        company: String(exp.company || ''),
+        location: String(exp.location || ''),
+        // Keep full YYYY-MM-DD format for date input fields
+        startDate: String(exp.startDate || ''),
+        // Don't set endDate if isCurrent is true
+        endDate: isCurrent ? undefined : endDateStr,
+        isCurrent,
+        description: String(exp.description || ''),
+        responsibilities: Array.isArray(exp.responsibilities)
+          ? exp.responsibilities.map(String)
+          : [],
+      }
+    })
   }
 
   // Education
@@ -184,6 +243,7 @@ function convertToProfile(parsed: Record<string, unknown>): Partial<Profile> {
       institution: String(edu.institution || ''),
       degree: String(edu.degree || ''),
       fieldOfStudy: String(edu.fieldOfStudy || ''),
+      // Keep full YYYY-MM-DD format for date input fields
       startDate: String(edu.startDate || ''),
       endDate: edu.endDate ? String(edu.endDate) : undefined,
       gpa: edu.gpa ? String(edu.gpa) : undefined,
@@ -200,5 +260,5 @@ function convertToProfile(parsed: Record<string, unknown>): Partial<Profile> {
 
 // Check if LLM parsing is available
 export function isLLMParsingAvailable(): boolean {
-  return Boolean(GEMINI_API_KEY && GEMINI_API_KEY !== 'YOUR_GEMINI_API_KEY_HERE')
+  return Boolean(GEMINI_API_KEY)
 }
