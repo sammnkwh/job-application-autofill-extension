@@ -1,4 +1,4 @@
-// Documents section with resume upload
+// Documents section with resume upload - Midday style
 
 import { useCallback, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card'
@@ -139,9 +139,9 @@ export function DocumentsSection({ onResumeImport }: DocumentsSectionProps) {
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           className={`
-            border-2 border-dashed rounded-lg p-8 text-center transition-colors
-            ${isDragging ? 'border-primary bg-primary/5' : 'border-muted-foreground/25'}
-            ${isProcessing ? 'opacity-50 pointer-events-none' : 'cursor-pointer hover:border-primary/50'}
+            border-2 border-dashed rounded-lg p-10 text-center transition-all
+            ${isDragging ? 'border-[#121212] bg-[#fafafa]' : 'border-[#e5e5e5]'}
+            ${isProcessing ? 'opacity-50 pointer-events-none' : 'cursor-pointer hover:border-[#878787] hover:bg-[#fafafa]'}
           `}
         >
           <input
@@ -153,16 +153,13 @@ export function DocumentsSection({ onResumeImport }: DocumentsSectionProps) {
             disabled={isProcessing}
           />
           <label htmlFor="resume-upload" className="cursor-pointer">
-            <div className="space-y-2">
-              <div className="text-4xl">📄</div>
-              <p className="font-medium">
-                {isDragging ? 'Drop your resume here' : 'Drag & drop your resume'}
+            <div className="space-y-3">
+              <p className="font-medium text-[#121212]">
+                {isDragging ? 'Drop your resume here' : 'Drop your files here, or'}
+                {!isDragging && <span className="underline ml-1">click to browse.</span>}
               </p>
-              <p className="text-sm text-muted-foreground">
-                or click to browse
-              </p>
-              <p className="text-xs text-muted-foreground">
-                PDF, DOCX, or TXT (max 5MB)
+              <p className="text-sm text-[#878787]">
+                3MB file limit. PDF, DOCX, or TXT.
               </p>
             </div>
           </label>
@@ -171,7 +168,7 @@ export function DocumentsSection({ onResumeImport }: DocumentsSectionProps) {
         {isProcessing && (
           <div className="space-y-2">
             <Progress value={progress} />
-            <p className="text-sm text-center text-muted-foreground">
+            <p className="text-sm text-center text-[#606060]">
               Processing resume...
             </p>
           </div>
@@ -184,23 +181,22 @@ export function DocumentsSection({ onResumeImport }: DocumentsSectionProps) {
         )}
 
         {success && (
-          <Alert>
-            <AlertDescription>{success}</AlertDescription>
+          <Alert className="border-[#e5e5e5] bg-[#fafafa]">
+            <AlertDescription className="text-[#121212]">{success}</AlertDescription>
           </Alert>
         )}
 
         {showAIOption && (
-          <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
+          <div className="flex items-center gap-4 p-4 border border-[#e5e5e5] rounded-lg bg-[#fafafa]">
             <div className="flex-1">
-              <p className="text-sm font-medium">Want better extraction?</p>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-sm font-medium text-[#121212]">Want better extraction?</p>
+              <p className="text-sm text-[#606060]">
                 AI can extract work experience and education more accurately.
               </p>
             </div>
             <Button
               onClick={handleAIParsing}
               disabled={isAIProcessing}
-              size="sm"
             >
               {isAIProcessing ? 'Processing...' : 'Enhance with AI'}
             </Button>
@@ -210,13 +206,13 @@ export function DocumentsSection({ onResumeImport }: DocumentsSectionProps) {
         {isAIProcessing && (
           <div className="space-y-2">
             <Progress value={undefined} className="animate-pulse" />
-            <p className="text-sm text-center text-muted-foreground">
+            <p className="text-sm text-center text-[#606060]">
               AI is analyzing your resume...
             </p>
           </div>
         )}
 
-        <p className="text-xs text-muted-foreground">
+        <p className="text-sm text-[#878787]">
           {showAIOption
             ? 'Initial parsing is local. AI enhancement uses Google Gemini to improve extraction.'
             : 'Your resume is processed locally and never sent to any server. Only extracted data is stored in your browser.'}

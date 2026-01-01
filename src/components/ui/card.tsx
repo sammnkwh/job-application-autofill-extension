@@ -2,14 +2,17 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-// Midday-style Card components
+// Midday-style Card components with left border accent
 const Card = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("border bg-background text-card-foreground", className)}
+    className={cn(
+      "bg-background text-card-foreground border-l-[3px] border-l-[#121212] border border-[#e5e5e5]",
+      className
+    )}
     {...props}
   />
 ))
@@ -21,7 +24,7 @@ const CardHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex flex-col space-y-1.5 p-6", className)}
+    className={cn("flex flex-col space-y-1 p-6 pb-4", className)}
     {...props}
   />
 ))
@@ -33,7 +36,7 @@ const CardTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("text-lg font-medium leading-none tracking-tight mb-2", className)}
+    className={cn("text-base font-semibold leading-none tracking-tight", className)}
     {...props}
   />
 ))
@@ -45,7 +48,7 @@ const CardDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("text-sm text-[#606060]", className)}
+    className={cn("text-sm text-[#606060] mt-1", className)}
     {...props}
   />
 ))
@@ -65,7 +68,7 @@ const CardFooter = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex items-center p-6 border-t text-xs text-[#606060]", className)}
+    className={cn("flex items-center p-6 border-t border-[#e5e5e5] text-xs text-[#606060]", className)}
     {...props}
   />
 ))

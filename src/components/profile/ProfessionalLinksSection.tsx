@@ -1,8 +1,8 @@
-// Professional Links form section
+// Professional Links form section - Midday style
 
 import { Input } from '../ui/input'
-import { Label } from '../ui/label'
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card'
+import { FormField } from '../ui/form-field'
 import type { Profile } from '../../types/profile'
 
 interface ProfessionalLinksSectionProps {
@@ -15,10 +15,16 @@ export function ProfessionalLinksSection({ links, onChange }: ProfessionalLinksS
     <Card>
       <CardHeader>
         <CardTitle>Professional Links</CardTitle>
+        <CardDescription>
+          Add your online profiles to help employers learn more about you.
+        </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="linkedin">LinkedIn</Label>
+      <CardContent className="space-y-6">
+        <FormField
+          label="LinkedIn"
+          htmlFor="linkedin"
+          helperText="Your LinkedIn profile URL for professional networking."
+        >
           <Input
             id="linkedin"
             type="url"
@@ -26,10 +32,13 @@ export function ProfessionalLinksSection({ links, onChange }: ProfessionalLinksS
             onChange={(e) => onChange({ linkedin: e.target.value })}
             placeholder="https://linkedin.com/in/yourprofile"
           />
-        </div>
+        </FormField>
 
-        <div className="space-y-2">
-          <Label htmlFor="github">GitHub</Label>
+        <FormField
+          label="GitHub"
+          htmlFor="github"
+          helperText="Your GitHub profile to showcase your code and projects."
+        >
           <Input
             id="github"
             type="url"
@@ -37,10 +46,13 @@ export function ProfessionalLinksSection({ links, onChange }: ProfessionalLinksS
             onChange={(e) => onChange({ github: e.target.value })}
             placeholder="https://github.com/yourusername"
           />
-        </div>
+        </FormField>
 
-        <div className="space-y-2">
-          <Label htmlFor="portfolio">Portfolio / Website</Label>
+        <FormField
+          label="Portfolio / Website"
+          htmlFor="portfolio"
+          helperText="A personal website or portfolio showcasing your work."
+        >
           <Input
             id="portfolio"
             type="url"
@@ -48,7 +60,7 @@ export function ProfessionalLinksSection({ links, onChange }: ProfessionalLinksS
             onChange={(e) => onChange({ portfolio: e.target.value })}
             placeholder="https://yourportfolio.com"
           />
-        </div>
+        </FormField>
       </CardContent>
     </Card>
   )

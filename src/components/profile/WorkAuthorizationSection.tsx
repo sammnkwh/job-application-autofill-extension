@@ -1,9 +1,10 @@
-// Work Authorization form section
+// Work Authorization form section - Midday style
 
 import { Label } from '../ui/label'
 import { Input } from '../ui/input'
 import { Checkbox } from '../ui/checkbox'
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card'
+import { FormField } from '../ui/form-field'
 import {
   Select,
   SelectContent,
@@ -26,9 +27,12 @@ export function WorkAuthorizationSection({
     <Card>
       <CardHeader>
         <CardTitle>Work Authorization</CardTitle>
+        <CardDescription>
+          Information about your legal ability to work in the United States.
+        </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex items-center space-x-2">
+      <CardContent className="space-y-6">
+        <div className="flex items-center space-x-3">
           <Checkbox
             id="authorizedToWork"
             checked={authorization.authorizedToWork}
@@ -36,12 +40,12 @@ export function WorkAuthorizationSection({
               onChange({ authorizedToWork: checked === true })
             }
           />
-          <Label htmlFor="authorizedToWork" className="font-normal">
+          <Label htmlFor="authorizedToWork" className="font-normal text-sm text-[#121212]">
             I am authorized to work in the United States
           </Label>
         </div>
 
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-3">
           <Checkbox
             id="requiresSponsorship"
             checked={authorization.requiresSponsorship}
@@ -49,13 +53,16 @@ export function WorkAuthorizationSection({
               onChange({ requiresSponsorship: checked === true })
             }
           />
-          <Label htmlFor="requiresSponsorship" className="font-normal">
+          <Label htmlFor="requiresSponsorship" className="font-normal text-sm text-[#121212]">
             I will require visa sponsorship now or in the future
           </Label>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="visaStatus">Visa Status (if applicable)</Label>
+        <FormField
+          label="Visa Status"
+          htmlFor="visaStatus"
+          helperText="Select your current visa status if applicable."
+        >
           <Select
             value={authorization.visaStatus || ''}
             onValueChange={(value) => onChange({ visaStatus: value || undefined })}
@@ -74,17 +81,20 @@ export function WorkAuthorizationSection({
               <SelectItem value="other">Other</SelectItem>
             </SelectContent>
           </Select>
-        </div>
+        </FormField>
 
-        <div className="space-y-2">
-          <Label htmlFor="citizenshipStatus">Citizenship Status</Label>
+        <FormField
+          label="Citizenship Status"
+          htmlFor="citizenshipStatus"
+          helperText="Your country of citizenship."
+        >
           <Input
             id="citizenshipStatus"
             value={authorization.citizenshipStatus || ''}
             onChange={(e) => onChange({ citizenshipStatus: e.target.value || undefined })}
             placeholder="e.g., U.S. Citizen, Canadian Citizen"
           />
-        </div>
+        </FormField>
       </CardContent>
     </Card>
   )

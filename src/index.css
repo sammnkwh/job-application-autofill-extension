@@ -1,5 +1,6 @@
-/* Midday-inspired font - using Inter for clean, modern look */
+/* Midday uses Geist font - falling back to Inter and system fonts */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap');
 
 @import "tw-animate-css";
 
@@ -144,11 +145,23 @@
   body {
     background-color: var(--background);
     color: var(--foreground);
-    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Geist', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+}
+
+/* Midday-style segmented tabs - active state */
+[data-state="active"][role="tab"] {
+  background-color: #F5F1EB !important;
+  color: #1A1A1A !important;
+  font-weight: 500 !important;
+}
+
+[role="tab"] {
+  background-color: #FFFFFF !important;
+  border: none !important;
 }
 
 /* Midday-style form elements */

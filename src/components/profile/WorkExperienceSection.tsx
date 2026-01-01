@@ -1,12 +1,13 @@
-// Work Experience form section with dynamic add/remove
+// Work Experience form section - Midday style
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Input } from '../ui/input'
-import { Label } from '../ui/label'
 import { Textarea } from '../ui/textarea'
 import { Button } from '../ui/button'
 import { Checkbox } from '../ui/checkbox'
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
+import { Label } from '../ui/label'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card'
+import { FormField } from '../ui/form-field'
 import type { Profile, WorkExperience } from '../../types/profile'
 
 interface WorkExperienceSectionProps {
@@ -39,17 +40,25 @@ export function WorkExperienceSection({
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Work Experience</CardTitle>
+      <CardHeader className="flex flex-row items-start justify-between">
+        <div className="space-y-1">
+          <CardTitle>Work Experience</CardTitle>
+          <CardDescription>
+            Add your professional work history, starting with your most recent position.
+          </CardDescription>
+        </div>
         <Button type="button" variant="outline" size="sm" onClick={handleAddNew}>
-          + Add Experience
+          + Add
         </Button>
       </CardHeader>
       <CardContent className="space-y-6">
         {experiences.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-4">
-            No work experience added yet. Click "Add Experience" to start.
-          </p>
+          <div className="border border-[#e5e5e5] border-dashed rounded-lg py-12 text-center">
+            <p className="text-base font-medium text-[#121212]">No work experience added</p>
+            <p className="text-sm text-[#606060] mt-1">
+              Click "+ Add" to add your work history.
+            </p>
+          </div>
         ) : (
           experiences.map((exp, index) => (
             <ExperienceEntry
@@ -78,6 +87,11 @@ function ExperienceEntry({ experience, index, onUpdate, onRemove }: ExperienceEn
     experience.responsibilities.join('\n')
   )
 
+  // Sync when experience changes (e.g., from AI import)
+  useEffect(() => {
+    setResponsibilitiesText(experience.responsibilities.join('\n'))
+  }, [experience.responsibilities])
+
   const handleResponsibilitiesChange = (text: string) => {
     setResponsibilitiesText(text)
     const lines = text.split('\n').filter((line) => line.trim())
@@ -85,60 +99,82 @@ function ExperienceEntry({ experience, index, onUpdate, onRemove }: ExperienceEn
   }
 
   return (
-    <div className="border rounded-lg p-4 space-y-4">
-      <div className="flex justify-between items-center">
-        <h4 className="font-medium">Position {index + 1}</h4>
-        <Button type="button" variant="ghost" size="sm" onClick={onRemove}>
+    <div className="border border-[#e5e5e5] rounded-lg p-6 space-y-6">
+      <div className="flex justify-between items-center border-b border-[#e5e5e5] pb-4 -mx-6 px-6 -mt-6 pt-4 bg-[#fafafa]">
+        <h4 className="font-medium text-[#121212]">Position {index + 1}</h4>
+        <Button type="button" variant="ghost" size="sm" onClick={onRemove} className="text-[#606060] hover:text-red-600">
           Remove
         </Button>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label>Job Title *</Label>
+      <div className="grid grid-cols-2 gap-6">
+        <FormField
+          label="Job Title"
+          htmlFor={`jobTitle-${experience.id}`}
+          required
+          helperText="Your official job title or role."
+        >
           <Input
+            id={`jobTitle-${experience.id}`}
             value={experience.jobTitle}
             onChange={(e) => onUpdate({ jobTitle: e.target.value })}
             placeholder="Software Engineer"
           />
-        </div>
-        <div className="space-y-2">
-          <Label>Company *</Label>
+        </FormField>
+        <FormField
+          label="Company"
+          htmlFor={`company-${experience.id}`}
+          required
+          helperText="The name of the organization."
+        >
           <Input
+            id={`company-${experience.id}`}
             value={experience.company}
             onChange={(e) => onUpdate({ company: e.target.value })}
             placeholder="Acme Inc."
           />
-        </div>
+        </FormField>
       </div>
 
-      <div className="space-y-2">
-        <Label>Location</Label>
+      <FormField
+        label="Location"
+        htmlFor={`location-${experience.id}`}
+        helperText="City and state/country where you worked."
+      >
         <Input
+          id={`location-${experience.id}`}
           value={experience.location}
           onChange={(e) => onUpdate({ location: e.target.value })}
           placeholder="San Francisco, CA"
         />
-      </div>
+      </FormField>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label>Start Date</Label>
+      <div className="grid grid-cols-2 gap-6">
+        <FormField
+          label="Start Date"
+          htmlFor={`startDate-${experience.id}`}
+          helperText="When you started this position."
+        >
           <Input
+            id={`startDate-${experience.id}`}
             type="date"
             value={experience.startDate}
             onChange={(e) => onUpdate({ startDate: e.target.value })}
           />
-        </div>
-        <div className="space-y-2">
-          <Label>End Date</Label>
+        </FormField>
+        <FormField
+          label="End Date"
+          htmlFor={`endDate-${experience.id}`}
+          helperText={experience.isCurrent ? "Not applicable for current role." : "When you left this position."}
+        >
           <Input
+            id={`endDate-${experience.id}`}
             type="date"
             value={experience.endDate || ''}
             onChange={(e) => onUpdate({ endDate: e.target.value || undefined })}
             disabled={experience.isCurrent}
           />
-        </div>
+        </FormField>
       </div>
 
       <div className="flex items-center space-x-2">
@@ -149,30 +185,38 @@ function ExperienceEntry({ experience, index, onUpdate, onRemove }: ExperienceEn
             onUpdate({ isCurrent: checked === true, endDate: checked ? undefined : experience.endDate })
           }
         />
-        <Label htmlFor={`current-${experience.id}`} className="font-normal">
+        <Label htmlFor={`current-${experience.id}`} className="font-normal text-sm text-[#121212]">
           I currently work here
         </Label>
       </div>
 
-      <div className="space-y-2">
-        <Label>Description</Label>
+      <FormField
+        label="Description"
+        htmlFor={`description-${experience.id}`}
+        helperText="A brief summary of your role and achievements."
+      >
         <Textarea
+          id={`description-${experience.id}`}
           value={experience.description}
           onChange={(e) => onUpdate({ description: e.target.value })}
           placeholder="Brief description of your role..."
           rows={2}
         />
-      </div>
+      </FormField>
 
-      <div className="space-y-2">
-        <Label>Key Responsibilities (one per line)</Label>
+      <FormField
+        label="Key Responsibilities"
+        htmlFor={`responsibilities-${experience.id}`}
+        helperText="One responsibility per line. These will be used for autofill."
+      >
         <Textarea
+          id={`responsibilities-${experience.id}`}
           value={responsibilitiesText}
           onChange={(e) => handleResponsibilitiesChange(e.target.value)}
-          placeholder="Led development of..."
+          placeholder="Led development of...&#10;Managed a team of...&#10;Improved performance by..."
           rows={4}
         />
-      </div>
+      </FormField>
     </div>
   )
 }

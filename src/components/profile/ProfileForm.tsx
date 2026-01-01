@@ -148,14 +148,14 @@ export function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
       )}
 
       <Tabs defaultValue="personal" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList>
           <TabsTrigger value="personal">Personal</TabsTrigger>
           <TabsTrigger value="experience">Experience</TabsTrigger>
           <TabsTrigger value="skills">Skills</TabsTrigger>
           <TabsTrigger value="other">Other</TabsTrigger>
         </TabsList>
 
-        <ScrollArea className="h-[500px] mt-4">
+        <ScrollArea className="h-[500px]">
           <TabsContent value="personal" className="space-y-4 pr-4">
             <DocumentsSection onResumeImport={handleResumeImport} />
             <PersonalInfoSection

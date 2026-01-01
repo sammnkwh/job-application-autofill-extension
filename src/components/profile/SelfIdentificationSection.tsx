@@ -1,8 +1,7 @@
-// Voluntary Self-Identification form section (EEO)
+// Voluntary Self-Identification form section (EEO) - Midday style
 
-import { Label } from '../ui/label'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card'
-import { Alert, AlertDescription } from '../ui/alert'
+import { FormField } from '../ui/form-field'
 import {
   Select,
   SelectContent,
@@ -26,19 +25,21 @@ export function SelfIdentificationSection({
       <CardHeader>
         <CardTitle>Voluntary Self-Identification</CardTitle>
         <CardDescription>
-          This information is used for Equal Employment Opportunity (EEO) reporting.
+          This information is used for Equal Employment Opportunity (EEO) reporting. Providing this information is voluntary and will not affect your application.
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <Alert>
-          <AlertDescription>
-            Providing this information is <strong>voluntary</strong> and will not affect your
-            application. This data is kept confidential and used only for compliance reporting.
-          </AlertDescription>
-        </Alert>
+      <CardContent className="space-y-6">
+        <div className="p-4 border border-[#e5e5e5] rounded-lg bg-[#fafafa]">
+          <p className="text-sm text-[#606060]">
+            This data is kept confidential and used only for compliance reporting. It will be stored locally and encrypted.
+          </p>
+        </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="gender">Gender</Label>
+        <FormField
+          label="Gender"
+          htmlFor="gender"
+          helperText="Select your gender identity or decline to answer."
+        >
           <Select
             value={selfId?.gender || ''}
             onValueChange={(value) => onChange({ gender: value || undefined })}
@@ -53,10 +54,13 @@ export function SelfIdentificationSection({
               <SelectItem value="decline">Decline to Self-Identify</SelectItem>
             </SelectContent>
           </Select>
-        </div>
+        </FormField>
 
-        <div className="space-y-2">
-          <Label htmlFor="ethnicity">Race / Ethnicity</Label>
+        <FormField
+          label="Race / Ethnicity"
+          htmlFor="ethnicity"
+          helperText="Select your race or ethnicity, or decline to answer."
+        >
           <Select
             value={selfId?.ethnicity || ''}
             onValueChange={(value) => onChange({ ethnicity: value || undefined })}
@@ -75,10 +79,13 @@ export function SelfIdentificationSection({
               <SelectItem value="decline">Decline to Self-Identify</SelectItem>
             </SelectContent>
           </Select>
-        </div>
+        </FormField>
 
-        <div className="space-y-2">
-          <Label htmlFor="veteranStatus">Veteran Status</Label>
+        <FormField
+          label="Veteran Status"
+          htmlFor="veteranStatus"
+          helperText="Select your veteran status, or decline to answer."
+        >
           <Select
             value={selfId?.veteranStatus || ''}
             onValueChange={(value) => onChange({ veteranStatus: value || undefined })}
@@ -92,10 +99,13 @@ export function SelfIdentificationSection({
               <SelectItem value="decline">Decline to Self-Identify</SelectItem>
             </SelectContent>
           </Select>
-        </div>
+        </FormField>
 
-        <div className="space-y-2">
-          <Label htmlFor="disabilityStatus">Disability Status</Label>
+        <FormField
+          label="Disability Status"
+          htmlFor="disabilityStatus"
+          helperText="Select your disability status, or decline to answer."
+        >
           <Select
             value={selfId?.disabilityStatus || ''}
             onValueChange={(value) => onChange({ disabilityStatus: value || undefined })}
@@ -109,12 +119,7 @@ export function SelfIdentificationSection({
               <SelectItem value="decline">Decline to Self-Identify</SelectItem>
             </SelectContent>
           </Select>
-        </div>
-
-        <p className="text-xs text-muted-foreground">
-          This information is stored locally and encrypted. It will only be used to
-          auto-fill voluntary EEO forms during job applications.
-        </p>
+        </FormField>
       </CardContent>
     </Card>
   )

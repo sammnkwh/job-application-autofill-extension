@@ -1,8 +1,8 @@
-// Personal Information form section
+// Personal Information form section - Midday style
 
 import { Input } from '../ui/input'
-import { Label } from '../ui/label'
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card'
+import { FormField } from '../ui/form-field'
 import type { Profile } from '../../types/profile'
 
 interface PersonalInfoSectionProps {
@@ -21,32 +21,47 @@ export function PersonalInfoSection({ personalInfo, onChange }: PersonalInfoSect
     <Card>
       <CardHeader>
         <CardTitle>Personal Information</CardTitle>
+        <CardDescription>
+          Your basic contact information for job applications.
+        </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="firstName">First Name *</Label>
+      <CardContent className="space-y-6">
+        <div className="grid grid-cols-2 gap-6">
+          <FormField
+            label="First Name"
+            htmlFor="firstName"
+            required
+            helperText="Your legal first name as it appears on documents."
+          >
             <Input
               id="firstName"
               value={personalInfo.firstName}
               onChange={(e) => onChange({ firstName: e.target.value })}
               placeholder="John"
             />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="lastName">Last Name *</Label>
+          </FormField>
+          <FormField
+            label="Last Name"
+            htmlFor="lastName"
+            required
+            helperText="Your legal last name or surname."
+          >
             <Input
               id="lastName"
               value={personalInfo.lastName}
               onChange={(e) => onChange({ lastName: e.target.value })}
               placeholder="Doe"
             />
-          </div>
+          </FormField>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email *</Label>
+        <div className="grid grid-cols-2 gap-6">
+          <FormField
+            label="Email"
+            htmlFor="email"
+            required
+            helperText="Your primary email for job communications."
+          >
             <Input
               id="email"
               type="email"
@@ -54,9 +69,13 @@ export function PersonalInfoSection({ personalInfo, onChange }: PersonalInfoSect
               onChange={(e) => onChange({ email: e.target.value })}
               placeholder="john.doe@example.com"
             />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="phone">Phone *</Label>
+          </FormField>
+          <FormField
+            label="Phone"
+            htmlFor="phone"
+            required
+            helperText="A phone number where recruiters can reach you."
+          >
             <Input
               id="phone"
               type="tel"
@@ -64,58 +83,61 @@ export function PersonalInfoSection({ personalInfo, onChange }: PersonalInfoSect
               onChange={(e) => onChange({ phone: e.target.value })}
               placeholder="(555) 123-4567"
             />
-          </div>
+          </FormField>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="street">Street Address</Label>
+        <FormField
+          label="Street Address"
+          htmlFor="street"
+          helperText="Your current street address including apartment number."
+        >
           <Input
             id="street"
             value={personalInfo.address.street}
             onChange={(e) => handleAddressChange('street', e.target.value)}
-            placeholder="123 Main St"
+            placeholder="123 Main St, Apt 4"
           />
-        </div>
+        </FormField>
 
         <div className="grid grid-cols-3 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="city">City</Label>
+          <FormField label="City" htmlFor="city">
             <Input
               id="city"
               value={personalInfo.address.city}
               onChange={(e) => handleAddressChange('city', e.target.value)}
               placeholder="San Francisco"
             />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="state">State</Label>
+          </FormField>
+          <FormField label="State" htmlFor="state">
             <Input
               id="state"
               value={personalInfo.address.state}
               onChange={(e) => handleAddressChange('state', e.target.value)}
               placeholder="CA"
             />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="zipCode">ZIP Code</Label>
+          </FormField>
+          <FormField label="ZIP Code" htmlFor="zipCode">
             <Input
               id="zipCode"
               value={personalInfo.address.zipCode}
               onChange={(e) => handleAddressChange('zipCode', e.target.value)}
               placeholder="94102"
             />
-          </div>
+          </FormField>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="country">Country</Label>
+        <FormField
+          label="Country"
+          htmlFor="country"
+          helperText="The country where you currently reside."
+        >
           <Input
             id="country"
             value={personalInfo.address.country}
             onChange={(e) => handleAddressChange('country', e.target.value)}
             placeholder="United States"
           />
-        </div>
+        </FormField>
       </CardContent>
     </Card>
   )

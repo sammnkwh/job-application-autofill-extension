@@ -5,7 +5,7 @@ import * as TabsPrimitive from "@radix-ui/react-tabs"
 
 import { cn } from "@/lib/utils"
 
-// Midday-style Tabs components
+// Midday-style segmented control tabs - exact match
 const Tabs = TabsPrimitive.Root
 
 const TabsList = React.forwardRef<
@@ -15,9 +15,17 @@ const TabsList = React.forwardRef<
   <TabsPrimitive.List
     ref={ref}
     className={cn(
-      "inline-flex h-10 items-center justify-center bg-accent p-1 text-muted-foreground",
+      "inline-flex w-full",
+      "border border-[#DCDAD2]",
+      "rounded-[3px]",
+      "overflow-hidden",
       className
     )}
+    style={{
+      backgroundColor: '#FFFFFF',
+      padding: 0,
+      margin: 0,
+    }}
     {...props}
   />
 ))
@@ -30,9 +38,21 @@ const TabsTrigger = React.forwardRef<
   <TabsPrimitive.Trigger
     ref={ref}
     className={cn(
-      "inline-flex items-center justify-center whitespace-nowrap px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground",
+      "flex-1 inline-flex items-center justify-center",
+      "whitespace-nowrap",
+      "py-[11px] px-4",
+      "text-sm",
+      "transition-colors duration-100",
+      "focus-visible:outline-none",
+      "disabled:pointer-events-none disabled:opacity-50",
       className
     )}
+    style={{
+      border: 'none',
+      borderRadius: 0,
+      outline: 'none',
+      boxShadow: 'none',
+    }}
     {...props}
   />
 ))
@@ -45,7 +65,7 @@ const TabsContent = React.forwardRef<
   <TabsPrimitive.Content
     ref={ref}
     className={cn(
-      "mt-2 ring-offset-background focus-visible:outline-none",
+      "mt-4 ring-offset-background focus-visible:outline-none",
       className
     )}
     {...props}
