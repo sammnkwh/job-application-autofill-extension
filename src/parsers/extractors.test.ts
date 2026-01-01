@@ -86,14 +86,18 @@ describe('extractors', () => {
       expect(result?.value.lastName).toBe('Smith')
     })
 
-    it('should skip email-like first lines', () => {
+    it('should skip email line and find name on next line', () => {
       const result = extractName('john@example.com\nJohn Doe')
-      expect(result).toBeNull()
+      expect(result).not.toBeNull()
+      expect(result?.value.firstName).toBe('John')
+      expect(result?.value.lastName).toBe('Doe')
     })
 
-    it('should skip URL-like first lines', () => {
+    it('should skip URL line and find name on next line', () => {
       const result = extractName('https://example.com\nJohn Doe')
-      expect(result).toBeNull()
+      expect(result).not.toBeNull()
+      expect(result?.value.firstName).toBe('John')
+      expect(result?.value.lastName).toBe('Doe')
     })
 
     it('should return null for single word', () => {

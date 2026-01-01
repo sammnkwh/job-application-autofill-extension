@@ -67,43 +67,87 @@ function cleanPhoneNumber(phone: string): string {
 export function extractName(text: string): ExtractedValue<{ firstName: string; lastName: string }> | null {
   const lines = text.split('\n').map((l) => l.trim()).filter((l) => l)
 
-  // First non-empty line is often the name
   if (lines.length === 0) return null
 
-  const firstLine = lines[0]
+  // Skip patterns for lines that are definitely not names
+  const skipPatterns = ['resume', 'cv', 'curriculum', 'phone', 'email', 'address', 'objective', 'summary', 'experience', 'education', 'skills']
+  const titles = ['mr', 'mrs', 'ms', 'dr', 'prof', 'jr', 'sr', 'ii', 'iii', 'iv']
 
-  // Skip if it looks like an email or URL
-  if (firstLine.includes('@') || firstLine.includes('http') || firstLine.includes('www')) {
-    return null
+  // Strategy 1: Look through first 10 lines for a name-like pattern
+  for (let i = 0; i < Math.min(lines.length, 10); i++) {
+    const line = lines[i]
+
+    // Skip if it looks like an email, URL, or phone
+    if (line.includes('@') || line.includes('http') || line.includes('www')) {
+      continue
+    }
+    if (/^\+?\d[\d\s\-().]{8,}$/.test(line)) {
+      continue
+    }
+
+    // Skip if it's too long or too short
+    if (line.length > 50 || line.length < 3) continue
+
+    // Skip if it contains non-name patterns
+    if (skipPatterns.some((p) => line.toLowerCase().includes(p))) {
+      continue
+    }
+
+    // Skip lines that look like addresses (have numbers at start or ZIP codes)
+    if (/^\d+\s/.test(line) || /\d{5}/.test(line)) {
+      continue
+    }
+
+    // Try to parse as name
+    const nameParts = line.split(/\s+/).filter((part) => part.length > 0)
+
+    if (nameParts.length >= 2 && nameParts.length <= 4) {
+      // Remove common titles and suffixes
+      const cleanParts = nameParts.filter(
+        (part) => !titles.includes(part.toLowerCase().replace(/[.,]/g, ''))
+      )
+
+      // Check if parts look like names (all letters, optionally with hyphen/apostrophe)
+      const looksLikeName = cleanParts.every(part =>
+        /^[A-Za-z][a-zA-Z'-]*$/.test(part.replace(/[,.]$/g, ''))
+      )
+
+      if (cleanParts.length >= 2 && looksLikeName) {
+        return {
+          value: {
+            firstName: cleanParts[0].replace(/[,.]$/g, ''),
+            lastName: cleanParts[cleanParts.length - 1].replace(/[,.]$/g, ''),
+          },
+          confidence: 'high',
+          source: line,
+        }
+      }
+    }
   }
 
-  // Skip if it's too long (probably not a name)
-  if (firstLine.length > 50) return null
-
-  // Skip if it contains common non-name patterns
-  const skipPatterns = ['resume', 'cv', 'curriculum', 'phone', 'email', 'address']
-  if (skipPatterns.some((p) => firstLine.toLowerCase().includes(p))) {
-    return null
+  // Strategy 2: Look for "Name:" label pattern
+  const nameLabel = text.match(/(?:name|full name|applicant)[:\s]+([A-Z][a-z]+)\s+([A-Z][a-z]+)/i)
+  if (nameLabel) {
+    return {
+      value: {
+        firstName: nameLabel[1],
+        lastName: nameLabel[2],
+      },
+      confidence: 'high',
+      source: nameLabel[0],
+    }
   }
 
-  // Try to parse as name
-  const nameParts = firstLine.split(/\s+/).filter((part) => part.length > 0)
-
-  if (nameParts.length >= 2) {
-    // Remove common titles and suffixes
-    const titles = ['mr', 'mrs', 'ms', 'dr', 'prof', 'jr', 'sr', 'ii', 'iii', 'iv']
-    const cleanParts = nameParts.filter(
-      (part) => !titles.includes(part.toLowerCase().replace(/[.,]/g, ''))
-    )
-
-    if (cleanParts.length >= 2) {
+  // Strategy 3: Try to find name from email (john.doe@email.com -> John Doe)
+  const emailMatch = text.match(/([a-zA-Z]+)[._]([a-zA-Z]+)@/i)
+  if (emailMatch) {
+    const firstName = emailMatch[1].charAt(0).toUpperCase() + emailMatch[1].slice(1).toLowerCase()
+    const lastName = emailMatch[2].charAt(0).toUpperCase() + emailMatch[2].slice(1).toLowerCase()
+    if (firstName.length >= 2 && lastName.length >= 2) {
       return {
-        value: {
-          firstName: cleanParts[0].replace(/[,.]$/g, ''),
-          lastName: cleanParts[cleanParts.length - 1].replace(/[,.]$/g, ''),
-        },
+        value: { firstName, lastName },
         confidence: 'medium',
-        source: firstLine,
+        source: emailMatch[0],
       }
     }
   }
