@@ -1,9 +1,11 @@
 // Education form section - Midday style
 
+import { Trash2 } from 'lucide-react'
 import { Input } from '../ui/input'
 import { Button } from '../ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card'
 import { FormField } from '../ui/form-field'
+import { toTitleCase } from '@/lib/utils'
 import type { Profile, Education } from '../../types/profile'
 
 interface EducationSectionProps {
@@ -19,6 +21,14 @@ export function EducationSection({
   onUpdate,
   onRemove,
 }: EducationSectionProps) {
+  // Sort education by endDate (most recent first)
+  const sortedEducation = [...education].sort((a, b) => {
+    if (!a.endDate && !b.endDate) return 0
+    if (!a.endDate) return -1 // No end date = ongoing, put first
+    if (!b.endDate) return 1
+    return new Date(b.endDate).getTime() - new Date(a.endDate).getTime()
+  })
+
   const handleAddNew = () => {
     const newEdu: Education = {
       id: `edu-${Date.now()}`,
@@ -48,14 +58,14 @@ export function EducationSection({
       </CardHeader>
       <CardContent className="space-y-6">
         {education.length === 0 ? (
-          <div className="border border-[#e5e5e5] border-dashed rounded-lg py-12 text-center">
+          <div className="border border-[#e5e5e5] border-dashed rounded-none py-12 text-center">
             <p className="text-base font-medium text-[#121212]">No education added</p>
             <p className="text-sm text-[#606060] mt-1">
               Click "+ Add" to add your educational history.
             </p>
           </div>
         ) : (
-          education.map((edu, index) => (
+          sortedEducation.map((edu, index) => (
             <EducationEntry
               key={edu.id}
               education={edu}
@@ -79,11 +89,18 @@ interface EducationEntryProps {
 
 function EducationEntry({ education, index, onUpdate, onRemove }: EducationEntryProps) {
   return (
-    <div className="border border-[#e5e5e5] rounded-lg p-6 space-y-6">
+    <div className="border border-[#e5e5e5] rounded-none p-6 space-y-6">
       <div className="flex justify-between items-center border-b border-[#e5e5e5] pb-4 -mx-6 px-6 -mt-6 pt-4 bg-[#fafafa]">
         <h4 className="font-medium text-[#121212]">Education {index + 1}</h4>
-        <Button type="button" variant="ghost" size="sm" onClick={onRemove} className="text-[#606060] hover:text-red-600">
-          Remove
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={onRemove}
+          className="h-8 w-8 text-[#878787] hover:text-red-600 hover:bg-red-50"
+          title="Remove education"
+        >
+          <Trash2 className="h-4 w-4" />
         </Button>
       </div>
 
@@ -96,12 +113,12 @@ function EducationEntry({ education, index, onUpdate, onRemove }: EducationEntry
         <Input
           id={`institution-${education.id}`}
           value={education.institution}
-          onChange={(e) => onUpdate({ institution: e.target.value })}
+          onChange={(e) => onUpdate({ institution: toTitleCase(e.target.value) })}
           placeholder="University of California, Berkeley"
         />
       </FormField>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-2 gap-8">
         <FormField
           label="Degree"
           htmlFor={`degree-${education.id}`}
@@ -111,7 +128,7 @@ function EducationEntry({ education, index, onUpdate, onRemove }: EducationEntry
           <Input
             id={`degree-${education.id}`}
             value={education.degree}
-            onChange={(e) => onUpdate({ degree: e.target.value })}
+            onChange={(e) => onUpdate({ degree: toTitleCase(e.target.value) })}
             placeholder="Bachelor of Science"
           />
         </FormField>
@@ -123,13 +140,13 @@ function EducationEntry({ education, index, onUpdate, onRemove }: EducationEntry
           <Input
             id={`fieldOfStudy-${education.id}`}
             value={education.fieldOfStudy}
-            onChange={(e) => onUpdate({ fieldOfStudy: e.target.value })}
+            onChange={(e) => onUpdate({ fieldOfStudy: toTitleCase(e.target.value) })}
             placeholder="Computer Science"
           />
         </FormField>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-6">
         <FormField
           label="Start Date"
           htmlFor={`startDate-${education.id}`}

@@ -3,6 +3,7 @@
 import { Input } from '../ui/input'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card'
 import { FormField } from '../ui/form-field'
+import { toTitleCase } from '@/lib/utils'
 import type { Profile } from '../../types/profile'
 
 interface PersonalInfoSectionProps {
@@ -26,17 +27,16 @@ export function PersonalInfoSection({ personalInfo, onChange }: PersonalInfoSect
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-2 gap-8">
           <FormField
             label="First Name"
             htmlFor="firstName"
             required
-            helperText="Your legal first name as it appears on documents."
           >
             <Input
               id="firstName"
               value={personalInfo.firstName}
-              onChange={(e) => onChange({ firstName: e.target.value })}
+              onChange={(e) => onChange({ firstName: toTitleCase(e.target.value) })}
               placeholder="John"
             />
           </FormField>
@@ -44,23 +44,21 @@ export function PersonalInfoSection({ personalInfo, onChange }: PersonalInfoSect
             label="Last Name"
             htmlFor="lastName"
             required
-            helperText="Your legal last name or surname."
           >
             <Input
               id="lastName"
               value={personalInfo.lastName}
-              onChange={(e) => onChange({ lastName: e.target.value })}
+              onChange={(e) => onChange({ lastName: toTitleCase(e.target.value) })}
               placeholder="Doe"
             />
           </FormField>
         </div>
 
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-2 gap-8">
           <FormField
             label="Email"
             htmlFor="email"
             required
-            helperText="Your primary email for job communications."
           >
             <Input
               id="email"
@@ -74,7 +72,6 @@ export function PersonalInfoSection({ personalInfo, onChange }: PersonalInfoSect
             label="Phone"
             htmlFor="phone"
             required
-            helperText="A phone number where recruiters can reach you."
           >
             <Input
               id="phone"
@@ -89,7 +86,6 @@ export function PersonalInfoSection({ personalInfo, onChange }: PersonalInfoSect
         <FormField
           label="Street Address"
           htmlFor="street"
-          helperText="Your current street address including apartment number."
         >
           <Input
             id="street"
@@ -99,12 +95,12 @@ export function PersonalInfoSection({ personalInfo, onChange }: PersonalInfoSect
           />
         </FormField>
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 gap-6">
           <FormField label="City" htmlFor="city">
             <Input
               id="city"
               value={personalInfo.address.city}
-              onChange={(e) => handleAddressChange('city', e.target.value)}
+              onChange={(e) => handleAddressChange('city', toTitleCase(e.target.value))}
               placeholder="San Francisco"
             />
           </FormField>
@@ -129,12 +125,11 @@ export function PersonalInfoSection({ personalInfo, onChange }: PersonalInfoSect
         <FormField
           label="Country"
           htmlFor="country"
-          helperText="The country where you currently reside."
         >
           <Input
             id="country"
             value={personalInfo.address.country}
-            onChange={(e) => handleAddressChange('country', e.target.value)}
+            onChange={(e) => handleAddressChange('country', toTitleCase(e.target.value))}
             placeholder="United States"
           />
         </FormField>

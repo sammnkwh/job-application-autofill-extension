@@ -27,7 +27,7 @@ export function FormField({
       </Label>
       {children}
       {helperText && (
-        <p className="text-sm text-[#606060]">{helperText}</p>
+        <p className="text-sm text-[#525252]">{helperText}</p>
       )}
     </div>
   )

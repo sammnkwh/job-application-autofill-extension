@@ -1,6 +1,7 @@
 // Documents section with resume upload - Midday style
 
 import { useCallback, useState } from 'react'
+import { Shield } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card'
 import { Alert, AlertDescription } from '../ui/alert'
 import { Progress } from '../ui/progress'
@@ -155,8 +156,8 @@ export function DocumentsSection({ onResumeImport }: DocumentsSectionProps) {
           <label htmlFor="resume-upload" className="cursor-pointer">
             <div className="space-y-3">
               <p className="font-medium text-[#121212]">
-                {isDragging ? 'Drop your resume here' : 'Drop your files here, or'}
-                {!isDragging && <span className="underline ml-1">click to browse.</span>}
+                {isDragging ? 'Drop your resume here' : 'Drop your files here, or '}
+                {!isDragging && <span className="underline">click to browse.</span>}
               </p>
               <p className="text-sm text-[#878787]">
                 3MB file limit. PDF, DOCX, or TXT.
@@ -212,11 +213,14 @@ export function DocumentsSection({ onResumeImport }: DocumentsSectionProps) {
           </div>
         )}
 
-        <p className="text-sm text-[#878787]">
-          {showAIOption
-            ? 'Initial parsing is local. AI enhancement uses Google Gemini to improve extraction.'
-            : 'Your resume is processed locally and never sent to any server. Only extracted data is stored in your browser.'}
-        </p>
+        <div className="flex items-start gap-2 text-sm text-[#606060]">
+          <Shield className="h-4 w-4 mt-0.5 flex-shrink-0" />
+          <p>
+            {showAIOption
+              ? 'Initial parsing is local. AI enhancement uses Google Gemini to improve extraction.'
+              : 'Your resume is processed locally and never sent to any server. Only extracted data is stored in your browser.'}
+          </p>
+        </div>
       </CardContent>
     </Card>
   )

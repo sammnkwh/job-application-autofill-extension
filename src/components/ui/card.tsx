@@ -2,17 +2,22 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-// Midday-style Card components with left border accent
+// Sharp corner Card with consistent borders
 const Card = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
+>(({ className, style, ...props }, ref) => (
   <div
     ref={ref}
     className={cn(
-      "bg-background text-card-foreground border-l-[3px] border-l-[#121212] border border-[#e5e5e5]",
+      "bg-white text-card-foreground",
       className
     )}
+    style={{
+      border: '1px solid #DCDAD2',
+      borderRadius: 0,
+      ...style,
+    }}
     {...props}
   />
 ))
@@ -68,7 +73,7 @@ const CardFooter = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex items-center p-6 border-t border-[#e5e5e5] text-xs text-[#606060]", className)}
+    className={cn("flex items-center p-6 border-t border-[#DCDAD2] text-xs text-[#606060]", className)}
     {...props}
   />
 ))

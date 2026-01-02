@@ -16,8 +16,8 @@ const TabsList = React.forwardRef<
     ref={ref}
     className={cn(
       "inline-flex w-full",
-      "border border-[#DCDAD2]",
-      "rounded-[3px]",
+      "border-[1px] border-solid border-[#DCDAD2]",
+      "rounded-none",
       "overflow-hidden",
       className
     )}
@@ -41,10 +41,12 @@ const TabsTrigger = React.forwardRef<
       "flex-1 inline-flex items-center justify-center",
       "whitespace-nowrap",
       "py-[11px] px-4",
-      "text-sm",
+      "text-sm text-[#606060]",
       "transition-colors duration-100",
       "focus-visible:outline-none",
       "disabled:pointer-events-none disabled:opacity-50",
+      "data-[state=active]:bg-[#F5F3EF] data-[state=active]:text-[#121212] data-[state=active]:font-medium",
+      "hover:bg-[#FAFAF8]",
       className
     )}
     style={{

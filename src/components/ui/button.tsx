@@ -4,25 +4,25 @@ import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 
-// Midday-style Button variants
+// Sharp corner button variants with white text
 const buttonVariants = cva(
   "inline-flex items-center justify-center text-sm font-medium transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
         default:
-          "bg-[#121212] text-white hover:bg-[#333333]",
+          "bg-[#1A1A1A] text-white hover:bg-[#333333] rounded-none border-0",
         destructive:
-          "bg-red-600 text-white hover:bg-red-700",
+          "bg-red-600 text-white hover:bg-red-700 rounded-none border-0",
         outline:
-          "border border-[#e5e5e5] bg-transparent text-[#121212] hover:bg-[#f5f5f5]",
+          "border-[1px] border-solid border-[#DCDAD2] bg-white text-[#1A1A1A] hover:bg-[#f5f5f5] rounded-none",
         secondary:
-          "bg-[#f5f5f5] text-[#121212] hover:bg-[#e5e5e5]",
-        ghost: "text-[#606060] hover:bg-[#f5f5f5] hover:text-[#121212]",
-        link: "text-[#121212] underline-offset-4 hover:underline",
+          "bg-[#f5f5f5] text-[#1A1A1A] hover:bg-[#e5e5e5] rounded-none border-0",
+        ghost: "text-[#606060] hover:bg-[#f5f5f5] hover:text-[#1A1A1A] rounded-none",
+        link: "text-[#1A1A1A] underline-offset-4 hover:underline",
       },
       size: {
-        default: "h-10 px-4 py-2",
+        default: "h-10 px-5 py-2",
         sm: "h-8 px-3 text-xs",
         lg: "h-11 px-8",
         icon: "h-10 w-10",

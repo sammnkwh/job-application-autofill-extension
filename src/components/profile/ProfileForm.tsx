@@ -1,11 +1,19 @@
 // Main Profile Form component
 
-import { useCallback } from 'react'
+import { useCallback, useState, useEffect } from 'react'
 import { Button } from '../ui/button'
 import { Progress } from '../ui/progress'
 import { Alert, AlertDescription } from '../ui/alert'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
 import { ScrollArea } from '../ui/scroll-area'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../ui/dialog'
 import { PersonalInfoSection } from './PersonalInfoSection'
 import { ProfessionalLinksSection } from './ProfessionalLinksSection'
 import { WorkExperienceSection } from './WorkExperienceSection'
@@ -39,9 +47,22 @@ export function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
     save,
     isLoading,
     isSaving,
+    hasExistingProfile,
     error,
     completeness,
   } = useProfile()
+
+  // Welcome modal state
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false)
+  const [welcomeModalShown, setWelcomeModalShown] = useState(false)
+
+  // Show welcome modal on first visit (no existing profile)
+  useEffect(() => {
+    if (!isLoading && !hasExistingProfile && !welcomeModalShown) {
+      setShowWelcomeModal(true)
+      setWelcomeModalShown(true)
+    }
+  }, [isLoading, hasExistingProfile, welcomeModalShown])
 
   const handleSave = useCallback(async () => {
     const result = await save()
@@ -119,6 +140,19 @@ export function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
     })
   }, [setProfile])
 
+  // Calculate section completeness for tab badges
+  const sectionStatus = {
+    personal: Boolean(
+      profile.personalInfo.firstName &&
+      profile.personalInfo.lastName &&
+      profile.personalInfo.email &&
+      profile.personalInfo.phone
+    ),
+    experience: profile.workExperience.length > 0 && profile.education.length > 0,
+    skills: profile.skillsAndQualifications.skills.length >= 3,
+    other: true, // Additional info is optional
+  }
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-8">
@@ -147,12 +181,32 @@ export function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
         </Alert>
       )}
 
+      {/* Required field legend */}
+      <p className="text-xs text-[#878787]">
+        <span className="text-[#606060]">*</span> Required field
+      </p>
+
       <Tabs defaultValue="personal" className="w-full">
         <TabsList>
-          <TabsTrigger value="personal">Personal</TabsTrigger>
-          <TabsTrigger value="experience">Experience</TabsTrigger>
-          <TabsTrigger value="skills">Skills</TabsTrigger>
-          <TabsTrigger value="other">Other</TabsTrigger>
+          <TabsTrigger value="personal" className="relative">
+            Personal
+            {!sectionStatus.personal && (
+              <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-amber-500" title="Incomplete" />
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="experience" className="relative">
+            Experience
+            {!sectionStatus.experience && (
+              <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-amber-500" title="Incomplete" />
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="skills" className="relative">
+            Skills
+            {!sectionStatus.skills && (
+              <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-amber-500" title="Incomplete" />
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="other">Additional</TabsTrigger>
         </TabsList>
 
         <ScrollArea className="h-[500px]">
@@ -204,11 +258,40 @@ export function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
       </Tabs>
 
       {/* Save Button */}
-      <div className="flex justify-end pt-4 border-t">
+      <div className="flex justify-end pt-4 mt-2 border-t border-[#DCDAD2]">
         <Button onClick={handleSave} disabled={isSaving}>
           {isSaving ? 'Saving...' : 'Save Profile'}
         </Button>
       </div>
+
+      {/* Welcome Modal for First-Time Users */}
+      <Dialog open={showWelcomeModal} onOpenChange={setShowWelcomeModal}>
+        <DialogContent className="sm:max-w-md" style={{ borderRadius: 0 }}>
+          <DialogHeader>
+            <DialogTitle>Welcome to Job Autofill</DialogTitle>
+            <DialogDescription>
+              Get started quickly by uploading your resume. We'll extract your information automatically.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <DocumentsSection
+              onResumeImport={(data) => {
+                handleResumeImport(data)
+                setShowWelcomeModal(false)
+              }}
+            />
+          </div>
+          <DialogFooter className="flex-col sm:flex-row gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowWelcomeModal(false)}
+              className="w-full sm:w-auto"
+            >
+              Skip for now
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
