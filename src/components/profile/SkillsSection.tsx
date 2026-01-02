@@ -88,7 +88,6 @@ export function SkillsSection({ skills, onChange }: SkillsSectionProps) {
         <div className="space-y-4">
           <FormField
             label="Skills"
-            helperText="Add technical skills, tools, and technologies you're proficient in."
           >
             <div className="flex gap-2">
               <Input
@@ -124,7 +123,6 @@ export function SkillsSection({ skills, onChange }: SkillsSectionProps) {
         <div className="space-y-4">
           <FormField
             label="Certifications"
-            helperText="Add professional certifications and credentials."
           >
             <div className="flex gap-2">
               <Input
@@ -173,7 +171,6 @@ export function SkillsSection({ skills, onChange }: SkillsSectionProps) {
         <div className="space-y-4">
           <FormField
             label="Languages"
-            helperText="Add languages you speak and your proficiency level."
           >
             <div className="flex gap-2">
               <Input

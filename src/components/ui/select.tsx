@@ -29,6 +29,7 @@ const SelectTrigger = React.forwardRef<
     style={{
       border: '1px solid #DCDAD2',
       borderRadius: 0,
+      boxSizing: 'border-box',
       ...style,
     }}
     {...props}

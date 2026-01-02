@@ -128,16 +128,15 @@ function ExperienceEntry({ experience, index, onUpdate, onRemove }: ExperienceEn
         </Button>
       </div>
 
-      <div className="grid grid-cols-2 gap-8">
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
         <FormField
           label="Job Title"
           htmlFor={`jobTitle-${experience.id}`}
           required
-          helperText="Your official job title or role."
         >
           <Input
             id={`jobTitle-${experience.id}`}
-            value={experience.jobTitle}
+            value={toTitleCase(experience.jobTitle)}
             onChange={(e) => onUpdate({ jobTitle: toTitleCase(e.target.value) })}
             placeholder="Software Engineer"
           />
@@ -146,11 +145,10 @@ function ExperienceEntry({ experience, index, onUpdate, onRemove }: ExperienceEn
           label="Company"
           htmlFor={`company-${experience.id}`}
           required
-          helperText="The name of the organization."
         >
           <Input
             id={`company-${experience.id}`}
-            value={experience.company}
+            value={toTitleCase(experience.company)}
             onChange={(e) => onUpdate({ company: toTitleCase(e.target.value) })}
             placeholder="Acme Inc."
           />
@@ -160,21 +158,19 @@ function ExperienceEntry({ experience, index, onUpdate, onRemove }: ExperienceEn
       <FormField
         label="Location"
         htmlFor={`location-${experience.id}`}
-        helperText="City and state/country where you worked."
       >
         <Input
           id={`location-${experience.id}`}
-          value={experience.location}
+          value={toTitleCase(experience.location)}
           onChange={(e) => onUpdate({ location: toTitleCase(e.target.value) })}
           placeholder="San Francisco, CA"
         />
       </FormField>
 
-      <div className="grid grid-cols-2 gap-8">
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
         <FormField
           label="Start Date"
           htmlFor={`startDate-${experience.id}`}
-          helperText="When you started this position."
         >
           <Input
             id={`startDate-${experience.id}`}
@@ -186,7 +182,7 @@ function ExperienceEntry({ experience, index, onUpdate, onRemove }: ExperienceEn
         <FormField
           label="End Date"
           htmlFor={`endDate-${experience.id}`}
-          helperText={experience.isCurrent ? "Current position" : "When you left this position."}
+          helperText={experience.isCurrent ? "Current position" : undefined}
         >
           {experience.isCurrent ? (
             <div className="flex h-11 w-full items-center px-3 py-2 text-sm text-[#606060] bg-[#f5f5f5]" style={{ border: '1px solid #DCDAD2' }}>

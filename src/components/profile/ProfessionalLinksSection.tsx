@@ -20,38 +20,37 @@ export function ProfessionalLinksSection({ links, onChange }: ProfessionalLinksS
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <FormField
-          label="LinkedIn"
-          htmlFor="linkedin"
-          helperText="Your LinkedIn profile URL for professional networking."
-        >
-          <Input
-            id="linkedin"
-            type="url"
-            value={links.linkedin || ''}
-            onChange={(e) => onChange({ linkedin: e.target.value })}
-            placeholder="https://linkedin.com/in/yourprofile"
-          />
-        </FormField>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+          <FormField
+            label="LinkedIn"
+            htmlFor="linkedin"
+          >
+            <Input
+              id="linkedin"
+              type="url"
+              value={links.linkedin || ''}
+              onChange={(e) => onChange({ linkedin: e.target.value })}
+              placeholder="https://linkedin.com/in/yourprofile"
+            />
+          </FormField>
 
-        <FormField
-          label="GitHub"
-          htmlFor="github"
-          helperText="Your GitHub profile to showcase your code and projects."
-        >
-          <Input
-            id="github"
-            type="url"
-            value={links.github || ''}
-            onChange={(e) => onChange({ github: e.target.value })}
-            placeholder="https://github.com/yourusername"
-          />
-        </FormField>
+          <FormField
+            label="GitHub"
+            htmlFor="github"
+          >
+            <Input
+              id="github"
+              type="url"
+              value={links.github || ''}
+              onChange={(e) => onChange({ github: e.target.value })}
+              placeholder="https://github.com/yourusername"
+            />
+          </FormField>
+        </div>
 
         <FormField
           label="Portfolio / Website"
           htmlFor="portfolio"
-          helperText="A personal website or portfolio showcasing your work."
         >
           <Input
             id="portfolio"

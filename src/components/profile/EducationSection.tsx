@@ -108,26 +108,24 @@ function EducationEntry({ education, index, onUpdate, onRemove }: EducationEntry
         label="Institution"
         htmlFor={`institution-${education.id}`}
         required
-        helperText="The name of the school, college, or university."
       >
         <Input
           id={`institution-${education.id}`}
-          value={education.institution}
+          value={toTitleCase(education.institution)}
           onChange={(e) => onUpdate({ institution: toTitleCase(e.target.value) })}
           placeholder="University of California, Berkeley"
         />
       </FormField>
 
-      <div className="grid grid-cols-2 gap-8">
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
         <FormField
           label="Degree"
           htmlFor={`degree-${education.id}`}
           required
-          helperText="Type of degree (e.g., Bachelor's, Master's)."
         >
           <Input
             id={`degree-${education.id}`}
-            value={education.degree}
+            value={toTitleCase(education.degree)}
             onChange={(e) => onUpdate({ degree: toTitleCase(e.target.value) })}
             placeholder="Bachelor of Science"
           />
@@ -135,22 +133,20 @@ function EducationEntry({ education, index, onUpdate, onRemove }: EducationEntry
         <FormField
           label="Field of Study"
           htmlFor={`fieldOfStudy-${education.id}`}
-          helperText="Your major or area of concentration."
         >
           <Input
             id={`fieldOfStudy-${education.id}`}
-            value={education.fieldOfStudy}
+            value={toTitleCase(education.fieldOfStudy)}
             onChange={(e) => onUpdate({ fieldOfStudy: toTitleCase(e.target.value) })}
             placeholder="Computer Science"
           />
         </FormField>
       </div>
 
-      <div className="grid grid-cols-3 gap-6">
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1.5rem' }}>
         <FormField
           label="Start Date"
           htmlFor={`startDate-${education.id}`}
-          helperText="When you started."
         >
           <Input
             id={`startDate-${education.id}`}
@@ -162,7 +158,6 @@ function EducationEntry({ education, index, onUpdate, onRemove }: EducationEntry
         <FormField
           label="End Date"
           htmlFor={`endDate-${education.id}`}
-          helperText="When you graduated."
         >
           <Input
             id={`endDate-${education.id}`}
@@ -174,7 +169,6 @@ function EducationEntry({ education, index, onUpdate, onRemove }: EducationEntry
         <FormField
           label="GPA"
           htmlFor={`gpa-${education.id}`}
-          helperText="Optional. Your grade point average."
         >
           <Input
             id={`gpa-${education.id}`}

@@ -58,43 +58,43 @@ export function WorkAuthorizationSection({
           </Label>
         </div>
 
-        <FormField
-          label="Visa Status"
-          htmlFor="visaStatus"
-          helperText="Select your current visa status if applicable."
-        >
-          <Select
-            value={authorization.visaStatus || ''}
-            onValueChange={(value) => onChange({ visaStatus: value || undefined })}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+          <FormField
+            label="Visa Status"
+            htmlFor="visaStatus"
           >
-            <SelectTrigger>
-              <SelectValue placeholder="Select visa status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="citizen">U.S. Citizen</SelectItem>
-              <SelectItem value="permanent_resident">Permanent Resident (Green Card)</SelectItem>
-              <SelectItem value="h1b">H-1B Visa</SelectItem>
-              <SelectItem value="l1">L-1 Visa</SelectItem>
-              <SelectItem value="opt">OPT</SelectItem>
-              <SelectItem value="cpt">CPT</SelectItem>
-              <SelectItem value="ead">EAD</SelectItem>
-              <SelectItem value="other">Other</SelectItem>
-            </SelectContent>
-          </Select>
-        </FormField>
+            <Select
+              value={authorization.visaStatus || ''}
+              onValueChange={(value) => onChange({ visaStatus: value || undefined })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select visa status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="citizen">U.S. Citizen</SelectItem>
+                <SelectItem value="permanent_resident">Permanent Resident (Green Card)</SelectItem>
+                <SelectItem value="h1b">H-1B Visa</SelectItem>
+                <SelectItem value="l1">L-1 Visa</SelectItem>
+                <SelectItem value="opt">OPT</SelectItem>
+                <SelectItem value="cpt">CPT</SelectItem>
+                <SelectItem value="ead">EAD</SelectItem>
+                <SelectItem value="other">Other</SelectItem>
+              </SelectContent>
+            </Select>
+          </FormField>
 
-        <FormField
-          label="Citizenship Status"
-          htmlFor="citizenshipStatus"
-          helperText="Your country of citizenship."
-        >
-          <Input
-            id="citizenshipStatus"
-            value={authorization.citizenshipStatus || ''}
-            onChange={(e) => onChange({ citizenshipStatus: e.target.value || undefined })}
-            placeholder="e.g., U.S. Citizen, Canadian Citizen"
-          />
-        </FormField>
+          <FormField
+            label="Citizenship Status"
+            htmlFor="citizenshipStatus"
+          >
+            <Input
+              id="citizenshipStatus"
+              value={authorization.citizenshipStatus || ''}
+              onChange={(e) => onChange({ citizenshipStatus: e.target.value || undefined })}
+              placeholder="e.g., U.S. Citizen, Canadian Citizen"
+            />
+          </FormField>
+        </div>
       </CardContent>
     </Card>
   )

@@ -20,6 +20,7 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
         style={{
           border: '1px solid #DCDAD2',
           borderRadius: 0,
+          boxSizing: 'border-box',
           ...style,
         }}
         ref={ref}

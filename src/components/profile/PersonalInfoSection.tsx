@@ -3,7 +3,7 @@
 import { Input } from '../ui/input'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card'
 import { FormField } from '../ui/form-field'
-import { toTitleCase } from '@/lib/utils'
+import { toTitleCase, expandCountryName } from '@/lib/utils'
 import type { Profile } from '../../types/profile'
 
 interface PersonalInfoSectionProps {
@@ -27,7 +27,7 @@ export function PersonalInfoSection({ personalInfo, onChange }: PersonalInfoSect
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="grid grid-cols-2 gap-8">
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
           <FormField
             label="First Name"
             htmlFor="firstName"
@@ -35,7 +35,7 @@ export function PersonalInfoSection({ personalInfo, onChange }: PersonalInfoSect
           >
             <Input
               id="firstName"
-              value={personalInfo.firstName}
+              value={toTitleCase(personalInfo.firstName)}
               onChange={(e) => onChange({ firstName: toTitleCase(e.target.value) })}
               placeholder="John"
             />
@@ -47,14 +47,14 @@ export function PersonalInfoSection({ personalInfo, onChange }: PersonalInfoSect
           >
             <Input
               id="lastName"
-              value={personalInfo.lastName}
+              value={toTitleCase(personalInfo.lastName)}
               onChange={(e) => onChange({ lastName: toTitleCase(e.target.value) })}
               placeholder="Doe"
             />
           </FormField>
         </div>
 
-        <div className="grid grid-cols-2 gap-8">
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
           <FormField
             label="Email"
             htmlFor="email"
@@ -95,11 +95,11 @@ export function PersonalInfoSection({ personalInfo, onChange }: PersonalInfoSect
           />
         </FormField>
 
-        <div className="grid grid-cols-3 gap-6">
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1.5rem' }}>
           <FormField label="City" htmlFor="city">
             <Input
               id="city"
-              value={personalInfo.address.city}
+              value={toTitleCase(personalInfo.address.city)}
               onChange={(e) => handleAddressChange('city', toTitleCase(e.target.value))}
               placeholder="San Francisco"
             />
@@ -107,8 +107,8 @@ export function PersonalInfoSection({ personalInfo, onChange }: PersonalInfoSect
           <FormField label="State" htmlFor="state">
             <Input
               id="state"
-              value={personalInfo.address.state}
-              onChange={(e) => handleAddressChange('state', e.target.value)}
+              value={personalInfo.address.state?.toUpperCase() || ''}
+              onChange={(e) => handleAddressChange('state', e.target.value.toUpperCase())}
               placeholder="CA"
             />
           </FormField>
@@ -128,9 +128,9 @@ export function PersonalInfoSection({ personalInfo, onChange }: PersonalInfoSect
         >
           <Input
             id="country"
-            value={personalInfo.address.country}
-            onChange={(e) => handleAddressChange('country', toTitleCase(e.target.value))}
-            placeholder="United States"
+            value={expandCountryName(personalInfo.address.country)}
+            onChange={(e) => handleAddressChange('country', expandCountryName(e.target.value))}
+            placeholder="United States of America"
           />
         </FormField>
       </CardContent>
