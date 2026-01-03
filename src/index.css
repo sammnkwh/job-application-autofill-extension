@@ -295,3 +295,56 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 input[type="date"]::-webkit-calendar-picker-indicator:hover {
   opacity: 1;
 }
+
+/* Accordion fadeIn animation - SalesIQ style */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* Accordion items - only bottom border, no box, no spacing */
+[data-slot="accordion"] {
+  display: flex;
+  flex-direction: column;
+  gap: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+[data-slot="accordion-item"] {
+  border: none !important;
+  border-bottom: 1px solid #E5E7EB !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+[data-slot="accordion-item"]:last-child {
+  border-bottom: none !important;
+}
+
+/* Fix accordion trigger icon alignment and left padding */
+[data-slot="accordion-trigger"] {
+  display: flex !important;
+  align-items: center !important;
+  padding-left: 0 !important;
+}
+
+[data-slot="accordion-content"] {
+  padding-left: 0 !important;
+}
+
+[data-slot="accordion-trigger"] svg {
+  align-self: center !important;
+  flex-shrink: 0 !important;
+}

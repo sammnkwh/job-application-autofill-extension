@@ -3,7 +3,6 @@
 import { Trash2 } from 'lucide-react'
 import { Input } from '../ui/input'
 import { Button } from '../ui/button'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card'
 import { FormField } from '../ui/form-field'
 import { toTitleCase } from '@/lib/utils'
 import type { Profile, Education } from '../../types/profile'
@@ -44,39 +43,34 @@ export function EducationSection({
   }
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-start justify-between">
-        <div className="space-y-1">
-          <CardTitle>Education</CardTitle>
-          <CardDescription>
-            Add your educational background, starting with your highest degree.
-          </CardDescription>
-        </div>
+    <div className="space-y-6">
+      <div className="flex items-start justify-between">
+        <p className="text-sm text-[#606060]">
+          Add your educational background, starting with your highest degree.
+        </p>
         <Button type="button" variant="outline" size="sm" onClick={handleAddNew}>
           + Add
         </Button>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {education.length === 0 ? (
-          <div className="border border-[#e5e5e5] border-dashed rounded-none py-12 text-center">
-            <p className="text-base font-medium text-[#121212]">No education added</p>
-            <p className="text-sm text-[#606060] mt-1">
-              Click "+ Add" to add your educational history.
-            </p>
-          </div>
-        ) : (
-          sortedEducation.map((edu, index) => (
-            <EducationEntry
-              key={edu.id}
-              education={edu}
-              index={index}
-              onUpdate={(updates) => onUpdate(edu.id, updates)}
-              onRemove={() => onRemove(edu.id)}
-            />
-          ))
-        )}
-      </CardContent>
-    </Card>
+      </div>
+      {education.length === 0 ? (
+        <div className="border border-[#e5e5e5] border-dashed rounded-none py-12 text-center">
+          <p className="text-base font-medium text-[#121212]">No education added</p>
+          <p className="text-sm text-[#606060] mt-1">
+            Click "+ Add" to add your educational history.
+          </p>
+        </div>
+      ) : (
+        sortedEducation.map((edu, index) => (
+          <EducationEntry
+            key={edu.id}
+            education={edu}
+            index={index}
+            onUpdate={(updates) => onUpdate(edu.id, updates)}
+            onRemove={() => onRemove(edu.id)}
+          />
+        ))
+      )}
+    </div>
   )
 }
 

@@ -7,7 +7,6 @@ import { Textarea } from '../ui/textarea'
 import { Button } from '../ui/button'
 import { Checkbox } from '../ui/checkbox'
 import { Label } from '../ui/label'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card'
 import { FormField } from '../ui/form-field'
 import { toTitleCase } from '@/lib/utils'
 import type { Profile, WorkExperience } from '../../types/profile'
@@ -53,39 +52,34 @@ export function WorkExperienceSection({
   }
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-start justify-between">
-        <div className="space-y-1">
-          <CardTitle>Work Experience</CardTitle>
-          <CardDescription>
-            Add your professional work history, starting with your most recent position.
-          </CardDescription>
-        </div>
+    <div className="space-y-6">
+      <div className="flex items-start justify-between">
+        <p className="text-sm text-[#606060]">
+          Add your professional work history, starting with your most recent position.
+        </p>
         <Button type="button" variant="outline" size="sm" onClick={handleAddNew}>
           + Add
         </Button>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {experiences.length === 0 ? (
-          <div className="border border-[#e5e5e5] border-dashed rounded-none py-12 text-center">
-            <p className="text-base font-medium text-[#121212]">No work experience added</p>
-            <p className="text-sm text-[#606060] mt-1">
-              Click "+ Add" to add your work history.
-            </p>
-          </div>
-        ) : (
-          sortedExperiences.map((exp, index) => (
-            <ExperienceEntry
-              key={exp.id}
-              experience={exp}
-              index={index}
-              onUpdate={(updates) => onUpdate(exp.id, updates)}
-              onRemove={() => onRemove(exp.id)}
-            />
-          ))
-        )}
-      </CardContent>
-    </Card>
+      </div>
+      {experiences.length === 0 ? (
+        <div className="border border-[#e5e5e5] border-dashed rounded-none py-12 text-center">
+          <p className="text-base font-medium text-[#121212]">No work experience added</p>
+          <p className="text-sm text-[#606060] mt-1">
+            Click "+ Add" to add your work history.
+          </p>
+        </div>
+      ) : (
+        sortedExperiences.map((exp, index) => (
+          <ExperienceEntry
+            key={exp.id}
+            experience={exp}
+            index={index}
+            onUpdate={(updates) => onUpdate(exp.id, updates)}
+            onRemove={() => onRemove(exp.id)}
+          />
+        ))
+      )}
+    </div>
   )
 }
 

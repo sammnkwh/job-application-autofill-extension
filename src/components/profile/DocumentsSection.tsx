@@ -2,7 +2,6 @@
 
 import { useCallback, useState } from 'react'
 import { Shield } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card'
 import { Alert, AlertDescription } from '../ui/alert'
 import { Progress } from '../ui/progress'
 import { Button } from '../ui/button'
@@ -127,101 +126,96 @@ export function DocumentsSection({ onResumeImport }: DocumentsSectionProps) {
   }, [lastResumeText, onResumeImport])
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Import from Resume</CardTitle>
-        <CardDescription>
-          Upload your resume to auto-fill your profile. Supports PDF, DOCX, and TXT files.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          className={`
-            border-2 border-dashed rounded-lg p-10 text-center transition-all
-            ${isDragging ? 'border-[#121212] bg-[#fafafa]' : 'border-[#e5e5e5]'}
-            ${isProcessing ? 'opacity-50 pointer-events-none' : 'cursor-pointer hover:border-[#878787] hover:bg-[#fafafa]'}
-          `}
-        >
-          <input
-            type="file"
-            accept=".pdf,.docx,.txt"
-            onChange={handleFileInput}
-            className="hidden"
-            id="resume-upload"
-            disabled={isProcessing}
-          />
-          <label htmlFor="resume-upload" className="cursor-pointer">
-            <div className="space-y-3">
-              <p className="font-medium text-[#121212]">
-                {isDragging ? 'Drop your resume here' : 'Drop your files here, or '}
-                {!isDragging && <span className="underline">click to browse.</span>}
-              </p>
-              <p className="text-sm text-[#878787]">
-                3MB file limit. PDF, DOCX, or TXT.
-              </p>
-            </div>
-          </label>
-        </div>
-
-        {isProcessing && (
-          <div className="space-y-2">
-            <Progress value={progress} />
-            <p className="text-sm text-center text-[#606060]">
-              Processing resume...
+    <div className="space-y-4">
+      <p className="text-sm text-[#606060]">
+        Upload your resume to auto-fill your profile. Supports PDF, DOCX, and TXT files.
+      </p>
+      <div
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        className={`
+          border-2 border-dashed rounded-lg p-10 text-center transition-all
+          ${isDragging ? 'border-[#121212] bg-[#fafafa]' : 'border-[#e5e5e5]'}
+          ${isProcessing ? 'opacity-50 pointer-events-none' : 'cursor-pointer hover:border-[#878787] hover:bg-[#fafafa]'}
+        `}
+      >
+        <input
+          type="file"
+          accept=".pdf,.docx,.txt"
+          onChange={handleFileInput}
+          className="hidden"
+          id="resume-upload"
+          disabled={isProcessing}
+        />
+        <label htmlFor="resume-upload" className="cursor-pointer">
+          <div className="space-y-3">
+            <p className="font-medium text-[#121212]">
+              {isDragging ? 'Drop your resume here' : 'Drop your files here, or '}
+              {!isDragging && <span className="underline">click to browse.</span>}
+            </p>
+            <p className="text-sm text-[#878787]">
+              3MB file limit. PDF, DOCX, or TXT.
             </p>
           </div>
-        )}
+        </label>
+      </div>
 
-        {error && (
-          <Alert variant="destructive">
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-
-        {success && (
-          <Alert className="border-[#e5e5e5] bg-[#fafafa]">
-            <AlertDescription className="text-[#121212]">{success}</AlertDescription>
-          </Alert>
-        )}
-
-        {showAIOption && (
-          <div className="flex items-center gap-4 p-4 border border-[#e5e5e5] rounded-lg bg-[#fafafa]">
-            <div className="flex-1">
-              <p className="text-sm font-medium text-[#121212]">Want better extraction?</p>
-              <p className="text-sm text-[#606060]">
-                AI can extract work experience and education more accurately.
-              </p>
-            </div>
-            <Button
-              onClick={handleAIParsing}
-              disabled={isAIProcessing}
-            >
-              {isAIProcessing ? 'Processing...' : 'Enhance with AI'}
-            </Button>
-          </div>
-        )}
-
-        {isAIProcessing && (
-          <div className="space-y-2">
-            <Progress value={undefined} className="animate-pulse" />
-            <p className="text-sm text-center text-[#606060]">
-              AI is analyzing your resume...
-            </p>
-          </div>
-        )}
-
-        <div className="flex items-start gap-2 text-sm text-[#606060]">
-          <Shield className="h-4 w-4 mt-0.5 flex-shrink-0" />
-          <p>
-            {showAIOption
-              ? 'Initial parsing is local. AI enhancement uses Google Gemini to improve extraction.'
-              : 'Your resume is processed locally and never sent to any server. Only extracted data is stored in your browser.'}
+      {isProcessing && (
+        <div className="space-y-2">
+          <Progress value={progress} />
+          <p className="text-sm text-center text-[#606060]">
+            Processing resume...
           </p>
         </div>
-      </CardContent>
-    </Card>
+      )}
+
+      {error && (
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+
+      {success && (
+        <Alert className="border-[#e5e5e5] bg-[#fafafa]">
+          <AlertDescription className="text-[#121212]">{success}</AlertDescription>
+        </Alert>
+      )}
+
+      {showAIOption && (
+        <div className="flex items-center gap-4 p-4 border border-[#e5e5e5] rounded-lg bg-[#fafafa]">
+          <div className="flex-1">
+            <p className="text-sm font-medium text-[#121212]">Want better extraction?</p>
+            <p className="text-sm text-[#606060]">
+              AI can extract work experience and education more accurately.
+            </p>
+          </div>
+          <Button
+            onClick={handleAIParsing}
+            disabled={isAIProcessing}
+          >
+            {isAIProcessing ? 'Processing...' : 'Enhance with AI'}
+          </Button>
+        </div>
+      )}
+
+      {isAIProcessing && (
+        <div className="space-y-2">
+          <Progress value={undefined} className="animate-pulse" />
+          <p className="text-sm text-center text-[#606060]">
+            AI is analyzing your resume...
+          </p>
+        </div>
+      )}
+
+      <div className="flex items-start gap-2 text-sm text-[#606060]">
+        <Shield className="h-4 w-4 mt-0.5 flex-shrink-0" />
+        <p>
+          {showAIOption
+            ? 'Initial parsing is local. AI enhancement uses Google Gemini to improve extraction.'
+            : 'Your resume is processed locally and never sent to any server. Only extracted data is stored in your browser.'}
+        </p>
+      </div>
+    </div>
   )
 }

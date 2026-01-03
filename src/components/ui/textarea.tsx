@@ -11,15 +11,14 @@ const Textarea = React.forwardRef<
     <textarea
       className={cn(
         "flex min-h-[80px] w-full bg-white px-3 py-2 text-sm text-[#121212]",
+        "border border-[#DCDAD2] rounded-none",
         "placeholder:text-[#878787]",
-        "focus:outline-none focus:border-[#8B7355] focus:ring-1 focus:ring-[#8B7355]/20",
+        "focus:outline-none focus:border-[#121212] focus:ring-1 focus:ring-[#121212]/20",
         "disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[#f5f5f5]",
         "resize-y transition-colors duration-150",
         className
       )}
       style={{
-        border: '1px solid #DCDAD2',
-        borderRadius: 0,
         boxSizing: 'border-box',
         ...style,
       }}
