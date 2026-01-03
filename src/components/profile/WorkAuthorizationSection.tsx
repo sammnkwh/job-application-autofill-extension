@@ -28,7 +28,7 @@ export function WorkAuthorizationSection({
         Information about your legal ability to work in the United States.
       </p>
 
-      <div className="flex items-center space-x-3">
+      <div className="flex items-center gap-3">
         <Checkbox
           id="authorizedToWork"
           checked={authorization.authorizedToWork}
@@ -41,7 +41,7 @@ export function WorkAuthorizationSection({
         </Label>
       </div>
 
-      <div className="flex items-center space-x-3">
+      <div className="flex items-center gap-3">
         <Checkbox
           id="requiresSponsorship"
           checked={authorization.requiresSponsorship}

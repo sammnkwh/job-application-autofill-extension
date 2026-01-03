@@ -193,7 +193,7 @@ function ExperienceEntry({ experience, index, onUpdate, onRemove }: ExperienceEn
         </FormField>
       </div>
 
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center gap-3">
         <Checkbox
           id={`current-${experience.id}`}
           checked={experience.isCurrent}

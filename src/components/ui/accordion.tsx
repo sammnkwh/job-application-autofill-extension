@@ -91,7 +91,7 @@ function AccordionContent({
   return (
     <AccordionPrimitive.Content
       data-slot="accordion-content"
-      className="overflow-hidden bg-transparent data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down"
+      className="overflow-visible bg-transparent data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down"
       style={{
         border: 'none',
         fontFamily: "'Geist', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",

@@ -348,3 +348,23 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   align-self: center !important;
   flex-shrink: 0 !important;
 }
+
+/* Isolate #root stacking context so portals always appear above */
+#root {
+  isolation: isolate;
+  position: relative;
+  z-index: 0;
+}
+
+/* Ensure Radix portaled content (Select, Popover, etc.) renders above everything */
+[data-radix-popper-content-wrapper] {
+  z-index: 9999 !important;
+  isolation: isolate;
+}
+
+[data-radix-select-content],
+[data-radix-select-viewport] {
+  background-color: white !important;
+  position: relative;
+  z-index: 9999 !important;
+}
