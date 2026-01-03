@@ -255,7 +255,7 @@ export function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
       </Tabs>
 
       {/* Save Button */}
-      <div className="flex justify-end pt-4 mt-2 border-t border-[#DCDAD2]">
+      <div className="flex justify-end pt-6">
         <Button onClick={handleSave} disabled={isSaving}>
           {isSaving ? 'Saving...' : 'Save Profile'}
         </Button>
