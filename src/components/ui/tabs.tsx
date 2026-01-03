@@ -15,7 +15,7 @@ const TabsList = React.forwardRef<
   <TabsPrimitive.List
     ref={ref}
     className={cn(
-      "inline-flex w-full",
+      "flex",
       "border-[1px] border-solid border-[#DCDAD2]",
       "rounded-none",
       "overflow-hidden",

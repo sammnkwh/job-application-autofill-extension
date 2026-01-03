@@ -187,7 +187,7 @@ export function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
       </p>
 
       <Tabs defaultValue="personal" className="w-full">
-        <TabsList className="mr-4">
+        <TabsList>
           <TabsTrigger value="personal" className="relative">
             Personal
             {!sectionStatus.personal && (
@@ -210,7 +210,7 @@ export function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
         </TabsList>
 
         <ScrollArea className="h-[500px]">
-          <TabsContent value="personal" className="space-y-4 pr-4">
+          <TabsContent value="personal" className="space-y-4">
             <DocumentsSection onResumeImport={handleResumeImport} />
             <PersonalInfoSection
               personalInfo={profile.personalInfo}
@@ -222,7 +222,7 @@ export function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
             />
           </TabsContent>
 
-          <TabsContent value="experience" className="space-y-4 pr-4">
+          <TabsContent value="experience" className="space-y-4">
             <WorkExperienceSection
               experiences={profile.workExperience}
               onAdd={addWorkExperience}
@@ -237,14 +237,14 @@ export function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
             />
           </TabsContent>
 
-          <TabsContent value="skills" className="space-y-4 pr-4">
+          <TabsContent value="skills" className="space-y-4">
             <SkillsSection
               skills={profile.skillsAndQualifications}
               onChange={updateSkills}
             />
           </TabsContent>
 
-          <TabsContent value="other" className="space-y-4 pr-4">
+          <TabsContent value="other" className="space-y-4">
             <WorkAuthorizationSection
               authorization={profile.workAuthorization}
               onChange={updateWorkAuthorization}
