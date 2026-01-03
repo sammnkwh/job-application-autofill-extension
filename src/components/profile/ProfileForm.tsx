@@ -187,7 +187,7 @@ export function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
       </p>
 
       <Tabs defaultValue="personal" className="w-full">
-        <TabsList>
+        <TabsList className="mr-4">
           <TabsTrigger value="personal" className="relative">
             Personal
             {!sectionStatus.personal && (
