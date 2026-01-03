@@ -1,18 +1,11 @@
 // Main Profile Form component
 
-import { useCallback, useState, useEffect } from 'react'
+import { useCallback } from 'react'
 import { Button } from '../ui/button'
 import { Progress } from '../ui/progress'
 import { Alert, AlertDescription } from '../ui/alert'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '../ui/dialog'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion'
 import { PersonalInfoSection } from './PersonalInfoSection'
 import { ProfessionalLinksSection } from './ProfessionalLinksSection'
 import { WorkExperienceSection } from './WorkExperienceSection'
@@ -46,22 +39,10 @@ export function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
     save,
     isLoading,
     isSaving,
-    hasExistingProfile,
     error,
     completeness,
   } = useProfile()
 
-  // Welcome modal state
-  const [showWelcomeModal, setShowWelcomeModal] = useState(false)
-  const [welcomeModalShown, setWelcomeModalShown] = useState(false)
-
-  // Show welcome modal on first visit (no existing profile)
-  useEffect(() => {
-    if (!isLoading && !hasExistingProfile && !welcomeModalShown) {
-      setShowWelcomeModal(true)
-      setWelcomeModalShown(true)
-    }
-  }, [isLoading, hasExistingProfile, welcomeModalShown])
 
   const handleSave = useCallback(async () => {
     const result = await save()
@@ -205,52 +186,113 @@ export function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
               <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-amber-500" title="Incomplete" />
             )}
           </TabsTrigger>
-          <TabsTrigger value="other">Additional</TabsTrigger>
+          <TabsTrigger value="other">Additional Info</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="personal" className="space-y-4">
-          <DocumentsSection onResumeImport={handleResumeImport} />
-          <PersonalInfoSection
-            personalInfo={profile.personalInfo}
-            onChange={updatePersonalInfo}
-          />
-          <ProfessionalLinksSection
-            links={profile.professionalLinks}
-            onChange={updateProfessionalLinks}
-          />
+        <TabsContent value="personal" className="mt-4">
+          {/* Import from Resume - shown separately, not in accordion */}
+          <div className="mb-6">
+            <DocumentsSection onResumeImport={handleResumeImport} />
+          </div>
+
+          <Accordion type="single" collapsible>
+            <AccordionItem value="personal-info">
+              <AccordionTrigger>
+                <span className="text-lg font-semibold text-[#111827]">Personal Information</span>
+              </AccordionTrigger>
+              <AccordionContent>
+                <PersonalInfoSection
+                  personalInfo={profile.personalInfo}
+                  onChange={updatePersonalInfo}
+                />
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="professional-links">
+              <AccordionTrigger>
+                <span className="text-lg font-semibold text-[#111827]">Professional Links</span>
+              </AccordionTrigger>
+              <AccordionContent>
+                <ProfessionalLinksSection
+                  links={profile.professionalLinks}
+                  onChange={updateProfessionalLinks}
+                />
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </TabsContent>
 
-        <TabsContent value="experience" className="space-y-4">
-          <WorkExperienceSection
-            experiences={profile.workExperience}
-            onAdd={addWorkExperience}
-            onUpdate={updateWorkExperience}
-            onRemove={removeWorkExperience}
-          />
-          <EducationSection
-            education={profile.education}
-            onAdd={addEducation}
-            onUpdate={updateEducation}
-            onRemove={removeEducation}
-          />
+        <TabsContent value="experience" className="mt-4">
+          <Accordion type="single" collapsible>
+            <AccordionItem value="work-experience">
+              <AccordionTrigger>
+                <span className="text-lg font-semibold text-[#111827]">Work Experience</span>
+              </AccordionTrigger>
+              <AccordionContent>
+                <WorkExperienceSection
+                  experiences={profile.workExperience}
+                  onAdd={addWorkExperience}
+                  onUpdate={updateWorkExperience}
+                  onRemove={removeWorkExperience}
+                />
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="education">
+              <AccordionTrigger>
+                <span className="text-lg font-semibold text-[#111827]">Education</span>
+              </AccordionTrigger>
+              <AccordionContent>
+                <EducationSection
+                  education={profile.education}
+                  onAdd={addEducation}
+                  onUpdate={updateEducation}
+                  onRemove={removeEducation}
+                />
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </TabsContent>
 
-        <TabsContent value="skills" className="space-y-4">
-          <SkillsSection
-            skills={profile.skillsAndQualifications}
-            onChange={updateSkills}
-          />
+        <TabsContent value="skills" className="mt-4">
+          <Accordion type="single" collapsible>
+            <AccordionItem value="skills">
+              <AccordionTrigger>
+                <span className="text-lg font-semibold text-[#111827]">Skills</span>
+              </AccordionTrigger>
+              <AccordionContent>
+                <SkillsSection
+                  skills={profile.skillsAndQualifications}
+                  onChange={updateSkills}
+                />
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </TabsContent>
 
-        <TabsContent value="other" className="space-y-4">
-          <WorkAuthorizationSection
-            authorization={profile.workAuthorization}
-            onChange={updateWorkAuthorization}
-          />
-          <SelfIdentificationSection
-            selfId={profile.voluntarySelfIdentification}
-            onChange={updateVoluntarySelfId}
-          />
+        <TabsContent value="other" className="mt-4">
+          <Accordion type="single" collapsible>
+            <AccordionItem value="work-authorization">
+              <AccordionTrigger>
+                <span className="text-lg font-semibold text-[#111827]">Work Authorization</span>
+              </AccordionTrigger>
+              <AccordionContent>
+                <WorkAuthorizationSection
+                  authorization={profile.workAuthorization}
+                  onChange={updateWorkAuthorization}
+                />
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="self-identification">
+              <AccordionTrigger>
+                <span className="text-lg font-semibold text-[#111827]">Self Identification</span>
+              </AccordionTrigger>
+              <AccordionContent>
+                <SelfIdentificationSection
+                  selfId={profile.voluntarySelfIdentification}
+                  onChange={updateVoluntarySelfId}
+                />
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </TabsContent>
       </Tabs>
 
@@ -261,34 +303,6 @@ export function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
         </Button>
       </div>
 
-      {/* Welcome Modal for First-Time Users */}
-      <Dialog open={showWelcomeModal} onOpenChange={setShowWelcomeModal}>
-        <DialogContent className="sm:max-w-md" style={{ borderRadius: 0 }}>
-          <DialogHeader>
-            <DialogTitle>Welcome to Job Autofill</DialogTitle>
-            <DialogDescription>
-              Get started quickly by uploading your resume. We'll extract your information automatically.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            <DocumentsSection
-              onResumeImport={(data) => {
-                handleResumeImport(data)
-                setShowWelcomeModal(false)
-              }}
-            />
-          </div>
-          <DialogFooter className="flex-col sm:flex-row gap-2">
-            <Button
-              variant="outline"
-              onClick={() => setShowWelcomeModal(false)}
-              className="w-full sm:w-auto"
-            >
-              Skip for now
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   )
 }
