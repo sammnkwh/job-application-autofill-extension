@@ -5,7 +5,6 @@ import { Button } from '../ui/button'
 import { Progress } from '../ui/progress'
 import { Alert, AlertDescription } from '../ui/alert'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
-import { ScrollArea } from '../ui/scroll-area'
 import {
   Dialog,
   DialogContent,
@@ -209,52 +208,50 @@ export function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
           <TabsTrigger value="other">Additional</TabsTrigger>
         </TabsList>
 
-        <ScrollArea className="h-[500px]">
-          <TabsContent value="personal" className="space-y-4">
-            <DocumentsSection onResumeImport={handleResumeImport} />
-            <PersonalInfoSection
-              personalInfo={profile.personalInfo}
-              onChange={updatePersonalInfo}
-            />
-            <ProfessionalLinksSection
-              links={profile.professionalLinks}
-              onChange={updateProfessionalLinks}
-            />
-          </TabsContent>
+        <TabsContent value="personal" className="space-y-4">
+          <DocumentsSection onResumeImport={handleResumeImport} />
+          <PersonalInfoSection
+            personalInfo={profile.personalInfo}
+            onChange={updatePersonalInfo}
+          />
+          <ProfessionalLinksSection
+            links={profile.professionalLinks}
+            onChange={updateProfessionalLinks}
+          />
+        </TabsContent>
 
-          <TabsContent value="experience" className="space-y-4">
-            <WorkExperienceSection
-              experiences={profile.workExperience}
-              onAdd={addWorkExperience}
-              onUpdate={updateWorkExperience}
-              onRemove={removeWorkExperience}
-            />
-            <EducationSection
-              education={profile.education}
-              onAdd={addEducation}
-              onUpdate={updateEducation}
-              onRemove={removeEducation}
-            />
-          </TabsContent>
+        <TabsContent value="experience" className="space-y-4">
+          <WorkExperienceSection
+            experiences={profile.workExperience}
+            onAdd={addWorkExperience}
+            onUpdate={updateWorkExperience}
+            onRemove={removeWorkExperience}
+          />
+          <EducationSection
+            education={profile.education}
+            onAdd={addEducation}
+            onUpdate={updateEducation}
+            onRemove={removeEducation}
+          />
+        </TabsContent>
 
-          <TabsContent value="skills" className="space-y-4">
-            <SkillsSection
-              skills={profile.skillsAndQualifications}
-              onChange={updateSkills}
-            />
-          </TabsContent>
+        <TabsContent value="skills" className="space-y-4">
+          <SkillsSection
+            skills={profile.skillsAndQualifications}
+            onChange={updateSkills}
+          />
+        </TabsContent>
 
-          <TabsContent value="other" className="space-y-4">
-            <WorkAuthorizationSection
-              authorization={profile.workAuthorization}
-              onChange={updateWorkAuthorization}
-            />
-            <SelfIdentificationSection
-              selfId={profile.voluntarySelfIdentification}
-              onChange={updateVoluntarySelfId}
-            />
-          </TabsContent>
-        </ScrollArea>
+        <TabsContent value="other" className="space-y-4">
+          <WorkAuthorizationSection
+            authorization={profile.workAuthorization}
+            onChange={updateWorkAuthorization}
+          />
+          <SelfIdentificationSection
+            selfId={profile.voluntarySelfIdentification}
+            onChange={updateVoluntarySelfId}
+          />
+        </TabsContent>
       </Tabs>
 
       {/* Save Button */}
