@@ -1,7 +1,6 @@
 // Documents section with resume upload - Midday style
 
 import { useCallback, useState } from 'react'
-import { Shield } from 'lucide-react'
 import { Alert, AlertDescription } from '../ui/alert'
 import { Progress } from '../ui/progress'
 import { Button } from '../ui/button'
@@ -128,17 +127,18 @@ export function DocumentsSection({ onResumeImport }: DocumentsSectionProps) {
   return (
     <div className="space-y-4">
       <p className="text-sm text-[#606060]">
-        Upload your resume to auto-fill your profile. Supports PDF, DOCX, and TXT files.
+        Upload your resume to auto-fill your profile.
       </p>
       <div
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         className={`
-          border-2 border-dashed rounded-lg p-10 text-center transition-all
+          border-2 border-dashed text-center transition-all
           ${isDragging ? 'border-[#121212] bg-[#fafafa]' : 'border-[#e5e5e5]'}
           ${isProcessing ? 'opacity-50 pointer-events-none' : 'cursor-pointer hover:border-[#878787] hover:bg-[#fafafa]'}
         `}
+        style={{ padding: '7.5rem 2.5rem' }}
       >
         <input
           type="file"
@@ -208,14 +208,11 @@ export function DocumentsSection({ onResumeImport }: DocumentsSectionProps) {
         </div>
       )}
 
-      <div className="flex items-start gap-2 text-sm text-[#606060]">
-        <Shield className="h-4 w-4 mt-0.5 flex-shrink-0" />
-        <p>
-          {showAIOption
-            ? 'Initial parsing is local. AI enhancement uses Google Gemini to improve extraction.'
-            : 'Your resume is processed locally and never sent to any server. Only extracted data is stored in your browser.'}
-        </p>
-      </div>
+      <p className="text-sm text-[#606060]">
+        {showAIOption
+          ? 'Initial parsing is local. AI enhancement uses Google Gemini to improve extraction.'
+          : 'Your resume is processed locally and never sent to any server. Only extracted data is stored in your browser.'}
+      </p>
     </div>
   )
 }
