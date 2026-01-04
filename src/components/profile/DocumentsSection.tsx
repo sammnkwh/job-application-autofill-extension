@@ -171,19 +171,19 @@ export function DocumentsSection({ onResumeImport }: DocumentsSectionProps) {
       )}
 
       {error && (
-        <Alert variant="destructive" style={{ width: '100%', borderRadius: 0 }}>
+        <Alert variant="destructive">
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
 
       {success && (
-        <Alert className="border-[#e5e5e5] bg-[#fafafa]" style={{ width: '100%', borderRadius: 0 }}>
+        <Alert className="border-[#e5e5e5] bg-[#fafafa]">
           <AlertDescription className="text-[#121212]">{success}</AlertDescription>
         </Alert>
       )}
 
       {showAIOption && (
-        <div className="flex items-center gap-4 p-4 border border-[#e5e5e5] bg-[#fafafa]" style={{ borderRadius: 0 }}>
+        <div className="flex items-center gap-4 p-4 border border-[#e5e5e5] bg-[#fafafa]">
           <div className="flex-1">
             <p className="text-sm font-medium text-[#121212]">Want better extraction?</p>
             <p className="text-sm text-[#606060]">
