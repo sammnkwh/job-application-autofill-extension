@@ -34,6 +34,7 @@ function App() {
   const [showClearDialog, setShowClearDialog] = useState(false)
   const [showExportDialog, setShowExportDialog] = useState(false)
   const [exportMessage, setExportMessage] = useState<string | null>(null)
+  const [debugMessage, setDebugMessage] = useState<string | null>(null)
 
   // Load settings on mount
   useState(() => {
@@ -164,11 +165,11 @@ function App() {
 
     const success = await copyDebugInfoToClipboard(debugInfo)
     if (success) {
-      setSaveMessage('Copied to clipboard. Click "Report Issue on GitHub" to submit.')
+      setDebugMessage('Copied to clipboard. Click "Report Issue on GitHub" to submit.')
     } else {
-      setSaveMessage('Could not copy to clipboard. Please try again.')
+      setDebugMessage('Could not copy to clipboard. Please try again.')
     }
-    setTimeout(() => setSaveMessage(null), 5000)
+    setTimeout(() => setDebugMessage(null), 5000)
   }
 
   const handleClearData = async () => {
@@ -321,8 +322,7 @@ function App() {
                   Copy Debug Info
                 </Button>
                 <p className="text-sm text-muted-foreground">
-                  Copies sanitized debug information to clipboard. Paste this in your bug report.
-                  Personal information is automatically removed.
+                  {debugMessage || 'Copies sanitized debug information to clipboard. Paste this in your bug report. Personal information is automatically removed.'}
                 </p>
               </div>
               <Separator />
