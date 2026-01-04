@@ -413,3 +413,34 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   z-index: 9999 !important;
 }
 
+/* Indeterminate progress bar animation */
+@keyframes progress-indeterminate {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(400%);
+  }
+}
+
+.progress-indeterminate {
+  position: relative;
+  height: 4px;
+  width: 100%;
+  background-color: #E5E5E5;
+  overflow: hidden;
+  border-radius: 9999px;
+}
+
+.progress-indeterminate::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 25%;
+  background-color: #1A1A1A;
+  border-radius: 9999px;
+  animation: progress-indeterminate 1.5s ease-in-out infinite;
+}
+

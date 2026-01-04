@@ -200,8 +200,8 @@ export function DocumentsSection({ onResumeImport }: DocumentsSectionProps) {
       )}
 
       {isAIProcessing && (
-        <div className="space-y-2">
-          <Progress value={undefined} className="animate-pulse" />
+        <div className="space-y-3">
+          <div className="progress-indeterminate" />
           <p className="text-sm text-center text-[#606060]">
             AI is analyzing your resume...
           </p>
