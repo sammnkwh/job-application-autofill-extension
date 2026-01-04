@@ -2,7 +2,7 @@
 
 import { Input } from '../ui/input'
 import { FormField } from '../ui/form-field'
-import { toTitleCase, expandCountryName } from '@/lib/utils'
+import { expandCountryName } from '@/lib/utils'
 import type { Profile } from '../../types/profile'
 
 interface PersonalInfoSectionProps {
@@ -30,8 +30,8 @@ export function PersonalInfoSection({ personalInfo, onChange }: PersonalInfoSect
         >
           <Input
             id="firstName"
-            value={toTitleCase(personalInfo.firstName)}
-            onChange={(e) => onChange({ firstName: toTitleCase(e.target.value) })}
+            value={personalInfo.firstName}
+            onChange={(e) => onChange({ firstName: e.target.value })}
             placeholder="John"
           />
         </FormField>
@@ -42,8 +42,8 @@ export function PersonalInfoSection({ personalInfo, onChange }: PersonalInfoSect
         >
           <Input
             id="lastName"
-            value={toTitleCase(personalInfo.lastName)}
-            onChange={(e) => onChange({ lastName: toTitleCase(e.target.value) })}
+            value={personalInfo.lastName}
+            onChange={(e) => onChange({ lastName: e.target.value })}
             placeholder="Doe"
           />
         </FormField>
@@ -94,8 +94,8 @@ export function PersonalInfoSection({ personalInfo, onChange }: PersonalInfoSect
         <FormField label="City" htmlFor="city">
           <Input
             id="city"
-            value={toTitleCase(personalInfo.address.city)}
-            onChange={(e) => handleAddressChange('city', toTitleCase(e.target.value))}
+            value={personalInfo.address.city}
+            onChange={(e) => handleAddressChange('city', e.target.value)}
             placeholder="San Francisco"
           />
         </FormField>

@@ -15,7 +15,6 @@ import { Button } from '../ui/button'
 import { Checkbox } from '../ui/checkbox'
 import { Label } from '../ui/label'
 import { FormField } from '../ui/form-field'
-import { toTitleCase } from '@/lib/utils'
 import type { Profile, Education } from '../../types/profile'
 
 interface EducationSectionProps {
@@ -114,8 +113,8 @@ function EducationEntry({ education, index, onUpdate, onRemove }: EducationEntry
       >
         <Input
           id={`institution-${education.id}`}
-          value={toTitleCase(education.institution)}
-          onChange={(e) => onUpdate({ institution: toTitleCase(e.target.value) })}
+          value={education.institution}
+          onChange={(e) => onUpdate({ institution: e.target.value })}
           placeholder="University of California, Berkeley"
         />
       </FormField>
@@ -128,8 +127,8 @@ function EducationEntry({ education, index, onUpdate, onRemove }: EducationEntry
         >
           <Input
             id={`degree-${education.id}`}
-            value={toTitleCase(education.degree)}
-            onChange={(e) => onUpdate({ degree: toTitleCase(e.target.value) })}
+            value={education.degree}
+            onChange={(e) => onUpdate({ degree: e.target.value })}
             placeholder="Bachelor of Science"
           />
         </FormField>
@@ -139,8 +138,8 @@ function EducationEntry({ education, index, onUpdate, onRemove }: EducationEntry
         >
           <Input
             id={`fieldOfStudy-${education.id}`}
-            value={toTitleCase(education.fieldOfStudy)}
-            onChange={(e) => onUpdate({ fieldOfStudy: toTitleCase(e.target.value) })}
+            value={education.fieldOfStudy}
+            onChange={(e) => onUpdate({ fieldOfStudy: e.target.value })}
             placeholder="Computer Science"
           />
         </FormField>

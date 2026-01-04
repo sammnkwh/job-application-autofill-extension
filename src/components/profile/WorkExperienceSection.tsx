@@ -19,7 +19,6 @@ import { Button } from '../ui/button'
 import { Checkbox } from '../ui/checkbox'
 import { Label } from '../ui/label'
 import { FormField } from '../ui/form-field'
-import { toTitleCase } from '@/lib/utils'
 import type { Profile, WorkExperience } from '../../types/profile'
 
 interface WorkExperienceSectionProps {
@@ -139,8 +138,8 @@ function ExperienceEntry({ experience, index, onUpdate, onRemove }: ExperienceEn
         >
           <Input
             id={`jobTitle-${experience.id}`}
-            value={toTitleCase(experience.jobTitle)}
-            onChange={(e) => onUpdate({ jobTitle: toTitleCase(e.target.value) })}
+            value={experience.jobTitle}
+            onChange={(e) => onUpdate({ jobTitle: e.target.value })}
             placeholder="Software Engineer"
           />
         </FormField>
@@ -151,8 +150,8 @@ function ExperienceEntry({ experience, index, onUpdate, onRemove }: ExperienceEn
         >
           <Input
             id={`company-${experience.id}`}
-            value={toTitleCase(experience.company)}
-            onChange={(e) => onUpdate({ company: toTitleCase(e.target.value) })}
+            value={experience.company}
+            onChange={(e) => onUpdate({ company: e.target.value })}
             placeholder="Acme Inc."
           />
         </FormField>
@@ -164,8 +163,8 @@ function ExperienceEntry({ experience, index, onUpdate, onRemove }: ExperienceEn
       >
         <Input
           id={`location-${experience.id}`}
-          value={toTitleCase(experience.location)}
-          onChange={(e) => onUpdate({ location: toTitleCase(e.target.value) })}
+          value={experience.location}
+          onChange={(e) => onUpdate({ location: e.target.value })}
           placeholder="San Francisco, CA"
         />
       </FormField>
