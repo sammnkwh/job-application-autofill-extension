@@ -40,6 +40,7 @@ export interface Education {
   fieldOfStudy: string
   startDate: string
   endDate?: string
+  isCurrent?: boolean
   gpa?: string
   honors?: string[]
 }

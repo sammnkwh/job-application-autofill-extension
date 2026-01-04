@@ -4,7 +4,7 @@ import { Input } from '../ui/input'
 
 // Trash bag icon
 const TrashBagIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#121212" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
     <path d="M8 6c0-2 1.5-3 4-3s4 1 4 3" />
     <path d="M6 6h12l-1 14c-.1 1.1-1 2-2.1 2H9.1c-1.1 0-2-.9-2.1-2L6 6z" />
     <path d="M10 6v-1" />
@@ -12,6 +12,8 @@ const TrashBagIcon = () => (
   </svg>
 )
 import { Button } from '../ui/button'
+import { Checkbox } from '../ui/checkbox'
+import { Label } from '../ui/label'
 import { FormField } from '../ui/form-field'
 import { toTitleCase } from '@/lib/utils'
 import type { Profile, Education } from '../../types/profile'
@@ -95,16 +97,14 @@ function EducationEntry({ education, index, onUpdate, onRemove }: EducationEntry
     <div className="border border-[#e5e5e5] rounded-none p-6 space-y-6">
       <div className="flex justify-between items-center">
         <span className="text-sm font-medium text-[#121212]">Education {index + 1}</span>
-        <Button
+        <button
           type="button"
-          variant="ghost"
-          size="icon"
           onClick={onRemove}
-          className="h-8 w-8 text-[#878787] hover:text-red-600 hover:bg-red-50"
+          className="border-none bg-transparent p-0 cursor-pointer"
           title="Remove education"
         >
           <TrashBagIcon />
-        </Button>
+        </button>
       </div>
 
       <FormField
@@ -146,10 +146,11 @@ function EducationEntry({ education, index, onUpdate, onRemove }: EducationEntry
         </FormField>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1.5rem' }}>
+      <div className="grid grid-cols-3 gap-6">
         <FormField
           label="Start Date"
           htmlFor={`startDate-${education.id}`}
+          className="min-w-0"
         >
           <Input
             id={`startDate-${education.id}`}
@@ -161,17 +162,26 @@ function EducationEntry({ education, index, onUpdate, onRemove }: EducationEntry
         <FormField
           label="End Date"
           htmlFor={`endDate-${education.id}`}
+          helperText={education.isCurrent ? "Currently enrolled" : undefined}
+          className="min-w-0"
         >
-          <Input
-            id={`endDate-${education.id}`}
-            type="date"
-            value={education.endDate || ''}
-            onChange={(e) => onUpdate({ endDate: e.target.value || undefined })}
-          />
+          {education.isCurrent ? (
+            <div className="flex w-full items-center px-3 py-2 text-sm text-[#606060] bg-[#f5f5f5]" style={{ border: '1px solid #DCDAD2', boxSizing: 'border-box', height: 44 }}>
+              Present
+            </div>
+          ) : (
+            <Input
+              id={`endDate-${education.id}`}
+              type="date"
+              value={education.endDate || ''}
+              onChange={(e) => onUpdate({ endDate: e.target.value || undefined })}
+            />
+          )}
         </FormField>
         <FormField
           label="GPA"
           htmlFor={`gpa-${education.id}`}
+          className="min-w-0"
         >
           <Input
             id={`gpa-${education.id}`}
@@ -180,6 +190,19 @@ function EducationEntry({ education, index, onUpdate, onRemove }: EducationEntry
             placeholder="3.8"
           />
         </FormField>
+      </div>
+
+      <div className="flex items-center gap-3">
+        <Checkbox
+          id={`current-${education.id}`}
+          checked={education.isCurrent}
+          onCheckedChange={(checked) =>
+            onUpdate({ isCurrent: checked === true, endDate: checked ? undefined : education.endDate })
+          }
+        />
+        <Label htmlFor={`current-${education.id}`} className="font-normal text-sm text-[#121212]">
+          I currently attend here
+        </Label>
       </div>
     </div>
   )

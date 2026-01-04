@@ -5,7 +5,7 @@ import { Input } from '../ui/input'
 
 // Trash bag icon
 const TrashBagIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#121212" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
     <path d="M8 6c0-2 1.5-3 4-3s4 1 4 3" />
     <path d="M6 6h12l-1 14c-.1 1.1-1 2-2.1 2H9.1c-1.1 0-2-.9-2.1-2L6 6z" />
     <path d="M10 6v-1" />
@@ -121,16 +121,14 @@ function ExperienceEntry({ experience, index, onUpdate, onRemove }: ExperienceEn
     <div className="border border-[#e5e5e5] rounded-none p-6 space-y-6">
       <div className="flex justify-between items-center">
         <span className="text-sm font-medium text-[#121212]">Position {index + 1}</span>
-        <Button
+        <button
           type="button"
-          variant="ghost"
-          size="icon"
           onClick={onRemove}
-          className="h-8 w-8 text-[#878787] hover:text-red-600 hover:bg-red-50"
+          className="text-[#878787] hover:text-red-600 transition-colors border-none bg-transparent p-0 cursor-pointer"
           title="Remove position"
         >
           <TrashBagIcon />
-        </Button>
+        </button>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>

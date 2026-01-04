@@ -5,7 +5,7 @@ import { Input } from '../ui/input'
 
 // Trash bag icon
 const TrashBagIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#121212" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
     <path d="M8 6c0-2 1.5-3 4-3s4 1 4 3" />
     <path d="M6 6h12l-1 14c-.1 1.1-1 2-2.1 2H9.1c-1.1 0-2-.9-2.1-2L6 6z" />
     <path d="M10 6v-1" />
@@ -157,15 +157,13 @@ export function SkillsSection({ skills, onChange }: SkillsSectionProps) {
                   <span className="font-medium text-[#121212]">{cert.name}</span>
                   {cert.issuer && <span className="text-[#606060]"> — {cert.issuer}</span>}
                 </span>
-                <Button
+                <button
                   type="button"
-                  variant="ghost"
-                  size="icon"
                   onClick={() => removeCertification(index)}
-                  className="h-8 w-8 text-[#878787] hover:text-red-600 hover:bg-red-50"
+                  className="border-none bg-transparent p-0 cursor-pointer"
                 >
                   <TrashBagIcon />
-                </Button>
+                </button>
               </div>
             ))}
           </div>
@@ -210,15 +208,13 @@ export function SkillsSection({ skills, onChange }: SkillsSectionProps) {
                   <span className="font-medium text-[#121212]">{lang.language}</span>
                   <span className="text-[#606060]"> — {lang.proficiency}</span>
                 </span>
-                <Button
+                <button
                   type="button"
-                  variant="ghost"
-                  size="icon"
                   onClick={() => removeLanguage(index)}
-                  className="h-8 w-8 text-[#878787] hover:text-red-600 hover:bg-red-50"
+                  className="border-none bg-transparent p-0 cursor-pointer"
                 >
                   <TrashBagIcon />
-                </Button>
+                </button>
               </div>
             ))}
           </div>
