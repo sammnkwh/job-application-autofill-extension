@@ -230,7 +230,7 @@ function convertToProfile(parsed: Record<string, unknown>): Partial<Profile> {
         isCurrent,
         description: String(exp.description || ''),
         responsibilities: Array.isArray(exp.responsibilities)
-          ? exp.responsibilities.map(String)
+          ? exp.responsibilities.map((r, i) => `${i + 1}. ${String(r).replace(/^\d+\.\s*/, '')}`)
           : [],
       }
     })
