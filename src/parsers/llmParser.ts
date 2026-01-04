@@ -3,9 +3,9 @@ import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai'
 import type { Profile } from '../types/profile'
 import { createEmptyProfile } from '../types/profile'
 
-// API key for shared usage - rate limited to free tier
-// When limit is hit, users are asked to try again later
-const GEMINI_API_KEY = 'AIzaSyBHhdg4uzrLBEHXIsnypzlwswsBPiQETcc'
+// API key loaded from environment variable
+// Create a .env file with VITE_GEMINI_API_KEY=your_key
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || ''
 
 export interface LLMParseResult {
   success: boolean
