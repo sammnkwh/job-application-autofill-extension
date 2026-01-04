@@ -23,7 +23,7 @@ import {
 } from '../components/ui/dialog'
 import { ProfileForm } from '../components/profile'
 import { clearAllData, exportProfile, importProfile, loadSettings, saveSettings, loadProfile, getStorageUsage } from '../utils/storage'
-import { validateImportData, openFilePicker } from '../utils/exportImport'
+import { validateImportData, openFilePicker, profileToMarkdown, type ExportFormat } from '../utils/exportImport'
 import { createDebugInfo, copyDebugInfoToClipboard, getExtensionVersion } from '../utils/logSanitizer'
 import { getRecentErrors, formatErrorLog } from '../utils/errorLogger'
 import type { Settings } from '../types/schema'
@@ -32,6 +32,8 @@ function App() {
   const [settings, setSettings] = useState<Settings | null>(null)
   const [saveMessage, setSaveMessage] = useState<string | null>(null)
   const [showClearDialog, setShowClearDialog] = useState(false)
+  const [showExportDialog, setShowExportDialog] = useState(false)
+  const [exportMessage, setExportMessage] = useState<string | null>(null)
 
   // Load settings on mount
   useState(() => {
@@ -50,19 +52,54 @@ function App() {
     setTimeout(() => setSaveMessage(null), 2000)
   }
 
-  const handleExport = async () => {
-    const result = await exportProfile()
-    if (result.success && result.data) {
-      const blob = new Blob([result.data], { type: 'application/json' })
+  const handleExportClick = async () => {
+    // Check if profile exists first
+    const profileResult = await loadProfile()
+    if (!profileResult.success || !profileResult.data) {
+      setExportMessage('No profile to export yet. Fill out and save your profile first.')
+      setTimeout(() => setExportMessage(null), 5000)
+      return
+    }
+    // Profile exists, show format selection dialog
+    setShowExportDialog(true)
+  }
+
+  const handleExport = async (format: ExportFormat) => {
+    setShowExportDialog(false)
+    const profileResult = await loadProfile()
+    if (!profileResult.success || !profileResult.data) {
+      setExportMessage('No profile to export yet. Fill out and save your profile first.')
+      setTimeout(() => setExportMessage(null), 5000)
+      return
+    }
+
+    const profile = profileResult.data
+    const dateStr = new Date().toISOString().split('T')[0]
+
+    if (format === 'markdown') {
+      const markdown = profileToMarkdown(profile)
+      const blob = new Blob([markdown], { type: 'text/markdown' })
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = `job-profile-${new Date().toISOString().split('T')[0]}.json`
+      a.download = `job-profile-${dateStr}.md`
       a.click()
       URL.revokeObjectURL(url)
     } else {
-      setSaveMessage('Error: ' + (result.error || 'Failed to export'))
-      setTimeout(() => setSaveMessage(null), 3000)
+      // JSON format
+      const result = await exportProfile()
+      if (result.success && result.data) {
+        const blob = new Blob([result.data], { type: 'application/json' })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `job-profile-${dateStr}.json`
+        a.click()
+        URL.revokeObjectURL(url)
+      } else {
+        setExportMessage('Error: ' + (result.error || 'Failed to export'))
+        setTimeout(() => setExportMessage(null), 3000)
+      }
     }
   }
 
@@ -210,13 +247,36 @@ function App() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={handleExport}>
-                  Export Profile
-                </Button>
-                <Button variant="outline" onClick={handleImport}>
-                  Import Profile
-                </Button>
+              <div className="space-y-2">
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={handleExportClick}>
+                    Export Profile
+                  </Button>
+                  <Dialog open={showExportDialog} onOpenChange={setShowExportDialog}>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Export Profile</DialogTitle>
+                        <DialogDescription>
+                          Choose a format for your exported profile
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="flex flex-col gap-3 pt-4">
+                        <Button variant="outline" onClick={() => handleExport('markdown')} className="w-full">
+                          Markdown
+                        </Button>
+                        <Button variant="outline" onClick={() => handleExport('json')} className="w-full">
+                          JSON
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                  <Button variant="outline" onClick={handleImport}>
+                    Import Profile
+                  </Button>
+                </div>
+                {exportMessage && (
+                  <p className="text-sm text-muted-foreground">{exportMessage}</p>
+                )}
               </div>
 
               <Separator />

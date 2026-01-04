@@ -1,7 +1,9 @@
 // Export/Import utilities for profile data
 
-import type { Profile } from '../types/profile'
+import type { Profile, WorkExperience, Education } from '../types/profile'
 import { CURRENT_SCHEMA_VERSION, compareVersions } from '../types/schema'
+
+export type ExportFormat = 'json' | 'markdown'
 
 // Export data wrapper
 export interface ExportData {
@@ -218,4 +220,138 @@ export function checkFileSize(file: File): { valid: boolean; message?: string } 
   }
 
   return { valid: true }
+}
+
+/**
+ * Format a date string for display
+ */
+function formatDate(dateString: string | undefined): string {
+  if (!dateString) return ''
+  const date = new Date(dateString)
+  return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+}
+
+/**
+ * Format work experience entry for markdown
+ */
+function formatWorkExperience(exp: WorkExperience): string {
+  const endDate = exp.isCurrent ? 'Present' : formatDate(exp.endDate)
+  const dateRange = `${formatDate(exp.startDate)} - ${endDate}`
+
+  let md = `### ${exp.jobTitle}\n`
+  md += `**${exp.company}** | ${exp.location} | ${dateRange}\n\n`
+
+  if (exp.description) {
+    md += `${exp.description}\n\n`
+  }
+
+  if (exp.responsibilities && exp.responsibilities.length > 0) {
+    exp.responsibilities.forEach(resp => {
+      md += `- ${resp}\n`
+    })
+    md += '\n'
+  }
+
+  return md
+}
+
+/**
+ * Format education entry for markdown
+ */
+function formatEducation(edu: Education): string {
+  const endDate = edu.isCurrent ? 'Present' : formatDate(edu.endDate)
+  const dateRange = `${formatDate(edu.startDate)} - ${endDate}`
+
+  let md = `### ${edu.degree} in ${edu.fieldOfStudy}\n`
+  md += `**${edu.institution}** | ${dateRange}\n`
+
+  if (edu.gpa) {
+    md += `GPA: ${edu.gpa}\n`
+  }
+
+  if (edu.honors && edu.honors.length > 0) {
+    md += `Honors: ${edu.honors.join(', ')}\n`
+  }
+
+  md += '\n'
+  return md
+}
+
+/**
+ * Convert profile to markdown format
+ */
+export function profileToMarkdown(profile: Profile): string {
+  const { personalInfo, professionalLinks, workExperience, education, skillsAndQualifications } = profile
+
+  let md = ''
+
+  // Header with name
+  md += `# ${personalInfo.firstName} ${personalInfo.lastName}\n\n`
+
+  // Contact info
+  const contactParts: string[] = []
+  if (personalInfo.email) contactParts.push(personalInfo.email)
+  if (personalInfo.phone) contactParts.push(personalInfo.phone)
+  if (personalInfo.address.city && personalInfo.address.state) {
+    contactParts.push(`${personalInfo.address.city}, ${personalInfo.address.state}`)
+  }
+  if (contactParts.length > 0) {
+    md += `${contactParts.join(' | ')}\n\n`
+  }
+
+  // Professional links
+  const links: string[] = []
+  if (professionalLinks.linkedin) links.push(`[LinkedIn](${professionalLinks.linkedin})`)
+  if (professionalLinks.github) links.push(`[GitHub](${professionalLinks.github})`)
+  if (professionalLinks.portfolio) links.push(`[Portfolio](${professionalLinks.portfolio})`)
+  if (links.length > 0) {
+    md += `${links.join(' | ')}\n\n`
+  }
+
+  md += '---\n\n'
+
+  // Work Experience
+  if (workExperience && workExperience.length > 0) {
+    md += '## Work Experience\n\n'
+    workExperience.forEach(exp => {
+      md += formatWorkExperience(exp)
+    })
+  }
+
+  // Education
+  if (education && education.length > 0) {
+    md += '## Education\n\n'
+    education.forEach(edu => {
+      md += formatEducation(edu)
+    })
+  }
+
+  // Skills
+  if (skillsAndQualifications.skills && skillsAndQualifications.skills.length > 0) {
+    md += '## Skills\n\n'
+    md += skillsAndQualifications.skills.join(' • ') + '\n\n'
+  }
+
+  // Certifications
+  if (skillsAndQualifications.certifications && skillsAndQualifications.certifications.length > 0) {
+    md += '## Certifications\n\n'
+    skillsAndQualifications.certifications.forEach(cert => {
+      md += `- **${cert.name}** - ${cert.issuer}`
+      if (cert.dateObtained) md += ` (${formatDate(cert.dateObtained)})`
+      md += '\n'
+    })
+    md += '\n'
+  }
+
+  // Languages
+  if (skillsAndQualifications.languages && skillsAndQualifications.languages.length > 0) {
+    md += '## Languages\n\n'
+    skillsAndQualifications.languages.forEach(lang => {
+      const proficiency = lang.proficiency.charAt(0).toUpperCase() + lang.proficiency.slice(1)
+      md += `- ${lang.language} (${proficiency})\n`
+    })
+    md += '\n'
+  }
+
+  return md.trim()
 }
