@@ -56,15 +56,21 @@ export function WorkAuthorizationSection({
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
         <FormField
-          label="Visa Status"
+          label="Work Authorization Status"
           htmlFor="visaStatus"
         >
           <Select
             value={authorization.visaStatus || ''}
-            onValueChange={(value) => onChange({ visaStatus: value || undefined })}
+            onValueChange={(value) => {
+              onChange({ visaStatus: value || undefined })
+              // Clear the "other" field if not selecting "other"
+              if (value !== 'other') {
+                onChange({ visaStatus: value || undefined, citizenshipStatus: undefined })
+              }
+            }}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select visa status" />
+              <SelectValue placeholder="Select work authorization status" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="citizen">U.S. Citizen</SelectItem>
@@ -79,17 +85,21 @@ export function WorkAuthorizationSection({
           </Select>
         </FormField>
 
-        <FormField
-          label="Citizenship Status"
-          htmlFor="citizenshipStatus"
-        >
-          <Input
-            id="citizenshipStatus"
-            value={authorization.citizenshipStatus || ''}
-            onChange={(e) => onChange({ citizenshipStatus: e.target.value || undefined })}
-            placeholder="e.g., U.S. Citizen, Canadian Citizen"
-          />
-        </FormField>
+        {authorization.visaStatus === 'other' && (
+          <FormField
+            label="Please specify"
+            htmlFor="otherStatus"
+            required
+          >
+            <Input
+              id="otherStatus"
+              value={authorization.citizenshipStatus || ''}
+              onChange={(e) => onChange({ citizenshipStatus: e.target.value || undefined })}
+              placeholder="Enter your work authorization status"
+              required
+            />
+          </FormField>
+        )}
       </div>
     </div>
   )

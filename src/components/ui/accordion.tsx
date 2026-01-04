@@ -98,7 +98,7 @@ function AccordionContent({
       }}
       {...props}
     >
-      <div className={cn("pb-6 pt-0 pl-0 bg-transparent", className)} style={{ border: 'none' }}>{children}</div>
+      <div className={cn("pt-0 pl-0 bg-transparent", className)} style={{ border: 'none', paddingBottom: 40 }}>{children}</div>
     </AccordionPrimitive.Content>
   )
 }

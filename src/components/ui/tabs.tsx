@@ -45,8 +45,8 @@ const TabsTrigger = React.forwardRef<
       "transition-colors duration-100",
       "focus-visible:outline-none",
       "disabled:pointer-events-none disabled:opacity-50",
-      "data-[state=active]:bg-[#F5F3EF] data-[state=active]:text-[#121212] data-[state=active]:font-medium",
-      "hover:bg-[#FAFAF8]",
+      "data-[state=active]:bg-[#1A1A1A] data-[state=active]:text-white data-[state=active]:font-medium",
+      "hover:bg-[#F5F5F5]",
       className
     )}
     style={{

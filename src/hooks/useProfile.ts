@@ -235,7 +235,7 @@ function calculateCompleteness(profile: Profile): number {
 
   // Work authorization
   total++
-  filled++ // Always counts as filled since it has default values
+  if (profile.workAuthorization.authorizedToWork) filled++
 
   return Math.round((filled / total) * 100)
 }
