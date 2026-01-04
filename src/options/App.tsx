@@ -249,7 +249,7 @@ function App() {
               <Button
                 variant="link"
                 className="p-0 h-auto"
-                onClick={() => window.open('https://github.com/anthropics/claude-code/issues', '_blank')}
+                onClick={() => window.open('https://github.com/sammnkwh/job-application-autofill-extension/issues', '_blank')}
               >
                 Report Issue on GitHub
               </Button>
