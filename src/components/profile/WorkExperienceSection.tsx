@@ -108,8 +108,8 @@ function ExperienceEntry({ experience, index, onUpdate, onRemove }: ExperienceEn
 
   return (
     <div className="border border-[#e5e5e5] rounded-none p-6 space-y-6">
-      <div className="flex justify-between items-center border-b border-[#e5e5e5] pb-4 -mx-6 px-6 -mt-6 pt-4 bg-[#fafafa]">
-        <h4 className="font-medium text-[#121212]">Position {index + 1}</h4>
+      <div className="flex justify-between items-center">
+        <span className="text-sm font-medium text-[#121212]">Position {index + 1}</span>
         <Button
           type="button"
           variant="ghost"

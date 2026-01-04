@@ -152,10 +152,10 @@
   }
 }
 
-/* Midday-style segmented tabs - active state */
+/* Tab active state - black background with white text */
 [data-state="active"][role="tab"] {
-  background-color: #F5F1EB !important;
-  color: #1A1A1A !important;
+  background-color: #1A1A1A !important;
+  color: #FFFFFF !important;
   font-weight: 500 !important;
 }
 
@@ -283,17 +283,13 @@ input, textarea, select {
 /* Max width */
 .max-w-4xl { max-width: 56rem; }
 
-/* Date input calendar icon styling for better visibility */
-input[type="date"]::-webkit-calendar-picker-indicator {
-  width: 20px;
-  height: 20px;
-  opacity: 0.6;
-  cursor: pointer;
-  filter: invert(30%);
+/* Date input styling */
+input[type="date"] {
+  font-family: 'Geist', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-input[type="date"]::-webkit-calendar-picker-indicator:hover {
-  opacity: 1;
+input[type="date"]::-webkit-calendar-picker-indicator {
+  display: none;
 }
 
 /* Accordion fadeIn animation - SalesIQ style */
@@ -368,3 +364,4 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   position: relative;
   z-index: 9999 !important;
 }
+
