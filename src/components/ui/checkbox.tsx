@@ -1,8 +1,26 @@
 import * as React from "react"
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox"
-import { Check } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+
+// Inline SVG checkmark for guaranteed visibility
+const CheckIcon = () => (
+  <svg
+    width="12"
+    height="12"
+    viewBox="0 0 12 12"
+    fill="none"
+    style={{ display: 'block' }}
+  >
+    <path
+      d="M2 6L5 9L10 3"
+      stroke="#1A1A1A"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+)
 
 // Checkbox with improved visibility
 const Checkbox = React.forwardRef<
@@ -12,18 +30,17 @@ const Checkbox = React.forwardRef<
   <CheckboxPrimitive.Root
     ref={ref}
     className={cn(
-      "peer h-4 w-4 shrink-0 rounded-sm border border-[#DCDAD2]",
+      "peer shrink-0 rounded-sm border border-[#DCDAD2] bg-white",
       "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
       "disabled:cursor-not-allowed disabled:opacity-50",
-      "data-[state=checked]:bg-[#1A1A1A] data-[state=checked]:border-[#1A1A1A] data-[state=checked]:text-white",
+      "data-[state=checked]:border-[#1A1A1A]",
       className
     )}
+    style={{ width: 16, height: 16, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
     {...props}
   >
-    <CheckboxPrimitive.Indicator
-      className={cn("flex items-center justify-center text-current")}
-    >
-      <Check className="h-3.5 w-3.5" />
+    <CheckboxPrimitive.Indicator style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <CheckIcon />
     </CheckboxPrimitive.Indicator>
   </CheckboxPrimitive.Root>
 ))
