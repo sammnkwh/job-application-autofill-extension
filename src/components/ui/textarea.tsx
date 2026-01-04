@@ -20,6 +20,7 @@ const Textarea = React.forwardRef<
       )}
       style={{
         boxSizing: 'border-box',
+        fontFamily: "'Geist', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
         ...style,
       }}
       ref={ref}
