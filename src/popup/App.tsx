@@ -216,9 +216,9 @@ function App() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-lg font-semibold">Job Autofill</h1>
-        <Badge variant={state.hasProfile ? 'default' : 'secondary'}>
-          {state.hasProfile ? 'Ready' : 'Setup Needed'}
-        </Badge>
+        {state.hasProfile && (
+          <Badge variant="default">Ready</Badge>
+        )}
       </div>
 
       {state.hasProfile ? (
@@ -327,15 +327,13 @@ function App() {
       ) : (
         <>
           {/* Welcome for new users */}
-          <Card>
-            <CardContent className="pt-4 text-center space-y-3">
-              <div className="text-4xl">&#128075;</div>
-              <div>
-                <h2 className="font-medium">Welcome!</h2>
-                <p className="text-sm text-muted-foreground">
-                  Set up your profile to start auto-filling job applications.
-                </p>
-              </div>
+          <Card className="overflow-hidden">
+            <CardContent
+              className="pt-4 pb-4 text-center space-y-3 bg-cover bg-center relative"
+              style={{ backgroundImage: 'url(/welcome-bg.jpg)' }}
+            >
+              <div className="text-4xl relative z-10">&#128075;</div>
+              <h2 className="font-medium relative z-10" style={{ color: '#ffffff' }}>Welcome!</h2>
             </CardContent>
           </Card>
 
