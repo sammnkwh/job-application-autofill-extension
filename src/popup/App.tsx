@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Button } from '../components/ui/button'
 import { Card, CardContent } from '../components/ui/card'
-import { Badge } from '../components/ui/badge'
 import { Progress } from '../components/ui/progress'
 import { Separator } from '../components/ui/separator'
 import { Alert, AlertDescription } from '../components/ui/alert'
-import { hasProfile, loadProfile, exportProfile, importProfile } from '../utils/storage'
-import { validateImportData, openFilePicker } from '../utils/exportImport'
+import { hasProfile, loadProfile } from '../utils/storage'
+import type { Profile } from '../types/profile'
 
 interface PlatformInfo {
   platform: 'workday' | 'greenhouse' | 'unknown'
@@ -115,44 +114,32 @@ function App() {
     }
 
     loadState()
+
+    // Listen for storage changes to update completeness in real-time
+    const handleStorageChange = (changes: { [key: string]: chrome.storage.StorageChange }) => {
+      if (changes.profile) {
+        const newProfile = changes.profile.newValue as Profile | undefined
+        if (newProfile) {
+          const newCompleteness = calculateCompleteness(newProfile)
+          setState(prev => ({
+            ...prev,
+            hasProfile: true,
+            profileCompleteness: newCompleteness,
+            lastUpdated: newProfile.lastUpdated,
+          }))
+        }
+      }
+    }
+
+    chrome.storage.local.onChanged.addListener(handleStorageChange)
+
+    return () => {
+      chrome.storage.local.onChanged.removeListener(handleStorageChange)
+    }
   }, [])
 
   const openOptions = () => {
     chrome.runtime.openOptionsPage()
-  }
-
-  const handleExport = async () => {
-    const result = await exportProfile()
-    if (result.success && result.data) {
-      const blob = new Blob([result.data], { type: 'application/json' })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `job-profile-${new Date().toISOString().split('T')[0]}.json`
-      a.click()
-      URL.revokeObjectURL(url)
-    } else {
-      setState(prev => ({ ...prev, error: result.error || 'Export failed' }))
-    }
-  }
-
-  const handleImport = async () => {
-    const text = await openFilePicker()
-    if (!text) return
-
-    const validation = validateImportData(text)
-    if (!validation.valid) {
-      setState(prev => ({ ...prev, error: validation.errors.join(' ') }))
-      return
-    }
-
-    const result = await importProfile(text)
-    if (result.success) {
-      // Reload to show updated profile
-      window.location.reload()
-    } else {
-      setState(prev => ({ ...prev, error: result.error || 'Import failed' }))
-    }
   }
 
   const triggerAutofill = async () => {
@@ -192,12 +179,14 @@ function App() {
     }
   }
 
-  const formatDate = (isoString: string) => {
+  const formatDateTime = (isoString: string) => {
     const date = new Date(isoString)
-    return date.toLocaleDateString(undefined, {
+    return date.toLocaleString(undefined, {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
     })
   }
 
@@ -216,9 +205,6 @@ function App() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-lg font-semibold">Job Autofill</h1>
-        {state.hasProfile && (
-          <Badge variant="default">Ready</Badge>
-        )}
       </div>
 
       {state.hasProfile ? (
@@ -303,26 +289,16 @@ function App() {
 
               {state.lastUpdated && (
                 <p className="text-xs text-muted-foreground">
-                  Last updated: {formatDate(state.lastUpdated)}
+                  Last updated: {formatDateTime(state.lastUpdated)}
                 </p>
               )}
             </CardContent>
           </Card>
 
           {/* Actions */}
-          <div className="space-y-2">
-            <Button variant="outline" className="w-full" onClick={openOptions}>
-              Edit Profile
-            </Button>
-            <div className="flex gap-2">
-              <Button variant="ghost" size="sm" className="flex-1 text-xs" onClick={handleExport}>
-                Export
-              </Button>
-              <Button variant="ghost" size="sm" className="flex-1 text-xs" onClick={handleImport}>
-                Import
-              </Button>
-            </div>
-          </div>
+          <Button variant="outline" className="w-full" onClick={openOptions}>
+            Edit Profile
+          </Button>
         </>
       ) : (
         <>
@@ -351,15 +327,46 @@ function App() {
   )
 }
 
-// Calculate profile completeness (simplified version)
-function calculateCompleteness(profile: { personalInfo: { firstName: string; lastName: string; email: string; phone: string } }): number {
+// Calculate profile completeness (full version matching useProfile.ts)
+function calculateCompleteness(profile: Profile): number {
   let filled = 0
-  let total = 4
+  let total = 0
 
-  if (profile.personalInfo.firstName) filled++
-  if (profile.personalInfo.lastName) filled++
-  if (profile.personalInfo.email) filled++
-  if (profile.personalInfo.phone) filled++
+  // Personal info (required fields)
+  const personalFields = ['firstName', 'lastName', 'email', 'phone'] as const
+  for (const field of personalFields) {
+    total++
+    if (profile.personalInfo[field]) filled++
+  }
+
+  // Address
+  const addressFields = ['city', 'state', 'country'] as const
+  for (const field of addressFields) {
+    total++
+    if (profile.personalInfo.address[field]) filled++
+  }
+
+  // Professional links (at least one)
+  total++
+  if (profile.professionalLinks.linkedin || profile.professionalLinks.github || profile.professionalLinks.portfolio) {
+    filled++
+  }
+
+  // Work experience (at least one)
+  total++
+  if (profile.workExperience.length > 0) filled++
+
+  // Education (at least one)
+  total++
+  if (profile.education.length > 0) filled++
+
+  // Skills (at least 3)
+  total++
+  if (profile.skillsAndQualifications.skills.length >= 3) filled++
+
+  // Work authorization
+  total++
+  if (profile.workAuthorization.authorizedToWork) filled++
 
   return Math.round((filled / total) * 100)
 }
