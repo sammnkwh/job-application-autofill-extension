@@ -44,7 +44,7 @@ export function EducationSection({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-start justify-between">
+      <div className="flex items-center justify-between">
         <p className="text-sm text-[#606060]">
           Add your educational background, starting with your highest degree.
         </p>

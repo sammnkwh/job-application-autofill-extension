@@ -29,6 +29,7 @@ const SelectTrigger = React.forwardRef<
     )}
     style={{
       boxSizing: 'border-box',
+      height: 44,
       ...style,
     }}
     {...props}

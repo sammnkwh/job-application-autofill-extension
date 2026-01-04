@@ -53,7 +53,7 @@ export function WorkExperienceSection({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-start justify-between">
+      <div className="flex items-center justify-between">
         <p className="text-sm text-[#606060]">
           Add your professional work history, starting with your most recent position.
         </p>

@@ -85,14 +85,15 @@ export function SkillsSection({ skills, onChange }: SkillsSectionProps) {
         <FormField
           label="Skills"
         >
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
             <Input
               value={newSkill}
               onChange={(e) => setNewSkill(e.target.value)}
               placeholder="e.g., JavaScript, Python, React"
               onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())}
+              className="flex-1"
             />
-            <Button type="button" variant="outline" onClick={addSkill}>
+            <Button type="button" variant="outline" onClick={addSkill} style={{ flexShrink: 0, height: 44, whiteSpace: 'nowrap' }}>
               + Add
             </Button>
           </div>
@@ -120,7 +121,7 @@ export function SkillsSection({ skills, onChange }: SkillsSectionProps) {
         <FormField
           label="Certifications"
         >
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
             <Input
               value={newCertName}
               onChange={(e) => setNewCertName(e.target.value)}
@@ -133,7 +134,7 @@ export function SkillsSection({ skills, onChange }: SkillsSectionProps) {
               placeholder="Issuing organization"
               className="flex-1"
             />
-            <Button type="button" variant="outline" onClick={addCertification}>
+            <Button type="button" variant="outline" onClick={addCertification} style={{ flexShrink: 0, height: 44, whiteSpace: 'nowrap' }}>
               + Add
             </Button>
           </div>
@@ -168,7 +169,7 @@ export function SkillsSection({ skills, onChange }: SkillsSectionProps) {
         <FormField
           label="Languages"
         >
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
             <Input
               value={newLangName}
               onChange={(e) => setNewLangName(e.target.value)}
@@ -186,7 +187,7 @@ export function SkillsSection({ skills, onChange }: SkillsSectionProps) {
                 <SelectItem value="native">Native</SelectItem>
               </SelectContent>
             </Select>
-            <Button type="button" variant="outline" onClick={addLanguage}>
+            <Button type="button" variant="outline" onClick={addLanguage} style={{ flexShrink: 0, height: 44, whiteSpace: 'nowrap' }}>
               + Add
             </Button>
           </div>

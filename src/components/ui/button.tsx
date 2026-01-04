@@ -15,7 +15,7 @@ const buttonVariants = cva(
         destructive:
           "bg-red-600 text-white hover:bg-red-700 rounded-none border-0",
         outline:
-          "border-[1px] border-solid border-[#DCDAD2] bg-white text-[#1A1A1A] hover:bg-[#f5f5f5] rounded-none",
+          "border border-[#D1D5DB] bg-white text-[#1A1A1A] hover:bg-[#f5f5f5] rounded-none",
         secondary:
           "bg-[#f5f5f5] text-[#1A1A1A] hover:bg-[#e5e5e5] rounded-none border-0",
         ghost: "text-[#606060] hover:bg-[#f5f5f5] hover:text-[#1A1A1A] rounded-none",
@@ -45,11 +45,24 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, style, ...props }, ref) => {
     const Comp = asChild ? Slot : "button"
     const isDefaultVariant = variant === undefined || variant === "default"
+    const isOutlineVariant = variant === "outline"
+
+    const computedStyle = {
+      borderRadius: 0,
+      ...(isDefaultVariant ? { color: '#FFFFFF' } : {}),
+      ...(isOutlineVariant ? {
+        border: '1px solid #D1D5DB',
+        backgroundColor: 'white',
+        color: '#1A1A1A'
+      } : {}),
+      ...style
+    }
+
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
-        style={isDefaultVariant ? { color: '#FFFFFF', ...style } : style}
+        style={computedStyle}
         {...props}
       />
     )
