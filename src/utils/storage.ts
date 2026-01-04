@@ -1,6 +1,7 @@
 // Chrome storage wrapper with encryption
 
 import type { Profile } from '../types/profile'
+import { logError } from './errorLogger'
 import type { EncryptedData, Settings } from '../types/schema'
 import {
   STORAGE_KEYS,
@@ -63,6 +64,7 @@ export async function saveProfile(profile: Profile): Promise<StorageResult<void>
 
     return { success: true }
   } catch (error) {
+    logError(error instanceof Error ? error : new Error('Failed to save profile'), 'Storage: saveProfile')
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to save profile',
@@ -93,6 +95,7 @@ export async function loadProfile(): Promise<StorageResult<Profile>> {
 
     return { success: true, data: profile }
   } catch (error) {
+    logError(error instanceof Error ? error : new Error('Failed to load profile'), 'Storage: loadProfile')
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to load profile',
@@ -112,6 +115,7 @@ export async function deleteProfile(): Promise<StorageResult<void>> {
     await chrome.storage.local.remove(STORAGE_KEYS.PROFILE)
     return { success: true }
   } catch (error) {
+    logError(error instanceof Error ? error : new Error('Failed to delete profile'), 'Storage: deleteProfile')
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to delete profile',
@@ -125,6 +129,7 @@ export async function clearAllData(): Promise<StorageResult<void>> {
     await chrome.storage.local.clear()
     return { success: true }
   } catch (error) {
+    logError(error instanceof Error ? error : new Error('Failed to clear data'), 'Storage: clearAllData')
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to clear data',
@@ -144,6 +149,7 @@ export async function saveSettings(settings: Partial<Settings>): Promise<Storage
     await chrome.storage.local.set({ [STORAGE_KEYS.SETTINGS]: updated })
     return { success: true }
   } catch (error) {
+    logError(error instanceof Error ? error : new Error('Failed to save settings'), 'Storage: saveSettings')
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to save settings',
@@ -162,6 +168,7 @@ export async function loadSettings(): Promise<StorageResult<Settings>> {
       data: settings ?? DEFAULT_SETTINGS,
     }
   } catch (error) {
+    logError(error instanceof Error ? error : new Error('Failed to load settings'), 'Storage: loadSettings')
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to load settings',
@@ -215,6 +222,7 @@ export async function importProfile(jsonString: string): Promise<StorageResult<v
     const profile = parsed.profile as Profile
     return saveProfile(profile)
   } catch (error) {
+    logError(error instanceof Error ? error : new Error('Failed to import profile'), 'Storage: importProfile')
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to import profile',

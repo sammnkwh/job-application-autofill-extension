@@ -2,6 +2,7 @@
 // Handles messages from content scripts and manages extension state
 
 import { detectFromUrl, getPlatformName, type ATSPlatform } from '../content/detector'
+import { logError } from '../utils/errorLogger'
 
 console.log('Background service worker loaded')
 
@@ -59,6 +60,7 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
       updateTabIcon(activeInfo.tabId, platform)
     }
   } catch (error) {
+    logError(error instanceof Error ? error : new Error(String(error)), 'Background: onActivated')
     console.error('Error getting tab:', error)
   }
 })
@@ -95,6 +97,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           console.log('Autofill response:', response)
         })
         .catch(error => {
+          logError(error instanceof Error ? error : new Error(String(error)), 'Background: triggerAutofill')
           console.error('Error triggering autofill:', error)
         })
     }

@@ -15,7 +15,7 @@ const buttonVariants = cva(
         destructive:
           "bg-red-600 text-white hover:bg-red-700 rounded-none border-0",
         outline:
-          "border border-[#D1D5DB] bg-white text-[#1A1A1A] hover:bg-[#f5f5f5] rounded-none",
+          "border border-[#D1D5DB] !bg-[#FFFFFF] text-[#1A1A1A] hover:!bg-[#FFFFFF] hover:border-[#1A1A1A] rounded-none transition-all",
         secondary:
           "bg-[#f5f5f5] text-[#1A1A1A] hover:bg-[#e5e5e5] rounded-none border-0",
         ghost: "text-[#606060] hover:bg-[#f5f5f5] hover:text-[#1A1A1A] rounded-none",
@@ -51,8 +51,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       borderRadius: 0,
       ...(isDefaultVariant ? { color: '#FFFFFF' } : {}),
       ...(isOutlineVariant ? {
-        border: '1px solid #D1D5DB',
-        backgroundColor: 'white',
         color: '#1A1A1A'
       } : {}),
       ...style

@@ -173,6 +173,91 @@ export function createSanitizedErrorReport(
 }
 
 /**
+ * Debug info for bug reports (no fake error)
+ */
+export interface DebugInfo {
+  timestamp: string
+  extensionVersion: string
+  browser: string
+  platform: string
+  settings: Record<string, unknown>
+  storageStats: Record<string, unknown>
+  errorLog?: string
+}
+
+export function createDebugInfo(
+  settings: Record<string, unknown>,
+  storageStats: Record<string, unknown>,
+  errorLog?: string
+): DebugInfo {
+  return {
+    timestamp: new Date().toISOString(),
+    extensionVersion: getExtensionVersion(),
+    browser: getBrowserInfo(),
+    platform: navigator.platform,
+    settings,
+    storageStats,
+    errorLog,
+  }
+}
+
+function getBrowserInfo(): string {
+  const ua = navigator.userAgent
+  if (ua.includes('Chrome')) {
+    const match = ua.match(/Chrome\/(\d+)/)
+    return `Chrome ${match?.[1] || 'unknown'}`
+  }
+  if (ua.includes('Firefox')) {
+    const match = ua.match(/Firefox\/(\d+)/)
+    return `Firefox ${match?.[1] || 'unknown'}`
+  }
+  if (ua.includes('Safari')) {
+    const match = ua.match(/Version\/(\d+)/)
+    return `Safari ${match?.[1] || 'unknown'}`
+  }
+  if (ua.includes('Edge')) {
+    const match = ua.match(/Edg\/(\d+)/)
+    return `Edge ${match?.[1] || 'unknown'}`
+  }
+  return 'Unknown'
+}
+
+export function formatDebugInfo(info: DebugInfo): string {
+  const lines = [
+    '**Debug Info**',
+    '```',
+    `Version: ${info.extensionVersion}`,
+    `Browser: ${info.browser}`,
+    `Platform: ${info.platform}`,
+    `Timestamp: ${info.timestamp}`,
+    '',
+    'Settings:',
+    JSON.stringify(info.settings, null, 2),
+    '',
+    'Storage:',
+    JSON.stringify(info.storageStats, null, 2),
+    '```',
+    '',
+    '**Recent Errors**',
+    '```',
+    info.errorLog || 'No recent errors',
+    '```',
+  ]
+
+  return lines.join('\n')
+}
+
+export async function copyDebugInfoToClipboard(info: DebugInfo): Promise<boolean> {
+  try {
+    const formatted = formatDebugInfo(info)
+    await navigator.clipboard.writeText(formatted)
+    return true
+  } catch {
+    return false
+  }
+}
+
+/**
  * Format error report for clipboard/display
  */
 export function formatErrorReport(report: ErrorReport): string {

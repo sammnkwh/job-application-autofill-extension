@@ -22,9 +22,10 @@ import {
   DialogTrigger,
 } from '../components/ui/dialog'
 import { ProfileForm } from '../components/profile'
-import { clearAllData, exportProfile, importProfile, loadSettings, saveSettings } from '../utils/storage'
+import { clearAllData, exportProfile, importProfile, loadSettings, saveSettings, loadProfile, getStorageUsage } from '../utils/storage'
 import { validateImportData, openFilePicker } from '../utils/exportImport'
-import { createSanitizedErrorReport, copyReportToClipboard, getExtensionVersion } from '../utils/logSanitizer'
+import { createDebugInfo, copyDebugInfoToClipboard, getExtensionVersion } from '../utils/logSanitizer'
+import { getRecentErrors, formatErrorLog } from '../utils/errorLogger'
 import type { Settings } from '../types/schema'
 
 function App() {
@@ -95,22 +96,42 @@ function App() {
     setTimeout(() => setSaveMessage(null), 5000)
   }
 
-  const handleReportIssue = async () => {
-    const report = createSanitizedErrorReport(
-      new Error('User-initiated bug report'),
+  const handleCopyDebugInfo = async () => {
+    // Gather storage stats
+    const storageUsage = await getStorageUsage()
+    const profileResult = await loadProfile()
+    const recentErrors = await getRecentErrors()
+
+    const storageStats: Record<string, unknown> = {
+      bytesUsed: storageUsage.bytesUsed,
+      bytesAvailable: storageUsage.bytesAvailable,
+      percentUsed: storageUsage.percentUsed,
+      hasProfile: profileResult.success && !!profileResult.data,
+    }
+
+    // Add profile stats if available (without PII)
+    if (profileResult.success && profileResult.data) {
+      const profile = profileResult.data
+      storageStats.workExperienceCount = profile.workExperience?.length || 0
+      storageStats.educationCount = profile.education?.length || 0
+      storageStats.hasSkills = !!profile.skillsAndQualifications
+    }
+
+    const debugInfo = createDebugInfo(
       {
-        settingsLoaded: settings !== null,
-        confidenceThreshold: settings?.confidenceThreshold,
-      }
+        confidenceThreshold: settings?.confidenceThreshold || 80,
+      },
+      storageStats,
+      formatErrorLog(recentErrors)
     )
 
-    const success = await copyReportToClipboard(report)
+    const success = await copyDebugInfoToClipboard(debugInfo)
     if (success) {
-      setSaveMessage('Debug info copied to clipboard. Paste it in your bug report.')
+      setSaveMessage('Copied to clipboard. Click "Report Issue on GitHub" to submit.')
     } else {
       setSaveMessage('Could not copy to clipboard. Please try again.')
     }
-    setTimeout(() => setSaveMessage(null), 3000)
+    setTimeout(() => setSaveMessage(null), 5000)
   }
 
   const handleClearData = async () => {
@@ -201,7 +222,6 @@ function App() {
               <Separator />
 
               <div className="space-y-2">
-                <Label className="text-destructive">Danger Zone</Label>
                 <Dialog open={showClearDialog} onOpenChange={setShowClearDialog}>
                   <DialogTrigger asChild>
                     <Button variant="destructive">Clear All Data</Button>
@@ -214,12 +234,12 @@ function App() {
                         This action cannot be undone.
                       </DialogDescription>
                     </DialogHeader>
-                    <DialogFooter>
-                      <Button variant="outline" onClick={() => setShowClearDialog(false)}>
-                        Cancel
-                      </Button>
-                      <Button variant="destructive" onClick={handleClearData}>
+                    <DialogFooter className="flex flex-col gap-3 sm:flex-col">
+                      <Button variant="outline" onClick={handleClearData} className="w-full border-[#1A1A1A]">
                         Clear All Data
+                      </Button>
+                      <Button variant="outline" onClick={() => setShowClearDialog(false)} className="w-full">
+                        Cancel
                       </Button>
                     </DialogFooter>
                   </DialogContent>
@@ -237,7 +257,7 @@ function App() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Button variant="outline" onClick={handleReportIssue}>
+                <Button variant="outline" onClick={handleCopyDebugInfo}>
                   Copy Debug Info
                 </Button>
                 <p className="text-sm text-muted-foreground">
