@@ -1,3 +1,4 @@
+
 # Job Application Autofill Extension - Implementation Tasks
 
 ## Relevant Files
@@ -356,6 +357,23 @@ E2E tests with Playwright, manual testing on real sites, bug fixes, and final po
 
 ---
 
+### 10.0 Phone Country Code Feature
+Add country code dropdown with emoji flags to the phone number field.
+
+- [x] 10.1 Create country code data file with common and all countries (`src/data/countryCodes.ts`)
+- [x] 10.2 Write unit tests for country code data and helper functions
+- [x] 10.3 Run country code data tests and verify they pass
+- [x] 10.4 Create CountryCodeSelect component with emoji flags (`src/components/ui/country-code-select.tsx`)
+- [x] 10.5 Write unit tests for CountryCodeSelect component
+- [x] 10.6 Run CountryCodeSelect tests and verify they pass
+- [x] 10.7 Update PersonalInfoSection to use country code dropdown with phone input
+- [x] 10.8 Write integration tests for phone field with country code
+- [x] 10.9 Run PersonalInfoSection tests and verify they pass
+- [x] 10.10 Run full test suite and verify all tests pass
+- [x] 10.11 Commit: "Add country code dropdown with flags to phone field"
+
+---
+
 ## Summary
 
 | Task | Sub-tasks | Focus |
@@ -370,8 +388,9 @@ E2E tests with Playwright, manual testing on real sites, bug fixes, and final po
 | 7.0 | 22 | Auto-fill |
 | 8.0 | 20 | Export/Import/Settings |
 | 9.0 | 22 | Testing & polish |
+| 10.0 | 11 | Phone country code |
 
-**Total: 185 sub-tasks**
+**Total: 196 sub-tasks**
 
 ---
 

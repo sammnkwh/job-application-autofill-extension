@@ -2,7 +2,14 @@
 
 import { Input } from '../ui/input'
 import { FormField } from '../ui/form-field'
+import { CountryCodeSelect, getDialCode } from '../ui/country-code-select'
 import { expandCountryName } from '@/lib/utils'
+import {
+  parsePhoneWithCountryCode,
+  combinePhoneWithCountryCode,
+  findCountryByDialCode,
+  DEFAULT_COUNTRY_CODE,
+} from '@/data/countryCodes'
 import type { Profile } from '../../types/profile'
 
 interface PersonalInfoSectionProps {
@@ -15,6 +22,22 @@ export function PersonalInfoSection({ personalInfo, onChange }: PersonalInfoSect
     onChange({
       address: { ...personalInfo.address, [field]: value },
     })
+  }
+
+  // Parse phone to extract country code and phone number
+  const { countryCode: dialCode, phoneNumber } = parsePhoneWithCountryCode(personalInfo.phone)
+  const country = findCountryByDialCode(dialCode)
+  const selectedCountryCode = country?.code || DEFAULT_COUNTRY_CODE
+
+  const handleCountryCodeChange = (countryCode: string) => {
+    const newDialCode = getDialCode(countryCode)
+    const combined = combinePhoneWithCountryCode(newDialCode, phoneNumber)
+    onChange({ phone: combined })
+  }
+
+  const handlePhoneNumberChange = (newPhoneNumber: string) => {
+    const combined = combinePhoneWithCountryCode(dialCode, newPhoneNumber)
+    onChange({ phone: combined })
   }
 
   return (
@@ -68,13 +91,20 @@ export function PersonalInfoSection({ personalInfo, onChange }: PersonalInfoSect
           htmlFor="phone"
           required
         >
-          <Input
-            id="phone"
-            type="tel"
-            value={personalInfo.phone}
-            onChange={(e) => onChange({ phone: e.target.value })}
-            placeholder="(555) 123-4567"
-          />
+          <div className="flex gap-2">
+            <CountryCodeSelect
+              value={selectedCountryCode}
+              onChange={handleCountryCodeChange}
+            />
+            <Input
+              id="phone"
+              type="tel"
+              value={phoneNumber}
+              onChange={(e) => handlePhoneNumberChange(e.target.value)}
+              placeholder="(555) 123-4567"
+              className="flex-1"
+            />
+          </div>
         </FormField>
       </div>
 
