@@ -402,7 +402,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 /* Ensure Radix portaled content (Select, Popover, etc.) renders above everything */
 [data-radix-popper-content-wrapper] {
-  z-index: 9999 !important;
+  z-index: 99999 !important;
   isolation: isolate;
 }
 
@@ -410,7 +410,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 [data-radix-select-viewport] {
   background-color: white !important;
   position: relative;
-  z-index: 9999 !important;
+  z-index: 99999 !important;
 }
 
 /* Indeterminate progress bar animation */
