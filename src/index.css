@@ -403,14 +403,24 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 /* Ensure Radix portaled content (Select, Popover, etc.) renders above everything */
 [data-radix-popper-content-wrapper] {
   z-index: 99999 !important;
-  isolation: isolate;
 }
 
 [data-radix-select-content],
 [data-radix-select-viewport] {
   background-color: white !important;
-  position: relative;
   z-index: 99999 !important;
+}
+
+/* Ensure form elements don't compete with dropdown z-index */
+input, select, textarea, label, .space-y-2, .space-y-6 {
+  position: relative;
+  z-index: 1;
+}
+
+/* Ensure accordion borders stay below dropdowns */
+[data-slot="accordion-item"] {
+  position: relative;
+  z-index: 0;
 }
 
 /* Indeterminate progress bar animation */
