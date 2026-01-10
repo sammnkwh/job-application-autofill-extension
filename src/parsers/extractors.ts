@@ -274,6 +274,7 @@ export interface EducationEntry {
   institution: string
   degree: string
   fieldOfStudy: string
+  location?: string
   startDate?: string
   endDate?: string
   gpa?: string

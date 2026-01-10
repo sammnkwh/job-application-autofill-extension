@@ -307,6 +307,7 @@ export function extractedDataToProfile(data: ExtractedResumeData): Partial<Profi
       institution: entry.institution,
       degree: entry.degree,
       fieldOfStudy: entry.fieldOfStudy,
+      location: entry.location || '',
       startDate: entry.startDate || '',
       endDate: entry.endDate,
       gpa: entry.gpa,

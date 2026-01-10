@@ -38,6 +38,7 @@ export interface Education {
   institution: string
   degree: string
   fieldOfStudy: string
+  location: string
   startDate: string
   endDate?: string
   isCurrent?: boolean

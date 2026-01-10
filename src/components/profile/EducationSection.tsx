@@ -44,6 +44,7 @@ export function EducationSection({
       institution: '',
       degree: '',
       fieldOfStudy: '',
+      location: '',
       startDate: '',
       endDate: undefined,
       gpa: undefined,
@@ -144,6 +145,18 @@ function EducationEntry({ education, index, onUpdate, onRemove }: EducationEntry
           />
         </FormField>
       </div>
+
+      <FormField
+        label="Location"
+        htmlFor={`location-${education.id}`}
+      >
+        <Input
+          id={`location-${education.id}`}
+          value={education.location || ''}
+          onChange={(e) => onUpdate({ location: e.target.value })}
+          placeholder=""
+        />
+      </FormField>
 
       <div className="grid grid-cols-3 gap-6">
         <FormField

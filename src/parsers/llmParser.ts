@@ -243,6 +243,7 @@ function convertToProfile(parsed: Record<string, unknown>): Partial<Profile> {
       institution: String(edu.institution || ''),
       degree: String(edu.degree || ''),
       fieldOfStudy: String(edu.fieldOfStudy || ''),
+      location: String(edu.location || ''),
       // Keep full YYYY-MM-DD format for date input fields
       startDate: String(edu.startDate || ''),
       endDate: edu.endDate ? String(edu.endDate) : undefined,
