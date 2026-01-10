@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Button } from '../components/ui/button'
 import { Card, CardContent } from '../components/ui/card'
-import { Progress } from '../components/ui/progress'
+import { SegmentedProgress } from '../components/ui/segmented-progress'
 import { Separator } from '../components/ui/separator'
 import { Alert, AlertDescription } from '../components/ui/alert'
 import { hasProfile, loadProfile } from '../utils/storage'
+import { getMissingSectionsForTooltip } from '../utils/fieldCompleteness'
 import type { Profile } from '../types/profile'
 
 interface PlatformInfo {
@@ -22,6 +23,7 @@ interface AutofillPreview {
 
 interface PopupState {
   hasProfile: boolean
+  profile: Profile | null
   profileCompleteness: number
   lastUpdated: string | null
   isLoading: boolean
@@ -35,6 +37,7 @@ interface PopupState {
 function App() {
   const [state, setState] = useState<PopupState>({
     hasProfile: false,
+    profile: null,
     profileCompleteness: 0,
     lastUpdated: null,
     isLoading: true,
@@ -51,10 +54,12 @@ function App() {
       const profileExists = await hasProfile()
       let profileCompleteness = 0
       let lastUpdated: string | null = null
+      let profile: Profile | null = null
 
       if (profileExists) {
         const result = await loadProfile()
         if (result.success && result.data) {
+          profile = result.data
           profileCompleteness = calculateCompleteness(result.data)
           lastUpdated = result.data.lastUpdated
         }
@@ -102,6 +107,7 @@ function App() {
 
       setState({
         hasProfile: profileExists,
+        profile,
         profileCompleteness,
         lastUpdated,
         isLoading: false,
@@ -124,6 +130,7 @@ function App() {
           setState(prev => ({
             ...prev,
             hasProfile: true,
+            profile: newProfile,
             profileCompleteness: newCompleteness,
             lastUpdated: newProfile.lastUpdated,
           }))
@@ -279,13 +286,11 @@ function App() {
           {/* Profile Summary */}
           <Card>
             <CardContent className="pt-4 space-y-3">
-              <div className="space-y-1">
-                <div className="flex justify-between text-sm">
-                  <span>Profile Completeness</span>
-                  <span className="font-medium">{state.profileCompleteness}%</span>
-                </div>
-                <Progress value={state.profileCompleteness} className="h-2" />
-              </div>
+              <SegmentedProgress
+                value={state.profileCompleteness}
+                missingSections={state.profile ? getMissingSectionsForTooltip(state.profile) : []}
+                showLabel={true}
+              />
 
               {state.lastUpdated && (
                 <p className="text-xs text-muted-foreground">

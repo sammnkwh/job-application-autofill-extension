@@ -22,6 +22,7 @@ interface EducationSectionProps {
   onAdd: (education: Education) => void
   onUpdate: (id: string, updates: Partial<Education>) => void
   onRemove: (id: string) => void
+  showIncompleteHints?: boolean
 }
 
 export function EducationSection({
@@ -29,6 +30,7 @@ export function EducationSection({
   onAdd,
   onUpdate,
   onRemove,
+  showIncompleteHints = false,
 }: EducationSectionProps) {
   // Sort education by endDate (most recent first)
   const sortedEducation = [...education].sort((a, b) => {
@@ -64,11 +66,22 @@ export function EducationSection({
         </Button>
       </div>
       {education.length === 0 ? (
-        <div className="border border-[#e5e5e5] border-dashed rounded-none py-12 text-center">
+        <div
+          className="border border-dashed rounded-none py-12 text-center"
+          style={{
+            borderColor: showIncompleteHints ? '#F59E0B' : '#e5e5e5',
+            borderWidth: showIncompleteHints ? '2px' : '1px',
+          }}
+        >
           <p className="text-base font-medium text-[#121212]">No education added</p>
           <p className="text-sm text-[#606060] mt-1">
             Click "+ Add" to add your educational history.
           </p>
+          {showIncompleteHints && (
+            <p className="text-sm text-[#9CA3AF] mt-2">
+              Add at least one education entry
+            </p>
+          )}
         </div>
       ) : (
         sortedEducation.map((edu, index) => (

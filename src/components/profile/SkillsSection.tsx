@@ -27,9 +27,14 @@ import type { Profile } from '../../types/profile'
 interface SkillsSectionProps {
   skills: Profile['skillsAndQualifications']
   onChange: (updates: Partial<Profile['skillsAndQualifications']>) => void
+  showIncompleteHints?: boolean
 }
 
-export function SkillsSection({ skills, onChange }: SkillsSectionProps) {
+export function SkillsSection({
+  skills,
+  onChange,
+  showIncompleteHints = false,
+}: SkillsSectionProps) {
   const [newSkill, setNewSkill] = useState('')
   const [newCertName, setNewCertName] = useState('')
   const [newCertIssuer, setNewCertIssuer] = useState('')
@@ -109,20 +114,32 @@ export function SkillsSection({ skills, onChange }: SkillsSectionProps) {
           </div>
         </FormField>
         {skills.skills.length > 0 ? (
-          <div className="flex flex-wrap gap-2">
-            {skills.skills.map((skill) => (
-              <Badge
-                key={skill}
-                variant="secondary"
-                className="cursor-pointer hover:bg-red-100 hover:text-red-600 transition-colors px-3 py-1"
-                onClick={() => removeSkill(skill)}
-              >
-                {skill} ×
-              </Badge>
-            ))}
+          <div className="space-y-2">
+            <div className="flex flex-wrap gap-2">
+              {skills.skills.map((skill) => (
+                <Badge
+                  key={skill}
+                  variant="secondary"
+                  className="cursor-pointer hover:bg-red-100 hover:text-red-600 transition-colors px-3 py-1"
+                  onClick={() => removeSkill(skill)}
+                >
+                  {skill} ×
+                </Badge>
+              ))}
+            </div>
+            {showIncompleteHints && skills.skills.length < 3 && (
+              <p className="text-sm text-[#9CA3AF]">
+                Add {3 - skills.skills.length} more skill{3 - skills.skills.length > 1 ? 's' : ''} (minimum 3 required)
+              </p>
+            )}
           </div>
         ) : (
-          <p className="text-sm text-[#878787]">No skills added yet. Start typing to add your first skill.</p>
+          <div className="space-y-1">
+            <p className="text-sm text-[#878787]">No skills added yet. Start typing to add your first skill.</p>
+            {showIncompleteHints && (
+              <p className="text-sm text-[#9CA3AF]">Add at least 3 skills</p>
+            )}
+          </div>
         )}
       </div>
 

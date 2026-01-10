@@ -11,13 +11,21 @@ import {
   DEFAULT_COUNTRY_CODE,
 } from '@/data/countryCodes'
 import type { Profile } from '../../types/profile'
+import type { PersonalInfoCompleteness } from '../../utils/fieldCompleteness'
 
 interface PersonalInfoSectionProps {
   personalInfo: Profile['personalInfo']
   onChange: (updates: Partial<Profile['personalInfo']>) => void
+  showIncompleteHints?: boolean
+  fieldCompleteness?: PersonalInfoCompleteness
 }
 
-export function PersonalInfoSection({ personalInfo, onChange }: PersonalInfoSectionProps) {
+export function PersonalInfoSection({
+  personalInfo,
+  onChange,
+  showIncompleteHints = false,
+  fieldCompleteness,
+}: PersonalInfoSectionProps) {
   const handleAddressChange = (field: keyof Profile['personalInfo']['address'], value: string) => {
     onChange({
       address: { ...personalInfo.address, [field]: value },
@@ -50,6 +58,8 @@ export function PersonalInfoSection({ personalInfo, onChange }: PersonalInfoSect
           label="First Name"
           htmlFor="firstName"
           required
+          incomplete={showIncompleteHints && fieldCompleteness && !fieldCompleteness.firstName}
+          incompleteMessage="Add your first name"
         >
           <Input
             id="firstName"
@@ -62,6 +72,8 @@ export function PersonalInfoSection({ personalInfo, onChange }: PersonalInfoSect
           label="Last Name"
           htmlFor="lastName"
           required
+          incomplete={showIncompleteHints && fieldCompleteness && !fieldCompleteness.lastName}
+          incompleteMessage="Add your last name"
         >
           <Input
             id="lastName"
@@ -77,6 +89,8 @@ export function PersonalInfoSection({ personalInfo, onChange }: PersonalInfoSect
           label="Email"
           htmlFor="email"
           required
+          incomplete={showIncompleteHints && fieldCompleteness && !fieldCompleteness.email}
+          incompleteMessage="Add your email address"
         >
           <Input
             id="email"
@@ -90,6 +104,8 @@ export function PersonalInfoSection({ personalInfo, onChange }: PersonalInfoSect
           label="Phone"
           htmlFor="phone"
           required
+          incomplete={showIncompleteHints && fieldCompleteness && !fieldCompleteness.phone}
+          incompleteMessage="Add your phone number"
         >
           <div className="flex gap-2">
             <CountryCodeSelect
@@ -121,7 +137,12 @@ export function PersonalInfoSection({ personalInfo, onChange }: PersonalInfoSect
       </FormField>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1.5rem' }}>
-        <FormField label="City" htmlFor="city">
+        <FormField
+          label="City"
+          htmlFor="city"
+          incomplete={showIncompleteHints && fieldCompleteness && !fieldCompleteness.city}
+          incompleteMessage="Add your city"
+        >
           <Input
             id="city"
             value={personalInfo.address.city}
@@ -129,7 +150,12 @@ export function PersonalInfoSection({ personalInfo, onChange }: PersonalInfoSect
             placeholder="San Francisco"
           />
         </FormField>
-        <FormField label="State" htmlFor="state">
+        <FormField
+          label="State"
+          htmlFor="state"
+          incomplete={showIncompleteHints && fieldCompleteness && !fieldCompleteness.state}
+          incompleteMessage="Add your state"
+        >
           <Input
             id="state"
             value={personalInfo.address.state?.toUpperCase() || ''}
@@ -150,6 +176,8 @@ export function PersonalInfoSection({ personalInfo, onChange }: PersonalInfoSect
       <FormField
         label="Country"
         htmlFor="country"
+        incomplete={showIncompleteHints && fieldCompleteness && !fieldCompleteness.country}
+        incompleteMessage="Add your country"
       >
         <Input
           id="country"

@@ -7,14 +7,24 @@ import type { Profile } from '../../types/profile'
 interface ProfessionalLinksSectionProps {
   links: Profile['professionalLinks']
   onChange: (updates: Partial<Profile['professionalLinks']>) => void
+  showIncompleteHints?: boolean
 }
 
-export function ProfessionalLinksSection({ links, onChange }: ProfessionalLinksSectionProps) {
+export function ProfessionalLinksSection({
+  links,
+  onChange,
+  showIncompleteHints = false,
+}: ProfessionalLinksSectionProps) {
   return (
     <div className="space-y-6">
       <p className="text-sm text-[#606060]">
         Add your online profiles to help employers learn more about you.
       </p>
+      {showIncompleteHints && (
+        <p className="text-sm text-[#9CA3AF]">
+          Add at least one professional link (LinkedIn, GitHub, or Portfolio)
+        </p>
+      )}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
         <FormField
           label="LinkedIn"

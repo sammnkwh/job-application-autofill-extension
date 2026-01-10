@@ -1,8 +1,9 @@
 // Main Profile Form component
 
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { Button } from '../ui/button'
-import { Progress } from '../ui/progress'
+import { SegmentedProgress } from '../ui/segmented-progress'
+import { SectionBadge } from '../ui/section-badge'
 import { Alert, AlertDescription } from '../ui/alert'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion'
@@ -15,6 +16,12 @@ import { DocumentsSection } from './DocumentsSection'
 import { WorkAuthorizationSection } from './WorkAuthorizationSection'
 import { SelfIdentificationSection } from './SelfIdentificationSection'
 import { useProfile } from '../../hooks/useProfile'
+import {
+  calculateSectionCompleteness,
+  getMissingSectionsForTooltip,
+  getPersonalInfoCompleteness,
+  hasProfessionalLink,
+} from '../../utils/fieldCompleteness'
 import type { Profile } from '../../types/profile'
 
 interface ProfileFormProps {
@@ -42,6 +49,21 @@ export function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
     error,
     completeness,
   } = useProfile()
+
+  // Show incomplete field hints after resume import
+  const [showIncompleteHints, setShowIncompleteHints] = useState(false)
+
+  // Calculate section-level completeness
+  const sectionCompleteness = calculateSectionCompleteness(profile)
+  const missingSections = getMissingSectionsForTooltip(profile)
+  const personalInfoComplete = getPersonalInfoCompleteness(profile)
+  const hasLinks = hasProfessionalLink(profile)
+
+  // Helper to get section completeness by name
+  const getSectionStatus = (name: string) => {
+    const section = sectionCompleteness.find(s => s.name === name)
+    return section || { complete: true, missingCount: 0 }
+  }
 
 
   const handleSave = useCallback(async () => {
@@ -118,6 +140,8 @@ export function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
 
       return merged
     })
+    // Show incomplete hints after resume import
+    setShowIncompleteHints(true)
   }, [setProfile])
 
   // Calculate section completeness for tab badges
@@ -147,13 +171,11 @@ export function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
   return (
     <div className="space-y-4">
       {/* Profile Completeness */}
-      <div className="space-y-2">
-        <div className="flex justify-between text-sm">
-          <span>Profile Completeness</span>
-          <span className="font-medium">{completeness}%</span>
-        </div>
-        <Progress value={completeness} />
-      </div>
+      <SegmentedProgress
+        value={completeness}
+        missingSections={missingSections}
+        showLabel={true}
+      />
 
       {error && (
         <Alert variant="destructive">
@@ -198,23 +220,38 @@ export function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
           <Accordion type="single" collapsible>
             <AccordionItem value="personal-info">
               <AccordionTrigger>
-                <span className="text-lg font-semibold text-[#111827]">Personal Information</span>
+                <div className="flex items-center gap-3">
+                  <span className="text-lg font-semibold text-[#111827]">Personal Information</span>
+                  <SectionBadge
+                    complete={getSectionStatus('Personal Information').complete}
+                    missingCount={getSectionStatus('Personal Information').missingCount}
+                  />
+                </div>
               </AccordionTrigger>
               <AccordionContent>
                 <PersonalInfoSection
                   personalInfo={profile.personalInfo}
                   onChange={updatePersonalInfo}
+                  showIncompleteHints={showIncompleteHints}
+                  fieldCompleteness={personalInfoComplete}
                 />
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="professional-links">
               <AccordionTrigger>
-                <span className="text-lg font-semibold text-[#111827]">Professional Links</span>
+                <div className="flex items-center gap-3">
+                  <span className="text-lg font-semibold text-[#111827]">Professional Links</span>
+                  <SectionBadge
+                    complete={getSectionStatus('Professional Links').complete}
+                    missingCount={getSectionStatus('Professional Links').missingCount}
+                  />
+                </div>
               </AccordionTrigger>
               <AccordionContent>
                 <ProfessionalLinksSection
                   links={profile.professionalLinks}
                   onChange={updateProfessionalLinks}
+                  showIncompleteHints={showIncompleteHints && !hasLinks}
                 />
               </AccordionContent>
             </AccordionItem>
@@ -225,7 +262,13 @@ export function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
           <Accordion type="single" collapsible>
             <AccordionItem value="work-experience">
               <AccordionTrigger>
-                <span className="text-lg font-semibold text-[#111827]">Work Experience</span>
+                <div className="flex items-center gap-3">
+                  <span className="text-lg font-semibold text-[#111827]">Work Experience</span>
+                  <SectionBadge
+                    complete={getSectionStatus('Work Experience').complete}
+                    missingCount={getSectionStatus('Work Experience').missingCount}
+                  />
+                </div>
               </AccordionTrigger>
               <AccordionContent>
                 <WorkExperienceSection
@@ -233,12 +276,19 @@ export function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
                   onAdd={addWorkExperience}
                   onUpdate={updateWorkExperience}
                   onRemove={removeWorkExperience}
+                  showIncompleteHints={showIncompleteHints && profile.workExperience.length === 0}
                 />
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="education">
               <AccordionTrigger>
-                <span className="text-lg font-semibold text-[#111827]">Education</span>
+                <div className="flex items-center gap-3">
+                  <span className="text-lg font-semibold text-[#111827]">Education</span>
+                  <SectionBadge
+                    complete={getSectionStatus('Education').complete}
+                    missingCount={getSectionStatus('Education').missingCount}
+                  />
+                </div>
               </AccordionTrigger>
               <AccordionContent>
                 <EducationSection
@@ -246,6 +296,7 @@ export function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
                   onAdd={addEducation}
                   onUpdate={updateEducation}
                   onRemove={removeEducation}
+                  showIncompleteHints={showIncompleteHints && profile.education.length === 0}
                 />
               </AccordionContent>
             </AccordionItem>
@@ -256,12 +307,19 @@ export function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
           <Accordion type="single" collapsible>
             <AccordionItem value="skills">
               <AccordionTrigger>
-                <span className="text-lg font-semibold text-[#111827]">Skills</span>
+                <div className="flex items-center gap-3">
+                  <span className="text-lg font-semibold text-[#111827]">Skills</span>
+                  <SectionBadge
+                    complete={getSectionStatus('Skills').complete}
+                    missingCount={getSectionStatus('Skills').missingCount}
+                  />
+                </div>
               </AccordionTrigger>
               <AccordionContent>
                 <SkillsSection
                   skills={profile.skillsAndQualifications}
                   onChange={updateSkills}
+                  showIncompleteHints={showIncompleteHints && profile.skillsAndQualifications.skills.length < 3}
                 />
               </AccordionContent>
             </AccordionItem>
@@ -272,7 +330,13 @@ export function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
           <Accordion type="single" collapsible>
             <AccordionItem value="work-authorization">
               <AccordionTrigger>
-                <span className="text-lg font-semibold text-[#111827]">Work Authorization</span>
+                <div className="flex items-center gap-3">
+                  <span className="text-lg font-semibold text-[#111827]">Work Authorization</span>
+                  <SectionBadge
+                    complete={getSectionStatus('Work Authorization').complete}
+                    missingCount={getSectionStatus('Work Authorization').missingCount}
+                  />
+                </div>
               </AccordionTrigger>
               <AccordionContent>
                 <WorkAuthorizationSection
@@ -283,7 +347,10 @@ export function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
             </AccordionItem>
             <AccordionItem value="self-identification">
               <AccordionTrigger>
-                <span className="text-lg font-semibold text-[#111827]">Self Identification</span>
+                <div className="flex items-center gap-3">
+                  <span className="text-lg font-semibold text-[#111827]">Self Identification</span>
+                  <SectionBadge complete={true} />
+                </div>
               </AccordionTrigger>
               <AccordionContent>
                 <SelfIdentificationSection

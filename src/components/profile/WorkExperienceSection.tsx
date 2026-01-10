@@ -26,6 +26,7 @@ interface WorkExperienceSectionProps {
   onAdd: (experience: WorkExperience) => void
   onUpdate: (id: string, updates: Partial<WorkExperience>) => void
   onRemove: (id: string) => void
+  showIncompleteHints?: boolean
 }
 
 export function WorkExperienceSection({
@@ -33,6 +34,7 @@ export function WorkExperienceSection({
   onAdd,
   onUpdate,
   onRemove,
+  showIncompleteHints = false,
 }: WorkExperienceSectionProps) {
   // Sort experiences by startDate (most recent first)
   const sortedExperiences = [...experiences].sort((a, b) => {
@@ -72,11 +74,22 @@ export function WorkExperienceSection({
         </Button>
       </div>
       {experiences.length === 0 ? (
-        <div className="border border-[#e5e5e5] border-dashed rounded-none py-12 text-center">
+        <div
+          className="border border-dashed rounded-none py-12 text-center"
+          style={{
+            borderColor: showIncompleteHints ? '#F59E0B' : '#e5e5e5',
+            borderWidth: showIncompleteHints ? '2px' : '1px',
+          }}
+        >
           <p className="text-base font-medium text-[#121212]">No work experience added</p>
           <p className="text-sm text-[#606060] mt-1">
             Click "+ Add" to add your work history.
           </p>
+          {showIncompleteHints && (
+            <p className="text-sm text-[#9CA3AF] mt-2">
+              Add at least one work experience entry
+            </p>
+          )}
         </div>
       ) : (
         sortedExperiences.map((exp, index) => (

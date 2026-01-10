@@ -9,6 +9,8 @@ interface FormFieldProps {
   required?: boolean
   children: React.ReactNode
   className?: string
+  incomplete?: boolean
+  incompleteMessage?: string
 }
 
 export function FormField({
@@ -18,6 +20,8 @@ export function FormField({
   required,
   children,
   className,
+  incomplete,
+  incompleteMessage,
 }: FormFieldProps) {
   return (
     <div className={cn("space-y-2", className)}>
@@ -25,8 +29,23 @@ export function FormField({
         {label}
         {required && <span className="text-[#606060] ml-0.5">*</span>}
       </Label>
-      {children}
-      {helperText && (
+      {incomplete ? (
+        <div
+          className="rounded-md"
+          style={{
+            border: '2px dashed #F59E0B',
+            padding: '1px',
+          }}
+        >
+          {children}
+        </div>
+      ) : (
+        children
+      )}
+      {incomplete && incompleteMessage && (
+        <p className="text-sm text-[#9CA3AF]">{incompleteMessage}</p>
+      )}
+      {helperText && !incomplete && (
         <p className="text-sm text-[#525252]">{helperText}</p>
       )}
     </div>
