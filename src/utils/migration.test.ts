@@ -116,7 +116,7 @@ describe('migration', () => {
           id: '1',
           jobTitle: 'Dev',
           company: 'Corp',
-          location: 'Remote',
+          location: { city: 'Remote', state: '', zipCode: '', country: '' },
           startDate: '2020-01-01',
           isCurrent: true,
           description: 'Work',

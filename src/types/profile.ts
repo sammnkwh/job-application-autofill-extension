@@ -25,7 +25,12 @@ export interface WorkExperience {
   id: string
   jobTitle: string
   company: string
-  location: string
+  location: {
+    city: string
+    state: string
+    zipCode: string
+    country: string
+  }
   startDate: string // ISO 8601 format
   endDate?: string // ISO 8601 format, undefined if current
   isCurrent: boolean
@@ -38,7 +43,12 @@ export interface Education {
   institution: string
   degree: string
   fieldOfStudy: string
-  location: string
+  location: {
+    city: string
+    state: string
+    zipCode: string
+    country: string
+  }
   startDate: string
   endDate?: string
   isCurrent?: boolean

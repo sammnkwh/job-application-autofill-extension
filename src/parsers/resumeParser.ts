@@ -287,32 +287,50 @@ export function extractedDataToProfile(data: ExtractedResumeData): Partial<Profi
 
   // Work Experience
   if (data.workExperience) {
-    profile.workExperience = data.workExperience.value.map((entry, index) => ({
-      id: `parsed-${index}`,
-      jobTitle: entry.jobTitle,
-      company: entry.company,
-      location: entry.location || '',
-      startDate: entry.startDate || '',
-      endDate: entry.endDate,
-      isCurrent: entry.isCurrent,
-      description: entry.description,
-      responsibilities: entry.responsibilities,
-    }))
+    profile.workExperience = data.workExperience.value.map((entry, index) => {
+      // Parse location string into components (e.g., "San Francisco, CA" -> city, state)
+      const locationParts = (entry.location || '').split(',').map((p) => p.trim())
+      return {
+        id: `parsed-${index}`,
+        jobTitle: entry.jobTitle,
+        company: entry.company,
+        location: {
+          city: locationParts[0] || '',
+          state: locationParts[1] || '',
+          zipCode: '',
+          country: '',
+        },
+        startDate: entry.startDate || '',
+        endDate: entry.endDate,
+        isCurrent: entry.isCurrent,
+        description: entry.description,
+        responsibilities: entry.responsibilities,
+      }
+    })
   }
 
   // Education
   if (data.education) {
-    profile.education = data.education.value.map((entry, index) => ({
-      id: `parsed-${index}`,
-      institution: entry.institution,
-      degree: entry.degree,
-      fieldOfStudy: entry.fieldOfStudy,
-      location: entry.location || '',
-      startDate: entry.startDate || '',
-      endDate: entry.endDate,
-      gpa: entry.gpa,
-      honors: entry.honors,
-    }))
+    profile.education = data.education.value.map((entry, index) => {
+      // Parse location string into components
+      const locationParts = (entry.location || '').split(',').map((p) => p.trim())
+      return {
+        id: `parsed-${index}`,
+        institution: entry.institution,
+        degree: entry.degree,
+        fieldOfStudy: entry.fieldOfStudy,
+        location: {
+          city: locationParts[0] || '',
+          state: locationParts[1] || '',
+          zipCode: '',
+          country: '',
+        },
+        startDate: entry.startDate || '',
+        endDate: entry.endDate,
+        gpa: entry.gpa,
+        honors: entry.honors,
+      }
+    })
   }
 
   // Skills

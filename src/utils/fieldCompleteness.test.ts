@@ -112,7 +112,7 @@ describe('fieldCompleteness', () => {
         id: 'exp-1',
         jobTitle: 'Developer',
         company: 'Acme',
-        location: 'SF',
+        location: { city: 'SF', state: 'CA', zipCode: '', country: '' },
         startDate: '2020-01-01',
         isCurrent: true,
         description: '',
@@ -180,7 +180,7 @@ describe('fieldCompleteness', () => {
         id: 'exp-1',
         jobTitle: 'Dev',
         company: 'Co',
-        location: 'SF',
+        location: { city: 'SF', state: 'CA', zipCode: '', country: '' },
         startDate: '2020-01-01',
         isCurrent: true,
         description: '',
@@ -191,7 +191,7 @@ describe('fieldCompleteness', () => {
         institution: 'Uni',
         degree: 'BS',
         fieldOfStudy: 'CS',
-        location: '',
+        location: { city: '', state: '', zipCode: '', country: '' },
         startDate: '2016-01-01',
       }]
       profile.skillsAndQualifications.skills = ['A', 'B', 'C']

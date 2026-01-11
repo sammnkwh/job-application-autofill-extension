@@ -53,7 +53,12 @@ export function WorkExperienceSection({
       id: `exp-${Date.now()}`,
       jobTitle: '',
       company: '',
-      location: '',
+      location: {
+        city: '',
+        state: '',
+        zipCode: '',
+        country: '',
+      },
       startDate: '',
       endDate: undefined,
       isCurrent: false,
@@ -170,17 +175,55 @@ function ExperienceEntry({ experience, index, onUpdate, onRemove }: ExperienceEn
         </FormField>
       </div>
 
-      <FormField
-        label="Location"
-        htmlFor={`location-${experience.id}`}
-      >
-        <Input
-          id={`location-${experience.id}`}
-          value={experience.location}
-          onChange={(e) => onUpdate({ location: e.target.value })}
-          placeholder="San Francisco, CA"
-        />
-      </FormField>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+        <FormField
+          label="City"
+          htmlFor={`city-${experience.id}`}
+        >
+          <Input
+            id={`city-${experience.id}`}
+            value={experience.location.city}
+            onChange={(e) => onUpdate({ location: { ...experience.location, city: e.target.value } })}
+            placeholder="San Francisco"
+          />
+        </FormField>
+        <FormField
+          label="State"
+          htmlFor={`state-${experience.id}`}
+        >
+          <Input
+            id={`state-${experience.id}`}
+            value={experience.location.state}
+            onChange={(e) => onUpdate({ location: { ...experience.location, state: e.target.value } })}
+            placeholder="CA"
+          />
+        </FormField>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+        <FormField
+          label="Zip Code"
+          htmlFor={`zipCode-${experience.id}`}
+        >
+          <Input
+            id={`zipCode-${experience.id}`}
+            value={experience.location.zipCode}
+            onChange={(e) => onUpdate({ location: { ...experience.location, zipCode: e.target.value } })}
+            placeholder="94102"
+          />
+        </FormField>
+        <FormField
+          label="Country"
+          htmlFor={`country-${experience.id}`}
+        >
+          <Input
+            id={`country-${experience.id}`}
+            value={experience.location.country}
+            onChange={(e) => onUpdate({ location: { ...experience.location, country: e.target.value } })}
+            placeholder="United States"
+          />
+        </FormField>
+      </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
         <FormField

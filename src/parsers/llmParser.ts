@@ -100,7 +100,15 @@ export async function parseResumeWithLLM(resumeText: string): Promise<LLMParseRe
                 properties: {
                   jobTitle: { type: SchemaType.STRING },
                   company: { type: SchemaType.STRING },
-                  location: { type: SchemaType.STRING },
+                  location: {
+                    type: SchemaType.OBJECT,
+                    properties: {
+                      city: { type: SchemaType.STRING },
+                      state: { type: SchemaType.STRING },
+                      zipCode: { type: SchemaType.STRING },
+                      country: { type: SchemaType.STRING },
+                    },
+                  },
                   startDate: { type: SchemaType.STRING },
                   endDate: { type: SchemaType.STRING },
                   isCurrent: { type: SchemaType.BOOLEAN },
@@ -120,6 +128,15 @@ export async function parseResumeWithLLM(resumeText: string): Promise<LLMParseRe
                   institution: { type: SchemaType.STRING },
                   degree: { type: SchemaType.STRING },
                   fieldOfStudy: { type: SchemaType.STRING },
+                  location: {
+                    type: SchemaType.OBJECT,
+                    properties: {
+                      city: { type: SchemaType.STRING },
+                      state: { type: SchemaType.STRING },
+                      zipCode: { type: SchemaType.STRING },
+                      country: { type: SchemaType.STRING },
+                    },
+                  },
                   startDate: { type: SchemaType.STRING },
                   endDate: { type: SchemaType.STRING },
                   gpa: { type: SchemaType.STRING },
@@ -218,11 +235,19 @@ function convertToProfile(parsed: Record<string, unknown>): Partial<Profile> {
       // isCurrent is true if: explicitly set OR endDate is empty/missing
       const isCurrent = Boolean(exp.isCurrent) || !endDateStr
 
+      // Parse location object
+      const loc = exp.location as Record<string, string> | undefined
+
       return {
         id: `llm-exp-${idx}`,
         jobTitle: String(exp.jobTitle || ''),
         company: String(exp.company || ''),
-        location: String(exp.location || ''),
+        location: {
+          city: loc?.city || '',
+          state: loc?.state || '',
+          zipCode: loc?.zipCode || '',
+          country: loc?.country || '',
+        },
         // Keep full YYYY-MM-DD format for date input fields
         startDate: String(exp.startDate || ''),
         // Don't set endDate if isCurrent is true
@@ -238,17 +263,27 @@ function convertToProfile(parsed: Record<string, unknown>): Partial<Profile> {
 
   // Education
   if (Array.isArray(parsed.education)) {
-    profile.education = parsed.education.map((edu: Record<string, unknown>, idx: number) => ({
-      id: `llm-edu-${idx}`,
-      institution: String(edu.institution || ''),
-      degree: String(edu.degree || ''),
-      fieldOfStudy: String(edu.fieldOfStudy || ''),
-      location: String(edu.location || ''),
-      // Keep full YYYY-MM-DD format for date input fields
-      startDate: String(edu.startDate || ''),
-      endDate: edu.endDate ? String(edu.endDate) : undefined,
-      gpa: edu.gpa ? String(edu.gpa) : undefined,
-    }))
+    profile.education = parsed.education.map((edu: Record<string, unknown>, idx: number) => {
+      // Parse location object
+      const loc = edu.location as Record<string, string> | undefined
+
+      return {
+        id: `llm-edu-${idx}`,
+        institution: String(edu.institution || ''),
+        degree: String(edu.degree || ''),
+        fieldOfStudy: String(edu.fieldOfStudy || ''),
+        location: {
+          city: loc?.city || '',
+          state: loc?.state || '',
+          zipCode: loc?.zipCode || '',
+          country: loc?.country || '',
+        },
+        // Keep full YYYY-MM-DD format for date input fields
+        startDate: String(edu.startDate || ''),
+        endDate: edu.endDate ? String(edu.endDate) : undefined,
+        gpa: edu.gpa ? String(edu.gpa) : undefined,
+      }
+    })
   }
 
   // Skills

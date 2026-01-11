@@ -46,7 +46,12 @@ export function EducationSection({
       institution: '',
       degree: '',
       fieldOfStudy: '',
-      location: '',
+      location: {
+        city: '',
+        state: '',
+        zipCode: '',
+        country: '',
+      },
       startDate: '',
       endDate: undefined,
       gpa: undefined,
@@ -159,17 +164,55 @@ function EducationEntry({ education, index, onUpdate, onRemove }: EducationEntry
         </FormField>
       </div>
 
-      <FormField
-        label="Location"
-        htmlFor={`location-${education.id}`}
-      >
-        <Input
-          id={`location-${education.id}`}
-          value={education.location || ''}
-          onChange={(e) => onUpdate({ location: e.target.value })}
-          placeholder=""
-        />
-      </FormField>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+        <FormField
+          label="City"
+          htmlFor={`city-${education.id}`}
+        >
+          <Input
+            id={`city-${education.id}`}
+            value={education.location.city}
+            onChange={(e) => onUpdate({ location: { ...education.location, city: e.target.value } })}
+            placeholder="Berkeley"
+          />
+        </FormField>
+        <FormField
+          label="State"
+          htmlFor={`state-${education.id}`}
+        >
+          <Input
+            id={`state-${education.id}`}
+            value={education.location.state}
+            onChange={(e) => onUpdate({ location: { ...education.location, state: e.target.value } })}
+            placeholder="CA"
+          />
+        </FormField>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+        <FormField
+          label="Zip Code"
+          htmlFor={`zipCode-${education.id}`}
+        >
+          <Input
+            id={`zipCode-${education.id}`}
+            value={education.location.zipCode}
+            onChange={(e) => onUpdate({ location: { ...education.location, zipCode: e.target.value } })}
+            placeholder="94720"
+          />
+        </FormField>
+        <FormField
+          label="Country"
+          htmlFor={`country-${education.id}`}
+        >
+          <Input
+            id={`country-${education.id}`}
+            value={education.location.country}
+            onChange={(e) => onUpdate({ location: { ...education.location, country: e.target.value } })}
+            placeholder="United States"
+          />
+        </FormField>
+      </div>
 
       <div className="grid grid-cols-3 gap-6">
         <FormField
