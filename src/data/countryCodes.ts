@@ -249,8 +249,12 @@ export const ALL_COUNTRIES: CountryCode[] = [
   { code: 'ZW', name: 'Zimbabwe', dialCode: '+263', flag: '🇿🇼' },
 ]
 
-// Default country code
+// Default country code (kept for backwards compatibility)
 export const DEFAULT_COUNTRY_CODE = 'US'
+
+// Empty country code constant for unselected state
+// Using a special value since Radix Select doesn't allow empty string as SelectItem value
+export const EMPTY_COUNTRY_CODE = '__none__'
 
 /**
  * Find a country by its ISO code
@@ -276,7 +280,7 @@ export function findCountryByDialCode(dialCode: string): CountryCode | undefined
  */
 export function parsePhoneWithCountryCode(phone: string): { countryCode: string; phoneNumber: string } {
   if (!phone) {
-    return { countryCode: '+1', phoneNumber: '' }
+    return { countryCode: '', phoneNumber: '' }
   }
 
   const trimmed = phone.trim()
@@ -294,8 +298,8 @@ export function parsePhoneWithCountryCode(phone: string): { countryCode: string;
     }
   }
 
-  // No country code found, return default US and the original number
-  return { countryCode: '+1', phoneNumber: trimmed }
+  // No country code found, return empty country code and the original number
+  return { countryCode: '', phoneNumber: trimmed }
 }
 
 /**
@@ -303,8 +307,17 @@ export function parsePhoneWithCountryCode(phone: string): { countryCode: string;
  */
 export function combinePhoneWithCountryCode(countryCode: string, phoneNumber: string): string {
   const cleanPhone = phoneNumber.trim()
-  if (!cleanPhone) {
+  const cleanCode = countryCode.trim()
+
+  if (!cleanPhone && !cleanCode) {
     return ''
   }
-  return `${countryCode} ${cleanPhone}`
+
+  // If we have a country code, prefix it (even without phone number to preserve selection)
+  if (cleanCode) {
+    return cleanPhone ? `${cleanCode} ${cleanPhone}` : cleanCode
+  }
+
+  // Phone number without country code
+  return cleanPhone
 }

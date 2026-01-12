@@ -149,21 +149,21 @@ describe('countryCodes', () => {
       expect(result.phoneNumber).toBe('5551234567')
     })
 
-    it('should default to +1 for phone without country code', () => {
+    it('should return empty country code for phone without country code prefix', () => {
       const result = parsePhoneWithCountryCode('555-123-4567')
-      expect(result.countryCode).toBe('+1')
+      expect(result.countryCode).toBe('')
       expect(result.phoneNumber).toBe('555-123-4567')
     })
 
     it('should handle empty string', () => {
       const result = parsePhoneWithCountryCode('')
-      expect(result.countryCode).toBe('+1')
+      expect(result.countryCode).toBe('')
       expect(result.phoneNumber).toBe('')
     })
 
     it('should handle whitespace-only string', () => {
       const result = parsePhoneWithCountryCode('   ')
-      expect(result.countryCode).toBe('+1')
+      expect(result.countryCode).toBe('')
       expect(result.phoneNumber).toBe('')
     })
 
@@ -197,14 +197,14 @@ describe('countryCodes', () => {
       expect(result).toBe('+1 555-123-4567')
     })
 
-    it('should return empty string for empty phone number', () => {
+    it('should preserve country code when phone number is empty', () => {
       const result = combinePhoneWithCountryCode('+1', '')
-      expect(result).toBe('')
+      expect(result).toBe('+1')
     })
 
-    it('should return empty string for whitespace-only phone number', () => {
+    it('should preserve country code when phone number is whitespace-only', () => {
       const result = combinePhoneWithCountryCode('+1', '   ')
-      expect(result).toBe('')
+      expect(result).toBe('+1')
     })
   })
 })
