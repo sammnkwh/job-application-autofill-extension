@@ -148,7 +148,7 @@ describe('fieldCompleteness', () => {
       expect(links?.complete).toBe(true)
     })
 
-    it('marks Work Experience as complete with at least one entry', () => {
+    it('marks Work Experience as complete with at least one complete entry (current job)', () => {
       const profile = createEmptyProfile()
       profile.workExperience = [{
         id: 'exp-1',
@@ -165,6 +165,138 @@ describe('fieldCompleteness', () => {
       const workExp = sections.find(s => s.name === 'Work Experience')
 
       expect(workExp?.complete).toBe(true)
+    })
+
+    it('marks Work Experience as complete with end date instead of isCurrent', () => {
+      const profile = createEmptyProfile()
+      profile.workExperience = [{
+        id: 'exp-1',
+        jobTitle: 'Developer',
+        company: 'Acme',
+        location: { city: '', state: '', zipCode: '', country: '' },
+        startDate: '2020-01-01',
+        endDate: '2023-06-01',
+        isCurrent: false,
+        description: '',
+        responsibilities: [],
+      }]
+
+      const sections = calculateSectionCompleteness(profile)
+      const workExp = sections.find(s => s.name === 'Work Experience')
+
+      expect(workExp?.complete).toBe(true)
+    })
+
+    it('marks Work Experience as incomplete when entry has empty required fields', () => {
+      const profile = createEmptyProfile()
+      profile.workExperience = [{
+        id: 'exp-1',
+        jobTitle: '',
+        company: '',
+        location: { city: '', state: '', zipCode: '', country: '' },
+        startDate: '',
+        isCurrent: false,
+        description: '',
+        responsibilities: [],
+      }]
+
+      const sections = calculateSectionCompleteness(profile)
+      const workExp = sections.find(s => s.name === 'Work Experience')
+
+      expect(workExp?.complete).toBe(false)
+      expect(workExp?.missingCount).toBe(4) // jobTitle, company, startDate, endDate
+    })
+
+    it('marks Work Experience as incomplete when missing end date and not current', () => {
+      const profile = createEmptyProfile()
+      profile.workExperience = [{
+        id: 'exp-1',
+        jobTitle: 'Developer',
+        company: 'Acme',
+        location: { city: '', state: '', zipCode: '', country: '' },
+        startDate: '2020-01-01',
+        isCurrent: false,
+        description: '',
+        responsibilities: [],
+      }]
+
+      const sections = calculateSectionCompleteness(profile)
+      const workExp = sections.find(s => s.name === 'Work Experience')
+
+      expect(workExp?.complete).toBe(false)
+    })
+
+    it('marks Education as complete with at least one complete entry (current)', () => {
+      const profile = createEmptyProfile()
+      profile.education = [{
+        id: 'edu-1',
+        institution: 'University',
+        degree: 'BS',
+        fieldOfStudy: 'Computer Science',
+        location: { city: '', state: '', zipCode: '', country: '' },
+        startDate: '2016-01-01',
+        isCurrent: true,
+      }]
+
+      const sections = calculateSectionCompleteness(profile)
+      const education = sections.find(s => s.name === 'Education')
+
+      expect(education?.complete).toBe(true)
+    })
+
+    it('marks Education as complete with end date instead of isCurrent', () => {
+      const profile = createEmptyProfile()
+      profile.education = [{
+        id: 'edu-1',
+        institution: 'University',
+        degree: 'BS',
+        fieldOfStudy: 'Computer Science',
+        location: { city: '', state: '', zipCode: '', country: '' },
+        startDate: '2016-01-01',
+        endDate: '2020-05-15',
+        isCurrent: false,
+      }]
+
+      const sections = calculateSectionCompleteness(profile)
+      const education = sections.find(s => s.name === 'Education')
+
+      expect(education?.complete).toBe(true)
+    })
+
+    it('marks Education as incomplete when entry has empty required fields', () => {
+      const profile = createEmptyProfile()
+      profile.education = [{
+        id: 'edu-1',
+        institution: '',
+        degree: '',
+        fieldOfStudy: '',
+        location: { city: '', state: '', zipCode: '', country: '' },
+        startDate: '',
+      }]
+
+      const sections = calculateSectionCompleteness(profile)
+      const education = sections.find(s => s.name === 'Education')
+
+      expect(education?.complete).toBe(false)
+      expect(education?.missingCount).toBe(5) // institution, degree, fieldOfStudy, startDate, endDate
+    })
+
+    it('marks Education as incomplete when missing end date and not current', () => {
+      const profile = createEmptyProfile()
+      profile.education = [{
+        id: 'edu-1',
+        institution: 'University',
+        degree: 'BS',
+        fieldOfStudy: 'Computer Science',
+        location: { city: '', state: '', zipCode: '', country: '' },
+        startDate: '2016-01-01',
+        isCurrent: false,
+      }]
+
+      const sections = calculateSectionCompleteness(profile)
+      const education = sections.find(s => s.name === 'Education')
+
+      expect(education?.complete).toBe(false)
     })
 
     it('marks Skills as complete with 3 or more skills', () => {
@@ -239,6 +371,7 @@ describe('fieldCompleteness', () => {
         fieldOfStudy: 'CS',
         location: { city: '', state: '', zipCode: '', country: '' },
         startDate: '2016-01-01',
+        endDate: '2020-05-15',
       }]
       profile.skillsAndQualifications.skills = ['A', 'B', 'C']
       profile.workAuthorization.authorizedToWork = true

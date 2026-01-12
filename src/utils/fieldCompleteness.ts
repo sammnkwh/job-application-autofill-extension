@@ -100,22 +100,61 @@ export function calculateSectionCompleteness(profile: Profile): SectionCompleten
     missingFields: hasLink ? [] : ['at least one link'],
   })
 
-  // Work Experience (at least one required)
-  const hasWorkExp = profile.workExperience.length > 0
+  // Work Experience (at least one complete entry required)
+  // Required: job title, company, start date, and either end date or "I currently work here"
+  const countWorkExpMissingFields = (exp: typeof profile.workExperience[0]) => {
+    let missing = 0
+    if (isFieldEmpty(exp.jobTitle)) missing++
+    if (isFieldEmpty(exp.company)) missing++
+    if (isFieldEmpty(exp.startDate)) missing++
+    if (!exp.isCurrent && isFieldEmpty(exp.endDate)) missing++
+    return missing
+  }
+
+  const hasCompleteWorkExp = profile.workExperience.some(exp => countWorkExpMissingFields(exp) === 0)
+
+  // Calculate missing count: if no entries, need 1 entry (4 fields). Otherwise, show missing fields from best entry.
+  let workExpMissingCount = 4 // Default: need all 4 fields
+  if (profile.workExperience.length > 0) {
+    // Find the entry with the least missing fields
+    const minMissing = Math.min(...profile.workExperience.map(countWorkExpMissingFields))
+    workExpMissingCount = minMissing
+  }
+
   sections.push({
     name: 'Work Experience',
-    complete: hasWorkExp,
-    missingCount: hasWorkExp ? 0 : 1,
-    missingFields: hasWorkExp ? [] : ['work experience entry'],
+    complete: hasCompleteWorkExp,
+    missingCount: workExpMissingCount,
+    missingFields: hasCompleteWorkExp ? [] : ['complete work experience entry'],
   })
 
-  // Education (at least one required)
-  const hasEducation = profile.education.length > 0
+  // Education (at least one complete entry required)
+  // Required: institution, degree, field of study, start date, and either end date or "I am currently enrolled"
+  const countEducationMissingFields = (edu: typeof profile.education[0]) => {
+    let missing = 0
+    if (isFieldEmpty(edu.institution)) missing++
+    if (isFieldEmpty(edu.degree)) missing++
+    if (isFieldEmpty(edu.fieldOfStudy)) missing++
+    if (isFieldEmpty(edu.startDate)) missing++
+    if (!edu.isCurrent && isFieldEmpty(edu.endDate)) missing++
+    return missing
+  }
+
+  const hasCompleteEducation = profile.education.some(edu => countEducationMissingFields(edu) === 0)
+
+  // Calculate missing count: if no entries, need 1 entry (5 fields). Otherwise, show missing fields from best entry.
+  let eduMissingCount = 5 // Default: need all 5 fields
+  if (profile.education.length > 0) {
+    // Find the entry with the least missing fields
+    const minMissing = Math.min(...profile.education.map(countEducationMissingFields))
+    eduMissingCount = minMissing
+  }
+
   sections.push({
     name: 'Education',
-    complete: hasEducation,
-    missingCount: hasEducation ? 0 : 1,
-    missingFields: hasEducation ? [] : ['education entry'],
+    complete: hasCompleteEducation,
+    missingCount: eduMissingCount,
+    missingFields: hasCompleteEducation ? [] : ['complete education entry'],
   })
 
   // Skills (at least 3 required)
