@@ -39,7 +39,7 @@ export function SkillsSection({
   const [newCertName, setNewCertName] = useState('')
   const [newCertIssuer, setNewCertIssuer] = useState('')
   const [newLangName, setNewLangName] = useState('')
-  const [newLangProf, setNewLangProf] = useState<'basic' | 'conversational' | 'professional' | 'native'>('conversational')
+  const [newLangProf, setNewLangProf] = useState<'basic' | 'conversational' | 'professional' | 'native' | ''>('')
 
   const addSkill = () => {
     if (newSkill.trim() && !skills.skills.includes(newSkill.trim())) {
@@ -72,14 +72,15 @@ export function SkillsSection({
   }
 
   const addLanguage = () => {
-    if (newLangName.trim()) {
+    if (newLangName.trim() && newLangProf) {
       onChange({
         languages: [
           ...skills.languages,
-          { language: newLangName.trim(), proficiency: newLangProf },
+          { language: newLangName.trim(), proficiency: newLangProf as 'basic' | 'conversational' | 'professional' | 'native' },
         ],
       })
       setNewLangName('')
+      setNewLangProf('')
     }
   }
 
@@ -198,8 +199,8 @@ export function SkillsSection({
               className="flex-1"
             />
             <Select value={newLangProf} onValueChange={(v) => setNewLangProf(v as typeof newLangProf)}>
-              <SelectTrigger className="w-40">
-                <SelectValue />
+              <SelectTrigger className="w-40" style={{ backgroundColor: '#ffffff' }}>
+                <SelectValue placeholder="Select" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="basic">Basic</SelectItem>

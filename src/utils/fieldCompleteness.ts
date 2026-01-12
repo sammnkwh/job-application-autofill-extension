@@ -157,14 +157,16 @@ export function calculateSectionCompleteness(profile: Profile): SectionCompleten
     missingFields: hasCompleteEducation ? [] : ['complete education entry'],
   })
 
-  // Skills (at least 3 required)
-  const skillCount = profile.skillsAndQualifications.skills.length
-  const skillsMissing = Math.max(0, 3 - skillCount)
+  // Skills (optional but show checkmark only if at least one item added)
+  const hasAnySkillsContent =
+    profile.skillsAndQualifications.skills.length > 0 ||
+    profile.skillsAndQualifications.certifications.length > 0 ||
+    profile.skillsAndQualifications.languages.length > 0
   sections.push({
     name: 'Skills',
-    complete: skillsMissing === 0,
-    missingCount: skillsMissing,
-    missingFields: skillsMissing > 0 ? [`${skillsMissing} more skill${skillsMissing > 1 ? 's' : ''}`] : [],
+    complete: hasAnySkillsContent,
+    missingCount: hasAnySkillsContent ? 0 : 1,
+    missingFields: hasAnySkillsContent ? [] : ['at least one skill, certification, or language'],
   })
 
   // Work Authorization

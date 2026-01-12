@@ -299,25 +299,33 @@ describe('fieldCompleteness', () => {
       expect(education?.complete).toBe(false)
     })
 
-    it('marks Skills as complete with 3 or more skills', () => {
+    it('marks Skills as incomplete when no items added', () => {
       const profile = createEmptyProfile()
-      profile.skillsAndQualifications.skills = ['JavaScript', 'Python', 'React']
-
-      const sections = calculateSectionCompleteness(profile)
-      const skills = sections.find(s => s.name === 'Skills')
-
-      expect(skills?.complete).toBe(true)
-    })
-
-    it('counts missing skills correctly', () => {
-      const profile = createEmptyProfile()
-      profile.skillsAndQualifications.skills = ['JavaScript']
-
       const sections = calculateSectionCompleteness(profile)
       const skills = sections.find(s => s.name === 'Skills')
 
       expect(skills?.complete).toBe(false)
-      expect(skills?.missingCount).toBe(2)
+      expect(skills?.missingCount).toBe(1)
+    })
+
+    it('marks Skills as complete when at least one skill is added', () => {
+      const profile = createEmptyProfile()
+      profile.skillsAndQualifications.skills = ['JavaScript']
+      const sections = calculateSectionCompleteness(profile)
+      const skills = sections.find(s => s.name === 'Skills')
+
+      expect(skills?.complete).toBe(true)
+      expect(skills?.missingCount).toBe(0)
+    })
+
+    it('marks Skills as complete when at least one language is added', () => {
+      const profile = createEmptyProfile()
+      profile.skillsAndQualifications.languages = [{ language: 'French', proficiency: 'basic' }]
+      const sections = calculateSectionCompleteness(profile)
+      const skills = sections.find(s => s.name === 'Skills')
+
+      expect(skills?.complete).toBe(true)
+      expect(skills?.missingCount).toBe(0)
     })
   })
 
