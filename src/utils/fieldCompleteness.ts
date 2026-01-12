@@ -1,13 +1,15 @@
 // Utilities for checking field completeness and calculating section status
 
 import type { Profile } from '../types/profile'
+import { parsePhoneWithCountryCode } from '../data/countryCodes'
 
 // Field display names for user-friendly messages
 const FIELD_DISPLAY_NAMES: Record<string, string> = {
   firstName: 'first name',
   lastName: 'last name',
   email: 'email address',
-  phone: 'phone number',
+  countryCode: 'country code',
+  phoneNumber: 'phone number',
   street: 'street address',
   city: 'city',
   state: 'state',
@@ -52,17 +54,28 @@ export interface SectionCompleteness {
 export function calculateSectionCompleteness(profile: Profile): SectionCompleteness[] {
   const sections: SectionCompleteness[] = []
 
-  // Personal Information
-  const personalRequired = ['firstName', 'lastName', 'email', 'phone'] as const
+  // Personal Information - 10 required fields
   const personalMissing: string[] = []
-  for (const field of personalRequired) {
+
+  // Basic info fields (3)
+  const basicRequired = ['firstName', 'lastName', 'email'] as const
+  for (const field of basicRequired) {
     if (isFieldEmpty(profile.personalInfo[field])) {
       personalMissing.push(field)
     }
   }
 
-  // Address fields
-  const addressRequired = ['city', 'state', 'country'] as const
+  // Phone fields (2) - country code and phone number are separate
+  const { countryCode, phoneNumber } = parsePhoneWithCountryCode(profile.personalInfo.phone)
+  if (isFieldEmpty(countryCode)) {
+    personalMissing.push('countryCode')
+  }
+  if (isFieldEmpty(phoneNumber)) {
+    personalMissing.push('phoneNumber')
+  }
+
+  // Address fields (5) - all required
+  const addressRequired = ['street', 'city', 'state', 'zipCode', 'country'] as const
   for (const field of addressRequired) {
     if (isFieldEmpty(profile.personalInfo.address[field])) {
       personalMissing.push(field)
@@ -146,20 +159,28 @@ export interface PersonalInfoCompleteness {
   firstName: boolean
   lastName: boolean
   email: boolean
-  phone: boolean
+  countryCode: boolean
+  phoneNumber: boolean
+  street: boolean
   city: boolean
   state: boolean
+  zipCode: boolean
   country: boolean
 }
 
 export function getPersonalInfoCompleteness(profile: Profile): PersonalInfoCompleteness {
+  const { countryCode, phoneNumber } = parsePhoneWithCountryCode(profile.personalInfo.phone)
+
   return {
     firstName: !isFieldEmpty(profile.personalInfo.firstName),
     lastName: !isFieldEmpty(profile.personalInfo.lastName),
     email: !isFieldEmpty(profile.personalInfo.email),
-    phone: !isFieldEmpty(profile.personalInfo.phone),
+    countryCode: !isFieldEmpty(countryCode),
+    phoneNumber: !isFieldEmpty(phoneNumber),
+    street: !isFieldEmpty(profile.personalInfo.address.street),
     city: !isFieldEmpty(profile.personalInfo.address.city),
     state: !isFieldEmpty(profile.personalInfo.address.state),
+    zipCode: !isFieldEmpty(profile.personalInfo.address.zipCode),
     country: !isFieldEmpty(profile.personalInfo.address.country),
   }
 }
@@ -171,4 +192,39 @@ export function hasProfessionalLink(profile: Profile): boolean {
   return !isFieldEmpty(profile.professionalLinks.linkedin) ||
          !isFieldEmpty(profile.professionalLinks.github) ||
          !isFieldEmpty(profile.professionalLinks.portfolio)
+}
+
+/**
+ * Self Identification completeness result
+ */
+export interface SelfIdentificationCompleteness {
+  gender: boolean
+  ethnicity: boolean
+  veteranStatus: boolean
+  disabilityStatus: boolean
+  complete: boolean
+  missingCount: number
+}
+
+/**
+ * Check if all self identification fields are filled
+ */
+export function getSelfIdentificationCompleteness(profile: Profile): SelfIdentificationCompleteness {
+  const selfId = profile.voluntarySelfIdentification
+  const gender = !isFieldEmpty(selfId?.gender)
+  const ethnicity = !isFieldEmpty(selfId?.ethnicity)
+  const veteranStatus = !isFieldEmpty(selfId?.veteranStatus)
+  const disabilityStatus = !isFieldEmpty(selfId?.disabilityStatus)
+
+  const filledCount = [gender, ethnicity, veteranStatus, disabilityStatus].filter(Boolean).length
+  const missingCount = 4 - filledCount
+
+  return {
+    gender,
+    ethnicity,
+    veteranStatus,
+    disabilityStatus,
+    complete: missingCount === 0,
+    missingCount,
+  }
 }

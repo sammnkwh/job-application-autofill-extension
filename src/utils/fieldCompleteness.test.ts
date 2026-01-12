@@ -6,6 +6,7 @@ import {
   getMissingSectionsForTooltip,
   getPersonalInfoCompleteness,
   hasProfessionalLink,
+  getSelfIdentificationCompleteness,
 } from './fieldCompleteness'
 import { createEmptyProfile } from '../types/profile'
 
@@ -50,7 +51,8 @@ describe('fieldCompleteness', () => {
       expect(getFieldDisplayName('firstName')).toBe('first name')
       expect(getFieldDisplayName('lastName')).toBe('last name')
       expect(getFieldDisplayName('email')).toBe('email address')
-      expect(getFieldDisplayName('phone')).toBe('phone number')
+      expect(getFieldDisplayName('countryCode')).toBe('country code')
+      expect(getFieldDisplayName('phoneNumber')).toBe('phone number')
     })
 
     it('returns the field name for unknown fields', () => {
@@ -67,14 +69,16 @@ describe('fieldCompleteness', () => {
       expect(sections.every(s => !s.complete)).toBe(true)
     })
 
-    it('marks Personal Information as complete when all required fields are filled', () => {
+    it('marks Personal Information as complete when all 10 required fields are filled', () => {
       const profile = createEmptyProfile()
       profile.personalInfo.firstName = 'John'
       profile.personalInfo.lastName = 'Doe'
       profile.personalInfo.email = 'john@example.com'
-      profile.personalInfo.phone = '555-1234'
+      profile.personalInfo.phone = '+1 555-1234' // Country code + phone number
+      profile.personalInfo.address.street = '123 Main St'
       profile.personalInfo.address.city = 'San Francisco'
       profile.personalInfo.address.state = 'CA'
+      profile.personalInfo.address.zipCode = '94102'
       profile.personalInfo.address.country = 'USA'
 
       const sections = calculateSectionCompleteness(profile)
@@ -84,16 +88,54 @@ describe('fieldCompleteness', () => {
       expect(personalInfo?.missingCount).toBe(0)
     })
 
-    it('counts missing personal info fields correctly', () => {
+    it('counts missing personal info fields correctly (10 fields total)', () => {
       const profile = createEmptyProfile()
       profile.personalInfo.firstName = 'John'
-      // Missing: lastName, email, phone, city, state, country
+      // Missing: lastName, email, countryCode, phoneNumber, street, city, state, zipCode, country = 9 fields
 
       const sections = calculateSectionCompleteness(profile)
       const personalInfo = sections.find(s => s.name === 'Personal Information')
 
       expect(personalInfo?.complete).toBe(false)
-      expect(personalInfo?.missingCount).toBe(6)
+      expect(personalInfo?.missingCount).toBe(9)
+    })
+
+    it('requires country code for phone to be complete', () => {
+      const profile = createEmptyProfile()
+      profile.personalInfo.firstName = 'John'
+      profile.personalInfo.lastName = 'Doe'
+      profile.personalInfo.email = 'john@example.com'
+      profile.personalInfo.phone = '555-1234' // No country code
+      profile.personalInfo.address.street = '123 Main St'
+      profile.personalInfo.address.city = 'San Francisco'
+      profile.personalInfo.address.state = 'CA'
+      profile.personalInfo.address.zipCode = '94102'
+      profile.personalInfo.address.country = 'USA'
+
+      const sections = calculateSectionCompleteness(profile)
+      const personalInfo = sections.find(s => s.name === 'Personal Information')
+
+      expect(personalInfo?.complete).toBe(false)
+      expect(personalInfo?.missingCount).toBe(1) // Missing country code
+    })
+
+    it('requires phone number even with country code', () => {
+      const profile = createEmptyProfile()
+      profile.personalInfo.firstName = 'John'
+      profile.personalInfo.lastName = 'Doe'
+      profile.personalInfo.email = 'john@example.com'
+      profile.personalInfo.phone = '+1' // Only country code, no phone number
+      profile.personalInfo.address.street = '123 Main St'
+      profile.personalInfo.address.city = 'San Francisco'
+      profile.personalInfo.address.state = 'CA'
+      profile.personalInfo.address.zipCode = '94102'
+      profile.personalInfo.address.country = 'USA'
+
+      const sections = calculateSectionCompleteness(profile)
+      const personalInfo = sections.find(s => s.name === 'Personal Information')
+
+      expect(personalInfo?.complete).toBe(false)
+      expect(personalInfo?.missingCount).toBe(1) // Missing phone number
     })
 
     it('marks Professional Links as complete with at least one link', () => {
@@ -153,9 +195,11 @@ describe('fieldCompleteness', () => {
       profile.personalInfo.firstName = 'John'
       profile.personalInfo.lastName = 'Doe'
       profile.personalInfo.email = 'john@example.com'
-      profile.personalInfo.phone = '555-1234'
+      profile.personalInfo.phone = '+1 555-1234'
+      profile.personalInfo.address.street = '123 Main St'
       profile.personalInfo.address.city = 'SF'
       profile.personalInfo.address.state = 'CA'
+      profile.personalInfo.address.zipCode = '94102'
       profile.personalInfo.address.country = 'USA'
 
       const missing = getMissingSectionsForTooltip(profile)
@@ -171,9 +215,11 @@ describe('fieldCompleteness', () => {
       profile.personalInfo.firstName = 'John'
       profile.personalInfo.lastName = 'Doe'
       profile.personalInfo.email = 'john@example.com'
-      profile.personalInfo.phone = '555-1234'
+      profile.personalInfo.phone = '+1 555-1234'
+      profile.personalInfo.address.street = '123 Main St'
       profile.personalInfo.address.city = 'SF'
       profile.personalInfo.address.state = 'CA'
+      profile.personalInfo.address.zipCode = '94102'
       profile.personalInfo.address.country = 'USA'
       profile.professionalLinks.linkedin = 'https://linkedin.com'
       profile.workExperience = [{
@@ -211,9 +257,12 @@ describe('fieldCompleteness', () => {
       expect(completeness.firstName).toBe(false)
       expect(completeness.lastName).toBe(false)
       expect(completeness.email).toBe(false)
-      expect(completeness.phone).toBe(false)
+      expect(completeness.countryCode).toBe(false)
+      expect(completeness.phoneNumber).toBe(false)
+      expect(completeness.street).toBe(false)
       expect(completeness.city).toBe(false)
       expect(completeness.state).toBe(false)
+      expect(completeness.zipCode).toBe(false)
       expect(completeness.country).toBe(false)
     })
 
@@ -221,12 +270,35 @@ describe('fieldCompleteness', () => {
       const profile = createEmptyProfile()
       profile.personalInfo.firstName = 'John'
       profile.personalInfo.email = 'john@example.com'
+      profile.personalInfo.phone = '+1 555-1234'
 
       const completeness = getPersonalInfoCompleteness(profile)
 
       expect(completeness.firstName).toBe(true)
       expect(completeness.email).toBe(true)
+      expect(completeness.countryCode).toBe(true)
+      expect(completeness.phoneNumber).toBe(true)
       expect(completeness.lastName).toBe(false)
+    })
+
+    it('returns countryCode false when phone has no country code', () => {
+      const profile = createEmptyProfile()
+      profile.personalInfo.phone = '555-1234' // No country code
+
+      const completeness = getPersonalInfoCompleteness(profile)
+
+      expect(completeness.countryCode).toBe(false)
+      expect(completeness.phoneNumber).toBe(true)
+    })
+
+    it('returns phoneNumber false when phone has only country code', () => {
+      const profile = createEmptyProfile()
+      profile.personalInfo.phone = '+1' // Only country code
+
+      const completeness = getPersonalInfoCompleteness(profile)
+
+      expect(completeness.countryCode).toBe(true)
+      expect(completeness.phoneNumber).toBe(false)
     })
   })
 
@@ -252,6 +324,68 @@ describe('fieldCompleteness', () => {
       const profile = createEmptyProfile()
       profile.professionalLinks.portfolio = 'https://johndoe.com'
       expect(hasProfessionalLink(profile)).toBe(true)
+    })
+  })
+
+  describe('getSelfIdentificationCompleteness', () => {
+    it('returns all false and 4 missing for empty profile', () => {
+      const profile = createEmptyProfile()
+      const completeness = getSelfIdentificationCompleteness(profile)
+
+      expect(completeness.gender).toBe(false)
+      expect(completeness.ethnicity).toBe(false)
+      expect(completeness.veteranStatus).toBe(false)
+      expect(completeness.disabilityStatus).toBe(false)
+      expect(completeness.complete).toBe(false)
+      expect(completeness.missingCount).toBe(4)
+    })
+
+    it('returns complete when all 4 fields are filled', () => {
+      const profile = createEmptyProfile()
+      profile.voluntarySelfIdentification = {
+        gender: 'Male',
+        ethnicity: 'White',
+        veteranStatus: 'I am not a veteran',
+        disabilityStatus: 'I do not have a disability',
+      }
+      const completeness = getSelfIdentificationCompleteness(profile)
+
+      expect(completeness.gender).toBe(true)
+      expect(completeness.ethnicity).toBe(true)
+      expect(completeness.veteranStatus).toBe(true)
+      expect(completeness.disabilityStatus).toBe(true)
+      expect(completeness.complete).toBe(true)
+      expect(completeness.missingCount).toBe(0)
+    })
+
+    it('counts missing fields correctly when partially filled', () => {
+      const profile = createEmptyProfile()
+      profile.voluntarySelfIdentification = {
+        gender: 'Female',
+        ethnicity: 'Hispanic or Latino',
+      }
+      const completeness = getSelfIdentificationCompleteness(profile)
+
+      expect(completeness.gender).toBe(true)
+      expect(completeness.ethnicity).toBe(true)
+      expect(completeness.veteranStatus).toBe(false)
+      expect(completeness.disabilityStatus).toBe(false)
+      expect(completeness.complete).toBe(false)
+      expect(completeness.missingCount).toBe(2)
+    })
+
+    it('handles "decline to answer" as a valid selection', () => {
+      const profile = createEmptyProfile()
+      profile.voluntarySelfIdentification = {
+        gender: 'Decline to self-identify',
+        ethnicity: 'Decline to self-identify',
+        veteranStatus: 'Decline to self-identify',
+        disabilityStatus: 'Decline to self-identify',
+      }
+      const completeness = getSelfIdentificationCompleteness(profile)
+
+      expect(completeness.complete).toBe(true)
+      expect(completeness.missingCount).toBe(0)
     })
   })
 })

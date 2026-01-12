@@ -21,6 +21,7 @@ import {
   getMissingSectionsForTooltip,
   getPersonalInfoCompleteness,
   hasProfessionalLink,
+  getSelfIdentificationCompleteness,
 } from '../../utils/fieldCompleteness'
 import type { Profile } from '../../types/profile'
 
@@ -58,6 +59,7 @@ export function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
   const missingSections = getMissingSectionsForTooltip(profile)
   const personalInfoComplete = getPersonalInfoCompleteness(profile)
   const hasLinks = hasProfessionalLink(profile)
+  const selfIdCompleteness = getSelfIdentificationCompleteness(profile)
 
   // Helper to get section completeness by name
   const getSectionStatus = (name: string) => {
@@ -349,7 +351,7 @@ export function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
               <AccordionTrigger>
                 <div className="flex items-center gap-3">
                   <span className="text-lg font-semibold text-[#111827]">Self Identification</span>
-                  <SectionBadge complete={true} />
+                  <SectionBadge complete={selfIdCompleteness.complete} missingCount={selfIdCompleteness.missingCount} />
                 </div>
               </AccordionTrigger>
               <AccordionContent>

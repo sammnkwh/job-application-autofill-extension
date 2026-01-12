@@ -30,7 +30,7 @@ describe('PersonalInfoSection', () => {
       )
 
       // Should have phone input
-      const phoneInput = screen.getByPlaceholderText('(555) 123-4567')
+      const phoneInput = screen.getByRole('textbox', { name: /phone/i })
       expect(phoneInput).toBeInTheDocument()
 
       // Should have country code dropdown
@@ -38,7 +38,7 @@ describe('PersonalInfoSection', () => {
       expect(countryCodeDropdown).toBeInTheDocument()
     })
 
-    it('defaults to US country code when phone is empty', () => {
+    it('shows globe icon when phone is empty (no default country)', () => {
       const onChange = vi.fn()
       render(
         <PersonalInfoSection
@@ -48,8 +48,7 @@ describe('PersonalInfoSection', () => {
       )
 
       const countryCodeDropdown = screen.getByRole('combobox', { name: /country code/i })
-      expect(countryCodeDropdown).toHaveTextContent('🇺🇸')
-      expect(countryCodeDropdown).toHaveTextContent('+1')
+      expect(countryCodeDropdown).toHaveTextContent('🌐')
     })
 
     it('parses existing US phone number with country code', () => {
@@ -65,7 +64,7 @@ describe('PersonalInfoSection', () => {
       expect(countryCodeDropdown).toHaveTextContent('🇺🇸')
       expect(countryCodeDropdown).toHaveTextContent('+1')
 
-      const phoneInput = screen.getByPlaceholderText('(555) 123-4567')
+      const phoneInput = screen.getByRole('textbox', { name: /phone/i })
       expect(phoneInput).toHaveValue('555-123-4567')
     })
 
@@ -82,11 +81,11 @@ describe('PersonalInfoSection', () => {
       expect(countryCodeDropdown).toHaveTextContent('🇬🇧')
       expect(countryCodeDropdown).toHaveTextContent('+44')
 
-      const phoneInput = screen.getByPlaceholderText('(555) 123-4567')
+      const phoneInput = screen.getByRole('textbox', { name: /phone/i })
       expect(phoneInput).toHaveValue('20 7946 0958')
     })
 
-    it('calls onChange with combined phone when phone number changes', () => {
+    it('calls onChange with just phone number when country code is empty', () => {
       const onChange = vi.fn()
       render(
         <PersonalInfoSection
@@ -95,13 +94,14 @@ describe('PersonalInfoSection', () => {
         />
       )
 
-      const phoneInput = screen.getByPlaceholderText('(555) 123-4567')
+      const phoneInput = screen.getByRole('textbox', { name: /phone/i })
       fireEvent.change(phoneInput, { target: { value: '555-123-4567' } })
 
-      expect(onChange).toHaveBeenCalledWith({ phone: '+1 555-123-4567' })
+      // With no country code selected, just the phone number is stored
+      expect(onChange).toHaveBeenCalledWith({ phone: '555-123-4567' })
     })
 
-    it('preserves phone number when only phone is typed (no country code)', () => {
+    it('shows globe icon when phone has no country code prefix', () => {
       const onChange = vi.fn()
       render(
         <PersonalInfoSection
@@ -110,15 +110,15 @@ describe('PersonalInfoSection', () => {
         />
       )
 
-      // Should default to US and show the number
+      // Should show globe icon (no country code detected)
       const countryCodeDropdown = screen.getByRole('combobox', { name: /country code/i })
-      expect(countryCodeDropdown).toHaveTextContent('+1')
+      expect(countryCodeDropdown).toHaveTextContent('🌐')
 
-      const phoneInput = screen.getByPlaceholderText('(555) 123-4567')
+      const phoneInput = screen.getByRole('textbox', { name: /phone/i })
       expect(phoneInput).toHaveValue('555-123-4567')
     })
 
-    it('returns empty string when phone number is cleared', () => {
+    it('preserves country code when phone number is cleared', () => {
       const onChange = vi.fn()
       render(
         <PersonalInfoSection
@@ -127,10 +127,11 @@ describe('PersonalInfoSection', () => {
         />
       )
 
-      const phoneInput = screen.getByPlaceholderText('(555) 123-4567')
+      const phoneInput = screen.getByRole('textbox', { name: /phone/i })
       fireEvent.change(phoneInput, { target: { value: '' } })
 
-      expect(onChange).toHaveBeenCalledWith({ phone: '' })
+      // Country code is preserved when phone number is cleared
+      expect(onChange).toHaveBeenCalledWith({ phone: '+1' })
     })
   })
 
@@ -144,13 +145,17 @@ describe('PersonalInfoSection', () => {
         />
       )
 
-      expect(screen.getByPlaceholderText('John')).toBeInTheDocument()
-      expect(screen.getByPlaceholderText('Doe')).toBeInTheDocument()
-      expect(screen.getByPlaceholderText('john.doe@example.com')).toBeInTheDocument()
-      expect(screen.getByPlaceholderText('123 Main St, Apt 4')).toBeInTheDocument()
-      expect(screen.getByPlaceholderText('San Francisco')).toBeInTheDocument()
-      expect(screen.getByPlaceholderText('CA')).toBeInTheDocument()
-      expect(screen.getByPlaceholderText('94102')).toBeInTheDocument()
+      // Check for label-based fields (no placeholders now)
+      expect(screen.getByLabelText(/first name/i)).toBeInTheDocument()
+      expect(screen.getByLabelText(/last name/i)).toBeInTheDocument()
+      expect(screen.getByLabelText(/email/i)).toBeInTheDocument()
+      expect(screen.getByLabelText(/street address/i)).toBeInTheDocument()
+      expect(screen.getByLabelText(/city/i)).toBeInTheDocument()
+      expect(screen.getByLabelText(/state/i)).toBeInTheDocument()
+      expect(screen.getByLabelText(/zip code/i)).toBeInTheDocument()
+      // Use textbox role to distinguish from Country Code combobox
+      const countryInput = screen.getByRole('textbox', { name: /country/i })
+      expect(countryInput).toBeInTheDocument()
     })
 
     it('calls onChange when first name changes', () => {
@@ -162,7 +167,7 @@ describe('PersonalInfoSection', () => {
         />
       )
 
-      const firstNameInput = screen.getByPlaceholderText('John')
+      const firstNameInput = screen.getByLabelText(/first name/i)
       fireEvent.change(firstNameInput, { target: { value: 'Jane' } })
 
       expect(onChange).toHaveBeenCalledWith({ firstName: 'Jane' })
@@ -177,7 +182,7 @@ describe('PersonalInfoSection', () => {
         />
       )
 
-      const emailInput = screen.getByPlaceholderText('john.doe@example.com')
+      const emailInput = screen.getByLabelText(/email/i)
       fireEvent.change(emailInput, { target: { value: 'jane@example.com' } })
 
       expect(onChange).toHaveBeenCalledWith({ email: 'jane@example.com' })
