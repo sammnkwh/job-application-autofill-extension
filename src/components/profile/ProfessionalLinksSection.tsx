@@ -35,7 +35,6 @@ export function ProfessionalLinksSection({
             type="url"
             value={links.linkedin || ''}
             onChange={(e) => onChange({ linkedin: e.target.value })}
-            placeholder="https://linkedin.com/in/yourprofile"
           />
         </FormField>
 
@@ -48,7 +47,6 @@ export function ProfessionalLinksSection({
             type="url"
             value={links.github || ''}
             onChange={(e) => onChange({ github: e.target.value })}
-            placeholder="https://github.com/yourusername"
           />
         </FormField>
       </div>
@@ -62,7 +60,6 @@ export function ProfessionalLinksSection({
           type="url"
           value={links.portfolio || ''}
           onChange={(e) => onChange({ portfolio: e.target.value })}
-          placeholder="https://yourportfolio.com"
         />
       </FormField>
     </div>

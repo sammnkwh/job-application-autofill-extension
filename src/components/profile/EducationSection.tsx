@@ -134,7 +134,6 @@ function EducationEntry({ education, index, onUpdate, onRemove }: EducationEntry
           id={`institution-${education.id}`}
           value={education.institution}
           onChange={(e) => onUpdate({ institution: e.target.value })}
-          placeholder="University of California, Berkeley"
         />
       </FormField>
 
@@ -148,7 +147,6 @@ function EducationEntry({ education, index, onUpdate, onRemove }: EducationEntry
             id={`degree-${education.id}`}
             value={education.degree}
             onChange={(e) => onUpdate({ degree: e.target.value })}
-            placeholder="Bachelor of Science"
           />
         </FormField>
         <FormField
@@ -159,7 +157,6 @@ function EducationEntry({ education, index, onUpdate, onRemove }: EducationEntry
             id={`fieldOfStudy-${education.id}`}
             value={education.fieldOfStudy}
             onChange={(e) => onUpdate({ fieldOfStudy: e.target.value })}
-            placeholder="Computer Science"
           />
         </FormField>
       </div>
@@ -173,7 +170,6 @@ function EducationEntry({ education, index, onUpdate, onRemove }: EducationEntry
             id={`city-${education.id}`}
             value={education.location.city}
             onChange={(e) => onUpdate({ location: { ...education.location, city: e.target.value } })}
-            placeholder="Berkeley"
           />
         </FormField>
         <FormField
@@ -184,7 +180,6 @@ function EducationEntry({ education, index, onUpdate, onRemove }: EducationEntry
             id={`state-${education.id}`}
             value={education.location.state}
             onChange={(e) => onUpdate({ location: { ...education.location, state: e.target.value } })}
-            placeholder="CA"
           />
         </FormField>
       </div>
@@ -198,7 +193,6 @@ function EducationEntry({ education, index, onUpdate, onRemove }: EducationEntry
             id={`zipCode-${education.id}`}
             value={education.location.zipCode}
             onChange={(e) => onUpdate({ location: { ...education.location, zipCode: e.target.value } })}
-            placeholder="94720"
           />
         </FormField>
         <FormField
@@ -209,7 +203,6 @@ function EducationEntry({ education, index, onUpdate, onRemove }: EducationEntry
             id={`country-${education.id}`}
             value={education.location.country}
             onChange={(e) => onUpdate({ location: { ...education.location, country: e.target.value } })}
-            placeholder="United States"
           />
         </FormField>
       </div>
@@ -255,7 +248,6 @@ function EducationEntry({ education, index, onUpdate, onRemove }: EducationEntry
             id={`gpa-${education.id}`}
             value={education.gpa || ''}
             onChange={(e) => onUpdate({ gpa: e.target.value || undefined })}
-            placeholder="3.8"
           />
         </FormField>
       </div>

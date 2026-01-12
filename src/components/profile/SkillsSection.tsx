@@ -104,7 +104,6 @@ export function SkillsSection({
             <Input
               value={newSkill}
               onChange={(e) => setNewSkill(e.target.value)}
-              placeholder="e.g., JavaScript, Python, React"
               onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())}
               className="flex-1"
             />
@@ -152,13 +151,11 @@ export function SkillsSection({
             <Input
               value={newCertName}
               onChange={(e) => setNewCertName(e.target.value)}
-              placeholder="Certification name"
               className="flex-1"
             />
             <Input
               value={newCertIssuer}
               onChange={(e) => setNewCertIssuer(e.target.value)}
-              placeholder="Issuing organization"
               className="flex-1"
             />
             <Button type="button" variant="outline" onClick={addCertification} style={{ flexShrink: 0, height: 44, whiteSpace: 'nowrap' }}>
@@ -198,7 +195,6 @@ export function SkillsSection({
             <Input
               value={newLangName}
               onChange={(e) => setNewLangName(e.target.value)}
-              placeholder="Language"
               className="flex-1"
             />
             <Select value={newLangProf} onValueChange={(v) => setNewLangProf(v as typeof newLangProf)}>

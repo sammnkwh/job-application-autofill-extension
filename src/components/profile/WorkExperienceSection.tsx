@@ -158,7 +158,6 @@ function ExperienceEntry({ experience, index, onUpdate, onRemove }: ExperienceEn
             id={`jobTitle-${experience.id}`}
             value={experience.jobTitle}
             onChange={(e) => onUpdate({ jobTitle: e.target.value })}
-            placeholder="Software Engineer"
           />
         </FormField>
         <FormField
@@ -170,7 +169,6 @@ function ExperienceEntry({ experience, index, onUpdate, onRemove }: ExperienceEn
             id={`company-${experience.id}`}
             value={experience.company}
             onChange={(e) => onUpdate({ company: e.target.value })}
-            placeholder="Acme Inc."
           />
         </FormField>
       </div>
@@ -184,7 +182,6 @@ function ExperienceEntry({ experience, index, onUpdate, onRemove }: ExperienceEn
             id={`city-${experience.id}`}
             value={experience.location.city}
             onChange={(e) => onUpdate({ location: { ...experience.location, city: e.target.value } })}
-            placeholder="San Francisco"
           />
         </FormField>
         <FormField
@@ -195,7 +192,6 @@ function ExperienceEntry({ experience, index, onUpdate, onRemove }: ExperienceEn
             id={`state-${experience.id}`}
             value={experience.location.state}
             onChange={(e) => onUpdate({ location: { ...experience.location, state: e.target.value } })}
-            placeholder="CA"
           />
         </FormField>
       </div>
@@ -209,7 +205,6 @@ function ExperienceEntry({ experience, index, onUpdate, onRemove }: ExperienceEn
             id={`zipCode-${experience.id}`}
             value={experience.location.zipCode}
             onChange={(e) => onUpdate({ location: { ...experience.location, zipCode: e.target.value } })}
-            placeholder="94102"
           />
         </FormField>
         <FormField
@@ -220,7 +215,6 @@ function ExperienceEntry({ experience, index, onUpdate, onRemove }: ExperienceEn
             id={`country-${experience.id}`}
             value={experience.location.country}
             onChange={(e) => onUpdate({ location: { ...experience.location, country: e.target.value } })}
-            placeholder="United States"
           />
         </FormField>
       </div>
@@ -279,7 +273,6 @@ function ExperienceEntry({ experience, index, onUpdate, onRemove }: ExperienceEn
           id={`description-${experience.id}`}
           value={experience.description}
           onChange={(e) => onUpdate({ description: e.target.value })}
-          placeholder="Brief description of your role..."
           rows={2}
         />
       </FormField>
@@ -293,7 +286,6 @@ function ExperienceEntry({ experience, index, onUpdate, onRemove }: ExperienceEn
           id={`responsibilities-${experience.id}`}
           value={responsibilitiesText}
           onChange={(e) => handleResponsibilitiesChange(e.target.value)}
-          placeholder="Led development of...&#10;Managed a team of...&#10;Improved performance by..."
           rows={4}
         />
       </FormField>
