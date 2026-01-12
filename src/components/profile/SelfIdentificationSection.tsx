@@ -35,6 +35,7 @@ export function SelfIdentificationSection({
         <FormField
           label="Gender"
           htmlFor="gender"
+          required
         >
           <Select
             value={selfId?.gender || ''}
@@ -55,6 +56,7 @@ export function SelfIdentificationSection({
         <FormField
           label="Race / Ethnicity"
           htmlFor="ethnicity"
+          required
         >
           <Select
             value={selfId?.ethnicity || ''}
@@ -81,6 +83,7 @@ export function SelfIdentificationSection({
         <FormField
           label="Veteran Status"
           htmlFor="veteranStatus"
+          required
         >
           <Select
             value={selfId?.veteranStatus || ''}
@@ -100,6 +103,7 @@ export function SelfIdentificationSection({
         <FormField
           label="Disability Status"
           htmlFor="disabilityStatus"
+          required
         >
           <Select
             value={selfId?.disabilityStatus || ''}

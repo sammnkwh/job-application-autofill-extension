@@ -152,6 +152,7 @@ function EducationEntry({ education, index, onUpdate, onRemove }: EducationEntry
         <FormField
           label="Field of Study"
           htmlFor={`fieldOfStudy-${education.id}`}
+          required
         >
           <Input
             id={`fieldOfStudy-${education.id}`}
@@ -211,6 +212,7 @@ function EducationEntry({ education, index, onUpdate, onRemove }: EducationEntry
         <FormField
           label="Start Date"
           htmlFor={`startDate-${education.id}`}
+          required
           className="min-w-0"
         >
           <Input
@@ -223,6 +225,7 @@ function EducationEntry({ education, index, onUpdate, onRemove }: EducationEntry
         <FormField
           label="End Date"
           htmlFor={`endDate-${education.id}`}
+          required={!education.isCurrent}
           helperText={education.isCurrent ? "Currently enrolled" : undefined}
           className="min-w-0"
         >

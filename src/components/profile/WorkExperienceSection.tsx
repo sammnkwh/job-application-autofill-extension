@@ -223,6 +223,7 @@ function ExperienceEntry({ experience, index, onUpdate, onRemove }: ExperienceEn
         <FormField
           label="Start Date"
           htmlFor={`startDate-${experience.id}`}
+          required
         >
           <Input
             id={`startDate-${experience.id}`}
@@ -234,6 +235,7 @@ function ExperienceEntry({ experience, index, onUpdate, onRemove }: ExperienceEn
         <FormField
           label="End Date"
           htmlFor={`endDate-${experience.id}`}
+          required={!experience.isCurrent}
           helperText={experience.isCurrent ? "Current position" : undefined}
         >
           {experience.isCurrent ? (
