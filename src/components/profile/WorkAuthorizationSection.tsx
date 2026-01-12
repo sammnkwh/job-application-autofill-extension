@@ -37,7 +37,7 @@ export function WorkAuthorizationSection({
           }
         />
         <Label htmlFor="authorizedToWork" className="font-normal text-sm text-[#121212]">
-          I am authorized to work in the United States
+          I am authorized to work in the United States without sponsorship
         </Label>
       </div>
 
