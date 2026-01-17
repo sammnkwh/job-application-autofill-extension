@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import type { Profile } from '../types/profile'
 import { createEmptyProfile } from '../types/profile'
 import { saveProfile, loadProfile, hasProfile } from '../utils/storage'
+import { calculateSectionCompleteness } from '../utils/fieldCompleteness'
 
 export interface UseProfileReturn {
   profile: Profile
@@ -196,46 +197,22 @@ export function useProfile(): UseProfileReturn {
   }
 }
 
-// Calculate profile completeness percentage
+// Calculate profile completeness percentage based on 23 required fields:
+// - Personal Info: 10 (firstName, lastName, email, countryCode, phoneNumber, street, city, state, zipCode, country)
+// - Professional Links: 1 (at least one of linkedin, github, portfolio)
+// - Work Experience: 4 (one complete entry: jobTitle, company, startDate, endDate/isCurrent)
+// - Education: 5 (one complete entry: institution, degree, fieldOfStudy, startDate, endDate/isCurrent)
+// - Skills: 1 (at least one skill, certification, or language)
+// - Work Authorization: 2 (one checkbox + visa status)
 function calculateCompleteness(profile: Profile): number {
-  let filled = 0
-  let total = 0
+  const sections = calculateSectionCompleteness(profile)
 
-  // Personal info (required fields)
-  const personalFields = ['firstName', 'lastName', 'email', 'phone'] as const
-  for (const field of personalFields) {
-    total++
-    if (profile.personalInfo[field]) filled++
-  }
+  // Total required fields across all sections
+  const TOTAL_REQUIRED = 23
 
-  // Address
-  const addressFields = ['city', 'state', 'country'] as const
-  for (const field of addressFields) {
-    total++
-    if (profile.personalInfo.address[field]) filled++
-  }
+  // Sum up all missing fields
+  const totalMissing = sections.reduce((sum, section) => sum + section.missingCount, 0)
 
-  // Professional links (at least one)
-  total++
-  if (profile.professionalLinks.linkedin || profile.professionalLinks.github || profile.professionalLinks.portfolio) {
-    filled++
-  }
-
-  // Work experience (at least one)
-  total++
-  if (profile.workExperience.length > 0) filled++
-
-  // Education (at least one)
-  total++
-  if (profile.education.length > 0) filled++
-
-  // Skills (at least 3)
-  total++
-  if (profile.skillsAndQualifications.skills.length >= 3) filled++
-
-  // Work authorization
-  total++
-  if (profile.workAuthorization.authorizedToWork) filled++
-
-  return Math.round((filled / total) * 100)
+  const filled = TOTAL_REQUIRED - totalMissing
+  return Math.round((filled / TOTAL_REQUIRED) * 100)
 }

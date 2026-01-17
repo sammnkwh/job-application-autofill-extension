@@ -222,7 +222,7 @@ export function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
           <Accordion type="single" collapsible>
             <AccordionItem value="personal-info">
               <AccordionTrigger>
-                <div className="flex items-center gap-3">
+                <div className="flex items-baseline gap-3">
                   <span className="text-lg font-semibold text-[#111827]">Personal Information</span>
                   <SectionBadge
                     complete={getSectionStatus('Personal Information').complete}
@@ -234,14 +234,14 @@ export function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
                 <PersonalInfoSection
                   personalInfo={profile.personalInfo}
                   onChange={updatePersonalInfo}
-                  showIncompleteHints={showIncompleteHints}
+                  showErrors={showIncompleteHints}
                   fieldCompleteness={personalInfoComplete}
                 />
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="professional-links">
               <AccordionTrigger>
-                <div className="flex items-center gap-3">
+                <div className="flex items-baseline gap-3">
                   <span className="text-lg font-semibold text-[#111827]">Professional Links</span>
                   <SectionBadge
                     complete={getSectionStatus('Professional Links').complete}
@@ -264,7 +264,7 @@ export function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
           <Accordion type="single" collapsible>
             <AccordionItem value="work-experience">
               <AccordionTrigger>
-                <div className="flex items-center gap-3">
+                <div className="flex items-baseline gap-3">
                   <span className="text-lg font-semibold text-[#111827]">Work Experience</span>
                   <SectionBadge
                     complete={getSectionStatus('Work Experience').complete}
@@ -284,7 +284,7 @@ export function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
             </AccordionItem>
             <AccordionItem value="education">
               <AccordionTrigger>
-                <div className="flex items-center gap-3">
+                <div className="flex items-baseline gap-3">
                   <span className="text-lg font-semibold text-[#111827]">Education</span>
                   <SectionBadge
                     complete={getSectionStatus('Education').complete}
@@ -309,7 +309,7 @@ export function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
           <Accordion type="single" collapsible>
             <AccordionItem value="skills">
               <AccordionTrigger>
-                <div className="flex items-center gap-3">
+                <div className="flex items-baseline gap-3">
                   <span className="text-lg font-semibold text-[#111827]">Skills</span>
                   <SectionBadge
                     complete={getSectionStatus('Skills').complete}
@@ -332,7 +332,7 @@ export function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
           <Accordion type="single" collapsible>
             <AccordionItem value="work-authorization">
               <AccordionTrigger>
-                <div className="flex items-center gap-3">
+                <div className="flex items-baseline gap-3">
                   <span className="text-lg font-semibold text-[#111827]">Work Authorization</span>
                   <SectionBadge
                     complete={getSectionStatus('Work Authorization').complete}
@@ -349,7 +349,7 @@ export function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
             </AccordionItem>
             <AccordionItem value="self-identification">
               <AccordionTrigger>
-                <div className="flex items-center gap-3">
+                <div className="flex items-baseline gap-3">
                   <span className="text-lg font-semibold text-[#111827]">Self Identification</span>
                   <SectionBadge complete={selfIdCompleteness.complete} missingCount={selfIdCompleteness.missingCount} />
                 </div>
