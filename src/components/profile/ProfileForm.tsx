@@ -351,7 +351,7 @@ export function ProfileForm({ onSaveSuccess }: ProfileFormProps) {
               <AccordionTrigger>
                 <div className="flex items-baseline gap-3">
                   <span className="text-lg font-semibold text-[#111827]">Self Identification</span>
-                  <SectionBadge complete={selfIdCompleteness.complete} missingCount={selfIdCompleteness.missingCount} />
+                  <SectionBadge complete={selfIdCompleteness.complete} missingCount={selfIdCompleteness.missingCount} optional />
                 </div>
               </AccordionTrigger>
               <AccordionContent>

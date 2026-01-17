@@ -28,12 +28,19 @@ export function WorkAuthorizationSection({
         Information about your legal ability to work in the United States.
       </p>
 
+      <p className="text-xs text-[#606060]">
+        <span className="text-[#606060]">*</span> Select one of the following:
+      </p>
+
       <div className="flex items-center gap-3">
         <Checkbox
           id="authorizedToWork"
           checked={authorization.authorizedToWork}
           onCheckedChange={(checked) =>
-            onChange({ authorizedToWork: checked === true })
+            onChange({
+              authorizedToWork: checked === true,
+              requiresSponsorship: checked === true ? false : authorization.requiresSponsorship,
+            })
           }
         />
         <Label htmlFor="authorizedToWork" className="font-normal text-sm text-[#121212]">
@@ -46,7 +53,10 @@ export function WorkAuthorizationSection({
           id="requiresSponsorship"
           checked={authorization.requiresSponsorship}
           onCheckedChange={(checked) =>
-            onChange({ requiresSponsorship: checked === true })
+            onChange({
+              requiresSponsorship: checked === true,
+              authorizedToWork: checked === true ? false : authorization.authorizedToWork,
+            })
           }
         />
         <Label htmlFor="requiresSponsorship" className="font-normal text-sm text-[#121212]">
@@ -58,6 +68,7 @@ export function WorkAuthorizationSection({
         <FormField
           label="Work Authorization Status"
           htmlFor="visaStatus"
+          required
         >
           <Select
             value={authorization.visaStatus || ''}

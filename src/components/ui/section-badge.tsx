@@ -24,10 +24,11 @@ interface SectionBadgeProps {
   complete: boolean
   missingCount?: number
   className?: string
+  optional?: boolean
 }
 
 const SectionBadge = React.forwardRef<HTMLSpanElement, SectionBadgeProps>(
-  ({ complete, missingCount = 0, className }, ref) => {
+  ({ complete, missingCount = 0, className, optional = false }, ref) => {
     if (complete) {
       return (
         <span
@@ -42,6 +43,10 @@ const SectionBadge = React.forwardRef<HTMLSpanElement, SectionBadgeProps>(
     }
 
     if (missingCount > 0) {
+      const optionalSuffix = optional ? ' (optional)' : ''
+      const displayText = `${missingCount} missing${optionalSuffix}`
+      const titleText = `${missingCount} field${missingCount > 1 ? 's' : ''} missing${optionalSuffix}`
+
       return (
         <span
           ref={ref}
@@ -49,10 +54,10 @@ const SectionBadge = React.forwardRef<HTMLSpanElement, SectionBadgeProps>(
             "inline-flex items-center text-xs text-[#9CA3AF] font-normal",
             className
           )}
-          title={`${missingCount} field${missingCount > 1 ? 's' : ''} missing`}
-          aria-label={`${missingCount} field${missingCount > 1 ? 's' : ''} missing`}
+          title={titleText}
+          aria-label={titleText}
         >
-          {missingCount} missing
+          {displayText}
         </span>
       )
     }
